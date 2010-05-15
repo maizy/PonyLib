@@ -27,6 +27,22 @@ class BookSequence(models.Model):
 
 
 
+class Genre(models.Model):
+    code = models.CharField(max_length=40)
+    value = models.CharField(max_length=255, blank=True)
+    protect = models.BooleanField(default=False)
+
+
+
+
+class BookGenre(models.Model):
+    genre = models.ForeignKey('Genre')
+    book = models.ForeignKey('Book')
+
+    class Meta:
+        db_table = _prefix+'book_genre'
+
+
 class Author(models.Model):
 
 
@@ -61,16 +77,22 @@ class Book(models.Model):
 
 
     title = models.TextField()
+    
     rel_path = models.TextField()
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    modifided_at = models.DateTimeField(auto_now=True)
+
     dir = models.ForeignKey('Dir', related_name='Books')
+
     authors = models.ForeignKey('Author', related_name='Books', blank=True)
+
     sequences = models.ManyToManyField('Sequence', through='BookSequence',\
                                        blank=True)
+    genres = models.ManyToManyField('Genre', through='BookGenre',\
+                                       blank=True)
 
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    modifided_at = models.DateTimeField(auto_now=True)
 
 
 
