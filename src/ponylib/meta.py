@@ -267,12 +267,14 @@ class Document:
         """
             Return annotation as simple text (with \n)
         """
-        #TODO
-        ann = self.annotation()
-        if not ann:
-            return ''
+        res  = u''
+        ann_doc = self.annotation_doc()
+        if ann_doc:
+            ann = ann_doc.getroot()
+            if ann is not None:
+                res = etree.tostring(ann, encoding=unicode, method='text')
 
-        return ann
+        return res
 
     def covers(self, cache_dir, prefix="file_"):
         """

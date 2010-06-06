@@ -1,6 +1,6 @@
+# _*_ coding: utf-8 _*_
 # Scanner settings
-PONYLIB_ROOTS = ('/path/to/lib', )
-
+PONYLIB_ROOTS = ('/paths/to/your/fb2lib', )
 
 # Django settings
 
@@ -66,8 +66,8 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #'django.contrib.sessions.middleware.SessionMiddleware',
+    #'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
 ROOT_URLCONF = 'ponylib.urls'

@@ -8,6 +8,7 @@ from ponylib import scanner
 from ponylib import meta
 
 
+
 __license__         = "GPL3"
 __copyright__       = "Copyright 2010 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
@@ -24,7 +25,7 @@ def main(argv):
 
     iter = scanner.Iterator(settings.PONYLIB_ROOTS)
 
-    print('Roots %r ' % settings.PONYLIB_ROOTS)
+    print('Roots %s' % ', '.join(settings.PONYLIB_ROOTS))
     
     total = 0
     ok = 0
@@ -55,6 +56,7 @@ def main(argv):
                 #print 'Sequences: %r' % doc.sequences()
                 for seq in doc.sequences():
                     print('Sequence: %(name)s (%(number)s)' % seq)
+                    
                 print('Annotation: %s' % doc.annotation_text())
                 ok += 1
             except meta.Exception:
