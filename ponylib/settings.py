@@ -1,6 +1,23 @@
 # _*_ coding: utf-8 _*_
+import os.path
+import platform
+
+
 # Scanner settings
-PONYLIB_ROOTS = ('/paths/to/your/fb2lib', )
+
+PONYLIB_LIB_ROOTS = ('/paths/to/your/fb2lib', )
+
+
+# Ponylib settings
+
+PONYLIB_CODE_ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+PONYLIB_BIN_ROOT = os.path.join(PONYLIB_CODE_ROOT, 'bin')
+
+PONYLIB_BIN_FB2LRF = os.path.join(PONYLIB_BIN_ROOT, 'fb2lrf_console', 'fb2lrf_c.exe')
+PONYLIB_BIN_WINE = '/usr/bin/env wine'
+PONYLIB_BIN_USE_WINE = (platform.system() != 'Window') #Set False on Windows
+
+DEVELOPMENT = True
 
 # Django settings
 
@@ -14,14 +31,24 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'ponylib'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'ponylib'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'ponylib'         # Not used with sqlite3.
+DATABASE_NAME = ''           # Or path to database file if using sqlite3.
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
-DATABASE_OPTIONS = {
-    'init_command': 'SET storage_engine=INNODB'
-}
+
+#test mysql config
+if DEVELOPMENT and DATABASE_ENGINE == 'mysql':
+    DATABASE_NAME = 'ponylib'
+    DATABASE_USER = 'ponylib'
+    DATABASE_PASSWORD = 'ponylib'
+    DATABASE_OPTIONS = {
+        'init_command': 'SET storage_engine=INNODB'
+    }
+
+#test sqlite3 config
+elif DEVELOPMENT and DATABASE_ENGINE == 'sqlite3':
+    DATABASE_NAME = os.path.join(PONYLIB_CODE_ROOT, 'data', 'db', 'main.db')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

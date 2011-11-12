@@ -1,4 +1,5 @@
 *.py[co]
 .idea
 .AppleDouble
+.DS_Store
 devserver-default-host

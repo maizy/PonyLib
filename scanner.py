@@ -23,9 +23,9 @@ def main(argv):
     os.environ['DJANGO_SETTINGS_MODULE'] = 'ponylib.settings'
     from django.conf import settings
 
-    iter = scanner.Iterator(settings.PONYLIB_ROOTS)
+    iter = scanner.Iterator(settings.PONYLIB_LIB_ROOTS)
 
-    print('Roots %s' % ', '.join(settings.PONYLIB_ROOTS))
+    print('Roots %s' % ', '.join(settings.PONYLIB_LIB_ROOTS))
     
     total = 0
     ok = 0

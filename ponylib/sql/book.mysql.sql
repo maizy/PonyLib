@@ -1,0 +1,1 @@
+ALTER TABLE `ponylib_book` ADD INDEX  `cst_path_idx` (`rel_path` ( 128 ) );
