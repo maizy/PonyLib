@@ -1,5 +1,22 @@
+# python
 *.py[co]
-.idea
+
+# IDE
+.idea/
+.project/
+
+# Mac OS X junk
 .AppleDouble
 .DS_Store
+Icon?
+.Spotlight-V100
+.Trashes
+
+
+# Windows junk
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# local config files
 devserver-default-host
