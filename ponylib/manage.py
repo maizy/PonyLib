@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+
+__license__         = "GPL3"
+__copyright__       = "Copyright 2011 maizy.ru"
+__author__          = "Nikita Kovaliov <nikita@maizy.ru>"
+
+__version__         = "0.1"
+__doc__             = ""
+
 from django.core.management import execute_manager
 
 try:

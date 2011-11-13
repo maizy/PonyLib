@@ -1,9 +1,15 @@
 #!/bin/bash
 
+# License: GPL v3
+# Copyright: 2011 maizy.ru"
+# Author: Nikita Kovaliov <nikita@maizy.ru>
+# Version: 0.1
+
+# TODO Break for some steps. Db or user may not exist.
+
+
 SCRIPT_PATH=$(cd ${0%/*} && echo $PWD/${0##*/})
 WEB_ROOT="`dirname "$SCRIPT_PATH"`/ponylib"
-
-#TODO Break for some steps. Db or user may not exist.
 
 echo "UNINSTALL"
 

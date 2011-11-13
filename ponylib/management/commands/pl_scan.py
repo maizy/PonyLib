@@ -11,7 +11,7 @@ from ponylib import meta
 
 
 __license__         = "GPL3"
-__copyright__       = "Copyright 2010 maizy.ru"
+__copyright__       = "Copyright 2010-2011 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
 __version__         = "0.1"
@@ -19,8 +19,11 @@ __doc__             = ""
 
 
 class Command(BaseCommand):
+
+
     args = '<lib_dir lib_dir ...>'
-    help = u'Сканирование указанных директорий'
+    help = u'Scan library dirs'
+
 
     def handle(self, *args, **options):
 
@@ -28,7 +31,6 @@ class Command(BaseCommand):
         iter = scanner.Iterator(lib_paths)
 
         print('Scan roots %s' % ', '.join(lib_paths))
-        sys.exit(0)
 
         total = 0
         ok = 0

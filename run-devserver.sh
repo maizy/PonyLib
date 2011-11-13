@@ -1,5 +1,11 @@
 #/bin/bash
 
+# License: GPL v3
+# Copyright: 2011 maizy.ru"
+# Author: Nikita Kovaliov <nikita@maizy.ru>
+# Version: 0.1
+
+
 SCRIPT_PATH=$(cd ${0%/*} && echo $PWD/${0##*/})
 PROJECT_ROOT=`dirname "$SCRIPT_PATH"`
 WEB_ROOT="${PROJECT_ROOT}/ponylib"

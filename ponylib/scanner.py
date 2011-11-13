@@ -1,18 +1,17 @@
 # _*_ coding: utf-8 _*_
-import os
-import sys
-
-try:
-    import ponylib.meta as meta
-except ImportError:
-    import meta
 
 __license__         = "GPL3"
-__copyright__       = "Copyright 2010 maizy.ru"
+__copyright__       = "Copyright 2010-2011 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
 __version__         = "0.1"
 __doc__             = ""
+
+
+import os
+import sys
+
+import ponylib.meta as meta
 
 
 class Iterator(object):
