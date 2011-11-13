@@ -18,6 +18,10 @@ __doc__             = ""
 
 
 def main(argv):
+
+    print('This script will be removed')
+    sys.exit(1)
+
     prj_dir = os.path.realpath(os.path.dirname(__file__))
     sys.path.append(prj_dir)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'ponylib.settings'

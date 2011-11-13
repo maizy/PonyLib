@@ -12,8 +12,6 @@ WEB_ROOT = os.path.join(PROJECT_ROOT, 'work')
 
 VAR_ROOT = os.path.join(PROJECT_ROOT, 'var')
 
-PONYLIB_CODE_ROOT = PROJECT_ROOT #deprecated
-
 BIN_ROOT = os.path.join(PROJECT_ROOT, 'bin')
 
 #fb2lrf
