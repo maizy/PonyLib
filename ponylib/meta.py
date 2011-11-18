@@ -1,392 +1,240 @@
-# -*- coding: utf-8 -*-
-#
-# Based on pybookshelf python plugin - http://code.google.com/p/pybookshelf/
-# Author: sergei.stolyarov, GPLv2
+#!/usr/bin/env python
+from __future__ import with_statement
+__license__   = 'GPL v3'
+__copyright__ = '2011, Roman Mukhin <ramses_ru at hotmail.com>, '\
+                '2008, Anatoly Shipitsin <norguhtar at gmail.com>'
+'''Read meta information from fb2 files'''
 
-# Ubuntu packages: python-lxml
-
-
-import zipfile
+import os
+import datetime
+from functools import partial
 from base64 import b64decode
 from lxml import etree
-import os.path
-import copy
+from calibre.utils.date import parse_date
+from calibre import guess_type, guess_all_extensions, prints, force_unicode
+from calibre.ebooks.metadata import MetaInformation, check_isbn
+from calibre.ebooks.chardet import xml_to_unicode
 
-class Exception(Exception):
-    pass
 
+NAMESPACES = {
+    'fb2'   :   'http://www.gribuser.ru/xml/fictionbook/2.0',
+    'xlink' :   'http://www.w3.org/1999/xlink'  }
 
-def _u(s):
-    return unicode(s, 'UTF8')
+XPath = partial(etree.XPath, namespaces=NAMESPACES)
+tostring = partial(etree.tostring, method='text', encoding=unicode)
 
-nsmap = {
-    'fb': "http://www.gribuser.ru/xml/fictionbook/2.0",
-    'xlink': "http://www.w3.org/1999/xlink"
-    }
+def get_metadata(stream):
+    ''' Return fb2 metadata as a L{MetaInformation} object '''
 
-def form_element(ns, element_name):
-    """
-        Form full qualified XML element name.
-    """
-    return "{%s}%s" % (nsmap[ns], element_name)
+    root = _get_fbroot(stream)
+    book_title = _parse_book_title(root)
+    authors = _parse_authors(root)
 
-"""For fb version 2.0
-"""
-class Author20:
-    fbns = "{%s}" % nsmap['fb']
-
-    def __init__(self, author_node=None):
-
-        self.firstname = None
-        self.middlename = None
-        self.lastname = None
-        self.nickname = None
-        self.homepage = None
-        self.email = None
-
-        if author_node is None:
-            return
-
-        ns = Author20.fbns
-
-        elements = {
-            ns+"first-name": u"",
-            ns+"middle-name": u"",
-            ns+"last-name": u"",
-            ns+"nickname": u""}
-
-        for c in author_node:
-            elements[c.tag] = c.text.strip() if c.text is not None else None
-
-        self.firstname = elements[ns+"first-name"]
-        self.middlename = elements[ns+"middle-name"]
-        self.lastname = elements[ns+"last-name"]
-        self.nickname = elements[ns+"nickname"]
-
-    def format(self, formatstr=""):
-        if formatstr != "":
-            return formatstr % {
-                'firstname': self.firstname,
-                'middlename': self.middlename,
-                'lastname': self.lastname,
-                'nickname': self.nickname
-                }
-
-        args = []
-        for s in (self.lastname, self.firstname, self.middlename):
-            if s:
-                args.append(s)
-        if not self.nickname is None and "" != self.nickname:
-            args.append(u"(%s)" % self.nickname)
-
-        return u" ".join(args)
-
-    def element(self):
-        """
-        Return lxml.etree._Element instance that corresponds given author details
-        """
-        ns = Author20.fbns
-
-        e = etree.Element(ns+"author", nsmap=nsmap)
-
-        def append_elem(name, value):
-            if value is None:
-                return
-            sube = etree.Element(ns+name, nsmap=nsmap)
-            sube.text = value
-            e.append(sube)
-
-        # the only allowed situations:
-        #   firstname!=None and lastname!=None
-        #   or
-        #   nickname!=None and firstname==None and middlename==None and lastname==None
-
-        if not (not self.firstname is None and not self.lastname is None):
-            if self.nickname is None or not (self.firstname is None and self.middlename is None and self.lastname is None):
-                raise Exception, "Incorrect author components!"
-
-        append_elem("first-name", self.firstname)
-        append_elem("middle-name", self.middlename)
-        append_elem("last-name", self.lastname)
-        append_elem("nickname", self.nickname)
-        append_elem("home-page", self.homepage)
-        append_elem("email", self.email)
-        return e
-
-class Document:
-
-    def __init__(self, text=None, filename=None):
-        self.__doc = None
-        self.__authors_list = None
-        self.__title = None
-        self.__genres = None
-        self.__annotation = None
-        self.__annotation_doc = None
-        self.__title_covers = None
-        self.__images = None
-        self.__sequences = None
-        self.new_title = None
-
-        try:
-            if text:
-                self.__doc = etree.ElementTree(etree.fromstring(text))
-            elif text=="":
-                raise Exception, "Invalid content: text is empty"
-            else:
-                f = open(filename)
-                parser = etree.XMLParser(recover=True) #recover bad chars
-                self.__doc = etree.parse(f, parser)
-                f.close()
-
-        except etree.XMLSyntaxError, error:
-            raise Exception, error
-
-        # check that document is really FictionBook2 file
-        root = self.__doc.getroot()
-        if not root or not root.tag == "{http://www.gribuser.ru/xml/fictionbook/2.0}FictionBook":
-            raise Exception, "Not FictionBook2 document"
-
-    def __str__(self):
-        document_encoding = self.__doc.docinfo.encoding
-        return etree.tostring(self.__doc, encoding=document_encoding, xml_declaration=True)
-
-    def write (self, file):
-        """
-        Save document to the file
-        """
-
-    def __xpath(self, expr):
-        return self.__doc.xpath(expr, namespaces=nsmap)
-
-    def authors(self):
-        """
-        Return list of book authors, unique list
-        """
-        if not self.__authors_list:
-            self.__authors_list = []
-            authors_hash = []
-            nodeset = self.__xpath("/fb:FictionBook/fb:description/fb:title-info/fb:author")
-            for node in nodeset:
-                a = Author20(node)
-                af = a.format()
-                if not af in authors_hash:
-                    authors_hash.append(a.format())
-                    self.__authors_list.append(a)
-
-        return self.__authors_list
-
-    def set_authors(self, authors_list):
-        """
-        Set new authors list
-        """
-        # update xml tree
-        nodeset = self.__xpath("/fb:FictionBook/fb:description/fb:title-info/fb:author")
-        first = nodeset[0]
-
-        for a in authors_list:
-            first.addprevious(a.element())
-
-        for node in nodeset:
-            # remember first element
-            if first is None:
-                first = node
-                continue
-            # delete others
-            node.getparent().remove(node)
-
-        self.__authors_list = copy.deepcopy(authors_list)
-
-    def genres(self):
-        if self.__genres is None:
-            self.__genres = []
-            nodeset = self.__xpath("/fb:FictionBook/fb:description/fb:title-info/fb:genre")
-            genres_hash = []
-
-            for node in nodeset:
-                genre = node.text
-                if genre is None:
-                    continue
-
-                try:
-                    genre_match = int(node.get("match"))
-                    # genre_match must be integer in range(1, 99)
-                    if genre_match < 1 or genre_match > 99:
-                        genre_match = None
-                except ValueError:
-                    genre_match = None
-                except TypeError:
-                    genre_match = None
-
-                if not genre in genres_hash:
-                    self.__genres.append((genre, genre_match))
-                    genres_hash.append(genre)
-
-        return self.__genres
-
-    def title(self):
-        if not self.__title:
-            nodeset = self.__xpath("/fb:FictionBook/fb:description/fb:title-info/fb:book-title")
-
-            if not len(nodeset):
-                raise Exception, "Book must have `book-title' element!"
-            self.__title =  nodeset[0].text
-
-        return self.__title
-
-    def set_title(self, new_title):
-        nodeset = self.__xpath("/fb:FictionBook/fb:description/fb:title-info/fb:book-title")
-        if not len(nodeset):
-            raise Exception, "Book must have `book-title' element!"
-        nodeset[0].text = new_title
-        self.__title = new_title
-
-    def annotation_doc(self):
-        """
-            Return annotation of the book as etree object
-        """
-        if not self.__annotation_doc:
-            self.__annotation = None
-            nodeset = self.__xpath("/fb:FictionBook/fb:description/fb:title-info/fb:annotation")
-            if len(nodeset):
-                self.__annotation_doc = etree.ElementTree(nodeset[0])
-
-        return self.__annotation_doc
-
-    def annotation(self):
-        """
-            Return annotation of the book, in XML. You should manually parse it before showing.
-        """
-        if not self.__annotation:
-            doc = self.annotation_doc()
-            if doc:
-                self.__annotation = etree.tostring(doc, encoding="UTF-8")
-
-        return self.__annotation
-
-    def annotation_text(self):
-        """
-            Return annotation as simple text (with \n)
-        """
-        res  = u''
-        ann_doc = self.annotation_doc()
-        if ann_doc:
-            ann = ann_doc.getroot()
-            if ann is not None:
-                res = etree.tostring(ann, encoding=unicode, method='text')
-
-        return res
-
-    def covers(self, cache_dir, prefix="file_"):
-        """
-            Return list of all covers from "title-info" element. Covers from "src-title-info"
-            should be extracted by the other function.
-
-            Returned list contains full paths to extracted covers.
-        """
-        if not self.__title_covers:
-            self.__title_covers = []
-
-            # try to extract covers and to fill a list
-            nodeset = self.__xpath("/fb:FictionBook/fb:description/fb:title-info/fb:coverpage/fb:image")
-
-            num = 0
-
-            for node in nodeset:
-                href = node.get(form_element("xlink", "href"))
-                num += 1
-
-                # extract cover
-                covers_nodes = self.__xpath('//fb:binary[@id="%s"]' % href[1:]) # remove first symbol - #
-                for cn in covers_nodes:
-                    img = b64decode(cn.text)
-                    # save text into the file
-                    outfile = os.path.join(cache_dir, "%s%d" % (prefix, num) )
-                    out = open(outfile, "w")
-                    out.write(img)
-                    out.close()
-                    self.__title_covers.append(outfile)
-                    break
-
-        return self.__title_covers
-
-    def sequences(self):
-        """
-            Return list of sequences, i.e. series
-        """
-        if self.__sequences is None:
-            self.__sequences = []
-
-            seq_nodes = self.__xpath("/fb:FictionBook/fb:description/fb:title-info/fb:sequence")
-            for node in seq_nodes:
-                s = {}
-                s["name"] = node.get("name")
-                s["number"] = node.get("number")
-                self.__sequences.append(s)
-
-        return self.__sequences
-
-    def html(self, xslt):
-        """
-            Transform fb2 to html
-            Argument: xslt - path to xslt-file
-            Return: html as string
-        """
-        f = open(xslt)
-        xslt_doc = etree.parse(f)
-        f.close()
-
-        # FIXME: possible unicode issues?
-        transform = etree.XSLT(xslt_doc)
-        result = transform(self.__doc)
-        return str(result)
-
-    def images(self):
-        if not self.__images:
-            self.__images = []
-            images_nodes = self.__xpath('//fb:binary')
-            for node in images_nodes:
-                #print node, node.get('id'), node.get('content-type')
-                img = b64decode(node.text)
-                self.__images.append((img, node.get('id'),
-                    node.get('content-type')))
-
-        return self.__images
-
-def parse(text, validate=False):
-    """
-        Parse text and return Document object
-    """
-    return Document(text=text)
-
-def parse_file(filename, validate=False):
-    """
-        Parse file (.fb2 or .fb2.zip) and return Document object. Loose parsing.
-    """
-    doc = None
-    if filename.lower().endswith(".fb2"):
-        doc = Document(filename=filename)
+    # fallback for book_title
+    if book_title:
+        book_title = unicode(book_title)
     else:
-        # treat file as zip-file
+        book_title = force_unicode(os.path.splitext(
+            os.path.basename(getattr(stream, 'name',
+                _('Unknown'))))[0])
+    mi = MetaInformation(book_title, authors)
+
+    try:
+        _parse_cover(root, mi)
+    except:
+        pass
+    try:
+        _parse_comments(root, mi)
+    except:
+        pass
+    try:
+        _parse_tags(root, mi)
+    except:
+        pass
+    try:
+        _parse_series(root, mi)
+    except:
+        pass
+    try:
+        _parse_isbn(root, mi)
+    except:
+        pass
+    try:
+        _parse_publisher(root, mi)
+    except:
+        pass
+    try:
+        _parse_pubdate(root, mi)
+    except:
+        pass
+    try:
+        _parse_timestamp(root, mi)
+    except:
+        pass
+
+    try:
+        _parse_language(root, mi)
+    except:
+        pass
+    #_parse_uuid(root, mi)
+
+    #if DEBUG:
+    #   prints(mi)
+    return mi
+
+def _parse_authors(root):
+    authors = []
+    # pick up authors but only from 1 secrion <title-info>; otherwise it is not consistent!
+    # Those are fallbacks: <src-title-info>, <document-info>
+    for author_sec in ['title-info', 'src-title-info', 'document-info']:
+        for au in XPath('//fb2:%s/fb2:author'%author_sec)(root):
+            author = _parse_author(au)
+            if author:
+                authors.append(author)
+        if author:
+            break
+
+    # if no author so far
+    if not authors:
+        authors.append(_('Unknown'))
+
+    return authors
+
+def _parse_author(elm_author):
+    """ Returns a list of display author and sortable author"""
+
+    xp_templ = 'normalize-space(fb2:%s/text())'
+
+    author = XPath(xp_templ % 'first-name')(elm_author)
+    lname = XPath(xp_templ % 'last-name')(elm_author)
+    mname = XPath(xp_templ % 'middle-name')(elm_author)
+
+    if mname:
+        author = (author + ' ' + mname).strip()
+    if lname:
+        author = (author + ' ' + lname).strip()
+
+    # fallback to nickname
+    if not author:
+        nname = XPath(xp_templ % 'nickname')(elm_author)
+        if nname:
+            author = nname
+
+    return author
+
+
+def _parse_book_title(root):
+    # <title-info> has a priority.   (actually <title-info>  is mandatory)
+    # other are backup solution (sequence is important. other then in fb2-doc)
+    xp_ti = '//fb2:title-info/fb2:book-title/text()'
+    xp_pi = '//fb2:publish-info/fb2:book-title/text()'
+    xp_si = '//fb2:src-title-info/fb2:book-title/text()'
+    book_title = XPath('normalize-space(%s|%s|%s)' % (xp_ti, xp_pi, xp_si))(root)
+
+    return book_title
+
+def _parse_cover(root, mi):
+    # pickup from <title-info>, if not exists it fallbacks to <src-title-info>
+    imgid = XPath('substring-after(string(//fb2:coverpage/fb2:image/@xlink:href), "#")')(root)
+    if imgid:
         try:
-            zz = zipfile.ZipFile(filename, 'r', zipfile.ZIP_STORED, True)
-        except zipfile.BadZipfile, e:
-            # file is not a zip-file so pass it as is
-            doc = Document(filename=filename)
-        except IOError, e:
-            # read error
-            raise Exception, "ZIP IOError: %s" % e
+            _parse_cover_data(root, imgid, mi)
+        except:
+            pass
+
+def _parse_cover_data(root, imgid, mi):
+    elm_binary = XPath('//fb2:binary[@id="%s"]'%imgid)(root)
+    if elm_binary:
+        mimetype = elm_binary[0].get('content-type', 'image/jpeg')
+        mime_extensions = guess_all_extensions(mimetype)
+
+        if not mime_extensions and mimetype.startswith('image/'):
+            mimetype_fromid = guess_type(imgid)[0]
+            if mimetype_fromid and mimetype_fromid.startswith('image/'):
+                mime_extensions = guess_all_extensions(mimetype_fromid)
+
+        if mime_extensions:
+            pic_data = elm_binary[0].text
+            if pic_data:
+                mi.cover_data = (mime_extensions[0][1:], b64decode(pic_data))
         else:
-            listing = zz.namelist()
-            if not len(listing):
-                raise Exception, "Provided ZIP-file is empty"
+            prints("WARNING: Unsupported coverpage mime-type '%s' (id=#%s)" % (mimetype, imgid) )
 
-            # take first file from archive
-            first = listing[0]
-            if not first.lower().endswith(".fb2"):
-                raise Exception, "Provided ZIP-archive doesn't contain FB2-file"
+def _parse_tags(root, mi):
+    # pick up genre but only from 1 secrion <title-info>; otherwise it is not consistent!
+    # Those are fallbacks: <src-title-info>
+    for genre_sec in ['title-info', 'src-title-info']:
+        # -- i18n Translations-- ?
+        tags = XPath('//fb2:%s/fb2:genre/text()' % genre_sec)(root)
+        if tags:
+            mi.tags = list(map(unicode, tags))
+            break
 
-            content = zz.read(listing[0])
-            zz.close()
-            doc = Document(text=content)
+def _parse_series(root, mi):
+    # calibri supports only 1 series: use the 1-st one
+    # pick up sequence but only from 1 secrion in prefered order
+    # except <src-title-info>
+    xp_ti = '//fb2:title-info/fb2:sequence[1]'
+    xp_pi = '//fb2:publish-info/fb2:sequence[1]'
 
-    return doc
+    elms_sequence = XPath('%s|%s' % (xp_ti, xp_pi))(root)
+    if elms_sequence:
+        mi.series = elms_sequence[0].get('name', None)
+        if mi.series:
+            mi.series_index = elms_sequence[0].get('number', None)
+
+def _parse_isbn(root, mi):
+    # some people try to put several isbn in this field, but it is not allowed.  try to stick to the 1-st one in this case
+    isbn = XPath('normalize-space(//fb2:publish-info/fb2:isbn/text())')(root)
+    if isbn:
+        # some people try to put several isbn in this field, but it is not allowed.  try to stick to the 1-st one in this case
+        if ',' in isbn:
+            isbn = isbn[:isbn.index(',')]
+        if check_isbn(isbn):
+            mi.isbn = isbn
+
+def _parse_comments(root, mi):
+    # pick up annotation but only from 1 secrion <title-info>;  fallback: <src-title-info>
+    for annotation_sec in ['title-info', 'src-title-info']:
+        elms_annotation = XPath('//fb2:%s/fb2:annotation' % annotation_sec)(root)
+        if elms_annotation:
+            mi.comments = tostring(elms_annotation[0])
+            # TODO: tags i18n, xslt?
+            break
+
+def _parse_publisher(root, mi):
+    publisher = XPath('string(//fb2:publish-info/fb2:publisher/text())')(root)
+    if publisher:
+        mi.publisher = publisher
+
+def _parse_pubdate(root, mi):
+    year = XPath('number(//fb2:publish-info/fb2:year/text())')(root)
+    if float.is_integer(year):
+        # only year is available, so use 1-st of Jan
+        mi.pubdate = datetime.date(int(year), 1, 1)
+
+def _parse_timestamp(root, mi):
+    #<date value="1996-12-03">03.12.1996</date>
+    xp ='//fb2:document-info/fb2:date/@value|'\
+        '//fb2:document-info/fb2:date/text()'
+    docdate = XPath('string(%s)' % xp)(root)
+    if docdate:
+        mi.timestamp = parse_date(docdate)
+
+def _parse_language(root, mi):
+    language = XPath('string(//fb2:title-info/fb2:lang/text())')(root)
+    if language:
+        mi.language = language
+        mi.languages = [ language ]
+
+def _parse_uuid(root, mi):
+    uuid = XPath('normalize-space(//document-info/fb2:id/text())')(root)
+    if uuid:
+        mi.uuid = uuid
+
+def _get_fbroot(stream):
+    parser = etree.XMLParser(recover=True, no_network=True)
+    raw = stream.read()
+    raw = xml_to_unicode(raw, strip_encoding_pats=True)[0]
+    root = etree.fromstring(raw, parser=parser)
+    return root
