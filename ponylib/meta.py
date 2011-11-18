@@ -1,20 +1,107 @@
-#!/usr/bin/env python
 from __future__ import with_statement
 __license__   = 'GPL v3'
 __copyright__ = '2011, Roman Mukhin <ramses_ru at hotmail.com>, '\
                 '2008, Anatoly Shipitsin <norguhtar at gmail.com>'
 '''Read meta information from fb2 files'''
 
+
+# TODO clean up and save only needed (sorry for this code:) )
+
+# -------------------------------------------
+
+#From calibre http://bazaar.launchpad.net/~kovid/calibre/trunk/view/head:
+#             /src/calibre/ebooks/metadata/fb2.py
+#Based on revision 10897
+
 import os
 import datetime
 from functools import partial
-from base64 import b64decode
+# from base64 import b64decode
 from lxml import etree
-from calibre.utils.date import parse_date
-from calibre import guess_type, guess_all_extensions, prints, force_unicode
-from calibre.ebooks.metadata import MetaInformation, check_isbn
-from calibre.ebooks.chardet import xml_to_unicode
+#from calibre.utils.date import parse_date
+#from calibre import guess_type, guess_all_extensions, prints, force_unicode
+#from calibre.ebooks.metadata import MetaInformation, check_isbn
+#from calibre.ebooks.chardet import xml_to_unicode
 
+
+# -------------------------------------------
+
+def force_unicode(text):
+    if not isinstance(text, unicode):
+        uni = unicode(text, encoding='utf-8')
+    else:
+        uni = text
+    return uni
+
+# -------------------------------------------
+# from calibre http://bazaar.launchpad.net/~kovid/calibre/trunk/view/head:
+#              /src/calibre/ebooks/chardet/__init__.py
+# Based on rev 10897
+
+import re, codecs
+ENCODING_PATS = [
+                 re.compile(r'<\?[^<>]+encoding\s*=\s*[\'"](.*?)[\'"][^<>]*>',
+                            re.IGNORECASE),
+                 re.compile(r'''<meta\s+?[^<>]*?content\s*=\s*['"][^'"]*?charset=([-_a-z0-9]+)[^'"]*?['"][^<>]*>''',
+                            re.IGNORECASE),
+                 ]
+
+def strip_encoding_declarations(raw):
+    limit = 50*1024
+    for pat in ENCODING_PATS:
+        prefix = raw[:limit]
+        suffix = raw[limit:]
+        prefix = pat.sub('', prefix)
+        raw = prefix + suffix
+    return raw
+
+def xml_to_unicode(raw, verbose=False, strip_encoding_pats=False,
+                   resolve_entities=False, assume_utf8=False):
+    '''
+    Force conversion of byte string to unicode. Tries to look for XML/HTML
+    encoding declaration first, if not found uses the chardet library and
+    prints a warning if detection confidence is < 100%
+    @return: (unicode, encoding used)
+    '''
+    encoding = None
+    if not raw:
+        return u'', encoding
+    if not isinstance(raw, unicode):
+        if raw.startswith(codecs.BOM_UTF8):
+            raw, encoding = raw.decode('utf-8')[1:], 'utf-8'
+        elif raw.startswith(codecs.BOM_UTF16_LE):
+            raw, encoding = raw.decode('utf-16-le')[1:], 'utf-16-le'
+        elif raw.startswith(codecs.BOM_UTF16_BE):
+            raw, encoding = raw.decode('utf-16-be')[1:], 'utf-16-be'
+    if not isinstance(raw, unicode):
+        for pat in ENCODING_PATS:
+            match = pat.search(raw)
+            if match:
+                encoding = match.group(1)
+                break
+        if encoding is None:
+            encoding = force_encoding(raw, verbose, assume_utf8=assume_utf8)
+        try:
+            if encoding.lower().strip() == 'macintosh':
+                encoding = 'mac-roman'
+            if encoding.lower().replace('_', '-').strip() in (
+                    'gb2312', 'chinese', 'csiso58gb231280', 'euc-cn', 'euccn',
+                    'eucgb2312-cn', 'gb2312-1980', 'gb2312-80', 'iso-ir-58'):
+                # Microsoft Word exports to HTML with encoding incorrectly set to
+                # gb2312 instead of gbk. gbk is a superset of gb2312, anyway.
+                encoding = 'gbk'
+            raw = raw.decode(encoding, 'replace')
+        except LookupError:
+            encoding = 'utf-8'
+            raw = raw.decode(encoding, 'replace')
+
+    if strip_encoding_pats:
+        raw = strip_encoding_declarations(raw)
+    #if resolve_entities:
+    #    raw = substitute_entites(raw)
+
+    return raw, encoding
+# -------------------------------------------
 
 NAMESPACES = {
     'fb2'   :   'http://www.gribuser.ru/xml/fictionbook/2.0',
@@ -37,12 +124,18 @@ def get_metadata(stream):
         book_title = force_unicode(os.path.splitext(
             os.path.basename(getattr(stream, 'name',
                 _('Unknown'))))[0])
-    mi = MetaInformation(book_title, authors)
 
-    try:
-        _parse_cover(root, mi)
-    except:
-        pass
+    mi = type('lamdbaobject', (object,), {})()
+
+    mi.book_title = book_title
+    mi.authors = authors
+
+    #TODO add from calibre
+#    try:
+#        _parse_cover(root, mi)
+#    except:
+#        pass
+
     try:
         _parse_comments(root, mi)
     except:
@@ -96,7 +189,8 @@ def _parse_authors(root):
 
     # if no author so far
     if not authors:
-        authors.append(_('Unknown'))
+        #authors.append(_('Unknown'))
+        authors.append('Unknown')
 
     return authors
 
@@ -142,23 +236,24 @@ def _parse_cover(root, mi):
         except:
             pass
 
-def _parse_cover_data(root, imgid, mi):
-    elm_binary = XPath('//fb2:binary[@id="%s"]'%imgid)(root)
-    if elm_binary:
-        mimetype = elm_binary[0].get('content-type', 'image/jpeg')
-        mime_extensions = guess_all_extensions(mimetype)
-
-        if not mime_extensions and mimetype.startswith('image/'):
-            mimetype_fromid = guess_type(imgid)[0]
-            if mimetype_fromid and mimetype_fromid.startswith('image/'):
-                mime_extensions = guess_all_extensions(mimetype_fromid)
-
-        if mime_extensions:
-            pic_data = elm_binary[0].text
-            if pic_data:
-                mi.cover_data = (mime_extensions[0][1:], b64decode(pic_data))
-        else:
-            prints("WARNING: Unsupported coverpage mime-type '%s' (id=#%s)" % (mimetype, imgid) )
+#TODO add from calibre
+#def _parse_cover_data(root, imgid, mi):
+#    elm_binary = XPath('//fb2:binary[@id="%s"]'%imgid)(root)
+#    if elm_binary:
+#        mimetype = elm_binary[0].get('content-type', 'image/jpeg')
+#        mime_extensions = guess_all_extensions(mimetype)
+#
+#        if not mime_extensions and mimetype.startswith('image/'):
+#            mimetype_fromid = guess_type(imgid)[0]
+#            if mimetype_fromid and mimetype_fromid.startswith('image/'):
+#                mime_extensions = guess_all_extensions(mimetype_fromid)
+#
+#        if mime_extensions:
+#            pic_data = elm_binary[0].text
+#            if pic_data:
+#                mi.cover_data = (mime_extensions[0][1:], b64decode(pic_data))
+#        else:
+#            prints("WARNING: Unsupported coverpage mime-type '%s' (id=#%s)" % (mimetype, imgid) )
 
 def _parse_tags(root, mi):
     # pick up genre but only from 1 secrion <title-info>; otherwise it is not consistent!
@@ -190,8 +285,10 @@ def _parse_isbn(root, mi):
         # some people try to put several isbn in this field, but it is not allowed.  try to stick to the 1-st one in this case
         if ',' in isbn:
             isbn = isbn[:isbn.index(',')]
-        if check_isbn(isbn):
-            mi.isbn = isbn
+
+        #TODO add from calibre
+        #if check_isbn(isbn):
+        mi.isbn = isbn
 
 def _parse_comments(root, mi):
     # pick up annotation but only from 1 secrion <title-info>;  fallback: <src-title-info>
@@ -219,7 +316,9 @@ def _parse_timestamp(root, mi):
         '//fb2:document-info/fb2:date/text()'
     docdate = XPath('string(%s)' % xp)(root)
     if docdate:
-        mi.timestamp = parse_date(docdate)
+        #TODO add from calibre
+        #mi.timestamp = parse_date(docdate)
+        mi.timestamp = docdate
 
 def _parse_language(root, mi):
     language = XPath('string(//fb2:title-info/fb2:lang/text())')(root)
