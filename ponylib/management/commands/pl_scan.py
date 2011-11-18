@@ -1,14 +1,4 @@
 # _*_ coding: utf-8 _*_
-import os.path
-import sys
-
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
-#from example.polls.models import Poll
-
-from ponylib import scanner
-from ponylib import meta
-
 
 __license__         = "GPL3"
 __copyright__       = "Copyright 2010-2011 maizy.ru"
@@ -16,6 +6,17 @@ __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
 __version__         = "0.1"
 __doc__             = ""
+
+import os.path
+import sys
+
+from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
+
+from upprint import pprint
+
+from ponylib import scanner
+from ponylib import meta
 
 
 class Command(BaseCommand):
@@ -30,7 +31,7 @@ class Command(BaseCommand):
         lib_paths = args
         iter = scanner.Iterator(lib_paths)
 
-        print('Scan roots %s' % ', '.join(lib_paths))
+        self.stdout.write('Scan roots "%s"\n' % '", "'.join(lib_paths))
 
         total = 0
         ok = 0
@@ -40,33 +41,29 @@ class Command(BaseCommand):
             for (root_path, file_path) in iter:
                 total += 1
                 full_path = os.path.join(root_path, file_path)
-                print('File: %s' % full_path)
+                self.stdout.write('File: %s\n' % full_path)
                 try:
-                    #TODO
-                    # перевести класс на ElementTree из нового API
-                    # или разобраться с аннотацией
-                    doc = meta.parse_file(full_path)
+                    mi = meta.read_fb2_meta(full_path)
 
-                except meta.Exception, e:
+                except Exception, e: #TODO use my Exception
                     parse_errors += 1
-                    print('Error in %s, skipping' % full_path)
-                    print(e.message)
-                    sys.exit(1)
+                    self.stderr.write('Error in %s, skipping: %r\n' % (full_path, e))
 
-                try:
-                    print 'Title: %s' % doc.title()
-                    for author in doc.authors():
-                        print('Author: %s' % author.format())
-                    #print 'Genres: %r' % doc.genres()
-                    #print 'Sequences: %r' % doc.sequences()
-                    for seq in doc.sequences():
-                        print('Sequence: %(name)s (%(number)s)' % seq)
-
-                    print('Annotation: %s' % doc.annotation_text())
-                    ok += 1
-                except meta.Exception:
-                    read_data_errors += 1
-                    print('Error in %s, skipping' % full_path)
+                #pprint(mi, self.stdout)
+#                try:
+#                    print 'Title: %s' % doc.title()
+#                    for author in doc.authors():
+#                        print('Author: %s' % author.format())
+#                    #print 'Genres: %r' % doc.genres()
+#                    #print 'Sequences: %r' % doc.sequences()
+#                    for seq in doc.sequences():
+#                        print('Sequence: %(name)s (%(number)s)' % seq)
+#
+#                    print('Annotation: %s' % doc.annotation_text())
+#                    ok += 1
+#                except meta_old.Exception:
+#                    read_data_errors += 1
+#                    print('Error in %s, skipping' % full_path)
 
             sys.stdout.write('\n\n')
 
