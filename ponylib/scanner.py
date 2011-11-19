@@ -11,8 +11,6 @@ __doc__             = ""
 import os
 import sys
 
-import ponylib.meta as meta
-
 
 class Iterator(object):
 
@@ -40,7 +38,7 @@ class Iterator(object):
 
         for root_path in self.roots:
             root_path = os.path.realpath(root_path)
-            path_iter = os.walk(root_path)
+            path_iter = os.walk(root_path, followlinks=True)
 
             for (dirpath, dirnames, filenames) in path_iter:
                 # ignore dirs start with '.'

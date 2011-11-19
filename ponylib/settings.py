@@ -9,6 +9,7 @@ __doc__             = ""
 
 
 import os
+import sys
 import os.path
 import platform
 
@@ -22,6 +23,13 @@ WEB_ROOT = os.path.join(PROJECT_ROOT, 'work')
 VAR_ROOT = os.path.join(PROJECT_ROOT, 'var')
 
 BIN_ROOT = os.path.join(PROJECT_ROOT, 'bin')
+
+LIB_ROOT = os.path.join(PROJECT_ROOT, 'libs')
+
+#libs
+if LIB_ROOT not in sys.path:
+    sys.path.append(LIB_ROOT)
+
 
 #fb2lrf
 PONYLIB_BIN_FB2LRF = os.path.join(BIN_ROOT, 'fb2lrf_console', 'fb2lrf_c.exe')
