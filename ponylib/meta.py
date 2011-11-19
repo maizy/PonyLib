@@ -1,28 +1,30 @@
 # _*_ coding: utf-8 _*_
 
 
-__license__ = ''
+__license__ = 'GPLv3'
 __copyright__ = 'Copyright 2011 maizy.ru'
 __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 
 __version__ = '0.1'
 __doc__ = ''
 
-
-from calibre_based import fb2_meta
 from datetime import date
 
+from calibre_based import fb2_meta
+
+class ConvertError(Exception):
+    pass
 
 def read_fb2_meta(filepath):
     """
     Read fb2 meta information
 
 
-    @return: dict:
-             {
+    @rtype: dict
+    @return: {
                  'authors': [unicode, ...],
                  'title': unicode,
-                 'language': unicode, #iso639-1 ex. 'en'
+                 'language': unicode, #iso639-1
                  'tags': [unicode, ...],
                  'series': [{'name': unicode, 'index': unicode}, ...],
                  'annotation': unicode,
@@ -39,7 +41,7 @@ def read_fb2_meta(filepath):
 
     if 'series' in res:
         series = {'name': res['series']}
-        if 'series_index' in res:
+        if 'series_index' in res and res['series_index'] is not None:
             series['index'] = unicode(res['series_index'], encoding='utf-8')
 
     if 'pubdate' in res and isinstance(res['pubdate'], date):
@@ -54,7 +56,9 @@ def read_fb2_meta(filepath):
             del res[calibre_prop]
 
     for fix_string_key in ('publisher', 'language', 'isbn'):
-        if fix_string_key in res and res[fix_string_key] is not None:
+        if fix_string_key in res and \
+           res[fix_string_key] is not None and \
+           not isinstance(res[fix_string_key], unicode):
             res[fix_string_key] = unicode(res[fix_string_key], encoding='utf-8')
 
     if 'annotation' in res:

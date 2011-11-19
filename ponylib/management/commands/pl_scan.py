@@ -9,6 +9,7 @@ __doc__             = ""
 
 import os.path
 import sys
+import traceback
 
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
@@ -36,7 +37,6 @@ class Command(BaseCommand):
         total = 0
         ok = 0
         parse_errors = 0
-        read_data_errors = 0
         try:
             for (root_path, file_path) in iter:
                 total += 1
@@ -44,34 +44,20 @@ class Command(BaseCommand):
                 self.stdout.write('File: %s\n' % full_path)
                 try:
                     mi = meta.read_fb2_meta(full_path)
+                    pprint(mi)
+                    ok += 1
 
-                except Exception, e: #TODO use my Exception
+                except Exception , e: #TODO use my Exceptions
                     parse_errors += 1
-                    self.stderr.write('Error in %s, skipping: %r\n' % (full_path, e))
-
-                #pprint(mi, self.stdout)
-#                try:
-#                    print 'Title: %s' % doc.title()
-#                    for author in doc.authors():
-#                        print('Author: %s' % author.format())
-#                    #print 'Genres: %r' % doc.genres()
-#                    #print 'Sequences: %r' % doc.sequences()
-#                    for seq in doc.sequences():
-#                        print('Sequence: %(name)s (%(number)s)' % seq)
-#
-#                    print('Annotation: %s' % doc.annotation_text())
-#                    ok += 1
-#                except meta_old.Exception:
-#                    read_data_errors += 1
-#                    print('Error in %s, skipping' % full_path)
-
-            sys.stdout.write('\n\n')
+                    self.stderr.write('Error in %s, skipping\n' % full_path)
+                    self.stderr.write('-'*60+'\n')
+                    traceback.print_exc(file=self.stderr)
+                    self.stderr.write('-'*60+'\n')
 
         except KeyboardInterrupt:
             sys.stdout.write('\n')
-            pass
 
         sys.stdout.write(("""%d files processed\n\t%d - successful\n\t"""
-                         +"""%d - parse errors or broken files\n\t%d - read data errors\n""") 
-                         % (total, ok, parse_errors, read_data_errors))
+                         +"""%d - parse errors or broken files\n\t""")
+                         % (total, ok, parse_errors))
 
