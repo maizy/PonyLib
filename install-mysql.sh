@@ -37,8 +37,10 @@ else
     exit 1
 fi
 
-echo '* Create databases'
-
+#TODO south
+echo '* Create south databases'
 $WEB_ROOT/manage.py syncdb
+echo '* Load init migrations'
+$WEB_ROOT/manage.py migrate ponylib
 
 echo '* Done'

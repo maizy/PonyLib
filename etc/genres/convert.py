@@ -8,7 +8,7 @@ import re
 
 f = codecs.open('genres.txt', 'r', 'utf-8')
 
-w = codecs.open('initial_data.json', 'w', 'utf-8')
+w = codecs.open('genres.json', 'w', 'utf-8')
 
 i = 1
 reg = re.compile(r'([^\s]+)\s+(.*)')
