@@ -25,7 +25,7 @@ def read_fb2_meta(filepath):
                  'authors': [unicode, ...],
                  'title': unicode,
                  'language': unicode, #iso639-1
-                 'tags': [unicode, ...],
+                 'genres': [unicode, ...],
                  'series': [{'name': unicode, 'index': unicode}, ...],
                  'annotation': unicode,
                  'isbn': unicode,
@@ -50,6 +50,7 @@ def read_fb2_meta(filepath):
     for (calibre_prop, our_key) in [
             ('comments', 'annotation'),
             ('book_title', 'title'),
+            ('tags', 'genres'),
         ]:
         if calibre_prop in res:
             res[our_key] = res[calibre_prop]

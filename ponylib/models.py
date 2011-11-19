@@ -1,6 +1,6 @@
 # _*_ coding: utf-8 _*_
 
-__license__         = "GPL3"
+__license__         = "GPLv3"
 __copyright__       = "Copyright 2011 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
@@ -13,48 +13,31 @@ from django.db import models
 
 _prefix = 'ponylib_'
 
-class Sequence(models.Model):
+# -------------------------------------------
+# Objects
 
+class Series(models.Model):
 
     name = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-
-
-class BookSequence(models.Model):
-
-    sequence = models.ForeignKey('Sequence')
-    book = models.ForeignKey('Book')
-
-    number = models.CharField(max_length=20)
-
     class Meta:
-        db_table = _prefix+'book_sequence'
-
-
+        db_table = _prefix+'series'
 
 
 class Genre(models.Model):
+
     code = models.CharField(max_length=40)
     value = models.CharField(max_length=255, blank=True)
     protect = models.BooleanField(default=False)
 
-
-
-
-class BookGenre(models.Model):
-    genre = models.ForeignKey('Genre')
-    book = models.ForeignKey('Book')
-
     class Meta:
-        db_table = _prefix+'book_genre'
+        db_table = _prefix+'genree'
 
 
 class Author(models.Model):
-
 
     fullname = models.TextField()
 
@@ -69,53 +52,73 @@ class Author(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        db_table = _prefix+'author'
 
 
-
-class Dir(models.Model):
-
+class Root(models.Model):
 
     path = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Book(models.Model):
+
+    title = models.TextField()
+    rel_path = models.TextField()
+
+    isbn = models.TextField(blank=True)
+    annotation = models.TextField(blank=True)
+    publisher = models.TextField(blank=True)
+    pubyear = models.IntegerField(blank=True)
+
+    root = models.ForeignKey('Root', related_name='Books')
+    authors = models.ManyToManyField('Author', through='BookAuthor', blank=True)
+    series = models.ManyToManyField('Series', through='BookSeries', blank=True)
+    genres = models.ManyToManyField('Genre', through='BookGenre', blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
+# -------------------------------------------
+# M-M
+class BookSeries(models.Model):
 
+    series = models.ForeignKey('Series')
+    book = models.ForeignKey('Book')
 
-class Book(models.Model):
-
-
-    title = models.TextField()
-    
-    rel_path = models.TextField()
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    modifided_at = models.DateTimeField(auto_now=True)
-
-    dir = models.ForeignKey('Dir', related_name='Books')
-
-    authors = models.ForeignKey('Author', related_name='Books', blank=True)
-
-    sequences = models.ManyToManyField('Sequence', through='BookSequence',\
-                                       blank=True)
-    genres = models.ManyToManyField('Genre', through='BookGenre',\
-                                       blank=True)
-
-
-
-
-
-
-class ScanErrorLog(models.Model):
-
-
-    fullpath = models.TextField()
-    error_type = models.CharField(max_length=50, default='unknown')
-    message = models.TextField(blank=True)
-    exception_class = models.TextField(blank=True)
-    date = models.DateTimeField(auto_now_add=True)
+    number = models.CharField(max_length=20)
 
     class Meta:
-        db_table = _prefix+'scan_error_log'
+        db_table = _prefix+'book_series'
+
+class BookGenre(models.Model):
+    genre = models.ForeignKey('Genre')
+    book = models.ForeignKey('Book')
+
+    class Meta:
+        db_table = _prefix+'book_genre'
+
+
+class BookAuthor(models.Model):
+    author = models.ForeignKey('Author')
+    book = models.ForeignKey('Book')
+
+    class Meta:
+        db_table = _prefix+'book_author'
+
+
+# -------------------------------------------
+# system
+#class ScanErrorLog(models.Model):
+#
+#    fullpath = models.TextField()
+#    error_type = models.CharField(max_length=50, default='unknown')
+#    message = models.TextField(blank=True)
+#    exception_class = models.TextField(blank=True)
+#    date = models.DateTimeField(auto_now_add=True)
+#
+#    class Meta:
+#        db_table = _prefix+'scan_error_log'
