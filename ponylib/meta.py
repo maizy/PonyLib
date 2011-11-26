@@ -26,11 +26,11 @@ def read_fb2_meta(filepath):
                  'title': unicode,
                  'language': unicode, #iso639-1
                  'genres': [unicode, ...],
-                 'series': [{'name': unicode, 'index': unicode}, ...],
+                 'series': [{'name': unicode, 'index': unicode|None}, ...],
                  'annotation': unicode,
                  'isbn': unicode,
                  'publisher': unicode,
-                 'pubyear': int,
+                 'pubyear': int|None,
              }
     """
 
@@ -43,6 +43,7 @@ def read_fb2_meta(filepath):
         series = {'name': res['series']}
         if 'series_index' in res and res['series_index'] is not None:
             series['index'] = unicode(res['series_index'], encoding='utf-8')
+        res['series'] = [series]
 
     if 'pubdate' in res and isinstance(res['pubdate'], date):
         res['pubyear'] = res['pubdate'].year

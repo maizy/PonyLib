@@ -9,12 +9,57 @@ __doc__             = ""
 
 
 from django.db import models
-
+from django.core.exceptions import ObjectDoesNotExist
 
 _prefix = 'ponylib_'
 
 # -------------------------------------------
-# Objects
+# Managers (table-level)
+
+class _BaseManager(models.Manager):
+
+    def _get_or_create(self, field, value, save=True, create_args=None):
+
+        if create_args is None:
+            create_args = {}
+
+        args = {field: value}
+        try:
+            row = self.get(**args)
+
+        except ObjectDoesNotExist:
+            create_args.update(args)
+            row = self.create(**create_args)
+            if save:
+                row.save()
+
+        return row
+
+
+
+class RootManager(_BaseManager):
+
+    def get_by_path_or_create(self, path):
+        return self._get_or_create('path', path)
+
+
+class AuthorManager(_BaseManager):
+
+    def get_by_fullname_or_create(self, fullname):
+        return self._get_or_create('fullname', fullname)
+
+class GenreManager(_BaseManager):
+
+    def get_by_name_or_create(self, name):
+        return self._get_or_create('name', name)
+
+class SeriesManager(_BaseManager):
+
+    def get_by_name_or_create(self, name):
+        return self._get_or_create('name', name)
+
+# -------------------------------------------
+# Objects (row-level)
 
 class Series(models.Model):
 
@@ -23,8 +68,7 @@ class Series(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = _prefix+'series'
+    objects = SeriesManager()
 
 
 class Genre(models.Model):
@@ -33,8 +77,7 @@ class Genre(models.Model):
     value = models.CharField(max_length=255, blank=True)
     protect = models.BooleanField(default=False)
 
-    class Meta:
-        db_table = _prefix+'genree'
+    objects = GenreManager()
 
 
 class Author(models.Model):
@@ -52,8 +95,8 @@ class Author(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = _prefix+'author'
+
+    objects = AuthorManager()
 
 
 class Root(models.Model):
@@ -61,6 +104,8 @@ class Root(models.Model):
     path = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = RootManager()
 
 
 class Book(models.Model):
@@ -71,7 +116,7 @@ class Book(models.Model):
     isbn = models.TextField(blank=True)
     annotation = models.TextField(blank=True)
     publisher = models.TextField(blank=True)
-    pubyear = models.IntegerField(blank=True)
+    pubyear = models.IntegerField(null=True)
 
     root = models.ForeignKey('Root', related_name='Books')
     authors = models.ManyToManyField('Author', through='BookAuthor', blank=True)

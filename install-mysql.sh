@@ -37,7 +37,6 @@ else
     exit 1
 fi
 
-#TODO south
 echo '* Create south databases'
 $WEB_ROOT/manage.py syncdb
 echo '* Load init migrations'
