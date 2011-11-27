@@ -83,6 +83,8 @@ STATIC_ROOT = path.join(VAR_ROOT, 'static-deploy')
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
+STATIC_KEY = '001'
+
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".

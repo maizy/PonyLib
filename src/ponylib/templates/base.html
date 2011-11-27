@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+        <head>
+        {% block html_head %}
+        <title>Ponylib</title>
+
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/reset.css" />
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/common.css" />
+        {% block head_css %}{% endblock %}
+
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/underscore.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/underscore.string.min.js"></script>
+        {% block head_scripts %}{% endblock %}
+        {% endblock %}
+            
+</head>
+
+<body>
+{% block body %}
+
+{% block content %}{% endblock %}
+
+{% endblock %}
+{% block bottom_scripts %}{% endblock %}
+</body>
+</html>

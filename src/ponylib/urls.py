@@ -11,7 +11,6 @@ __doc__             = ""
 from django.conf.urls.defaults import include, url, patterns
 from django.views.generic import RedirectView
 
-# Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
