@@ -8,20 +8,23 @@ __version__         = "0.1"
 __doc__             = ""
 
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import include, url, patterns
+from django.views.generic import RedirectView
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^webfront/', include('webfront.foo.urls')),
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # (r'^admin/', include(admin.site.urls)),
+    (r'^$', RedirectView.as_view(url='search/', permanent=False)),
 )
+
+urlpatterns += patterns('ponylib.view.search',
+    (r'^search/$', 'index'),
+    (r'^search/results/$', 'results'),
+)
+
+#urlpatterns += patterns('',
+#     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+#     (r'^admin/', include(admin.site.urls)),
+# )

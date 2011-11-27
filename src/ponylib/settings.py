@@ -126,7 +126,7 @@ INSTALLED_APPS = (
     #'django.contrib.sessions',
     #'django.contrib.sites',
     #'django.contrib.messages',
-    #'django.contrib.staticfiles',
+    'django.contrib.staticfiles',
     #'django.contrib.admin',
     'south'
 )
