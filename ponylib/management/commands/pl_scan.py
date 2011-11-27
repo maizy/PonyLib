@@ -56,8 +56,10 @@ class Command(BaseCommand):
 
                 full_path = os.path.join(lib_path, file_path)
                 self.stdout.write('File: %s\n' % full_path)
+                mi = None
                 try:
                     mi = meta.read_fb2_meta(full_path)
+
                     #pprint(mi)
 
                     book = Book()
@@ -80,8 +82,8 @@ class Command(BaseCommand):
                             author_link.save()
 
                     if 'genres' in mi:
-                        for genree_name in mi['genres']:
-                            genree = Genre.objects.get_by_name_or_create(genree_name)
+                        for genree_code in mi['genres']:
+                            genree = Genre.objects.get_by_code_or_create(genree_code+u'u')
                             genree_link = BookGenre()
                             genree_link.book = book
                             genree_link.genre = genree
@@ -93,24 +95,27 @@ class Command(BaseCommand):
                             series_link = BookSeries()
                             series_link.series = series
                             series_link.book = book
-                            if in_series['index'] is not None:
+                            if 'index' in in_series:
                                 series_link.number = in_series['index']
                             series_link.save()
 
 
                     ok += 1
 
-                except Exception , e: #TODO use my Exceptions
+                except Exception , e: #TODO catch only my Exceptions
                     parse_errors += 1
                     self.stderr.write('Error in %s, skipping\n' % full_path)
+                    self.stderr.write('-'*60+'\n')
+                    self.stderr.write('Meta info: ')
+                    pprint(mi, self.stderr)
                     self.stderr.write('-'*60+'\n')
                     traceback.print_exc(file=self.stderr)
                     self.stderr.write('-'*60+'\n')
 
         except KeyboardInterrupt:
-            sys.stdout.write('\n')
+            sys.stdout.write('User interrupt\n')
 
         sys.stdout.write(("""%d files processed\n\t%d - successful\n\t"""
-                         +"""%d - parse errors or broken files\n\t""")
+                         +"""%d - parse errors or broken files\n""")
                          % (total, ok, parse_errors))
 

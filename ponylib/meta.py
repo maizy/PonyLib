@@ -11,6 +11,17 @@ __doc__ = ''
 from datetime import date
 
 from calibre_based import fb2_meta
+from django.utils.encoding import force_unicode as django_force_unicode
+
+def force_unicode(*args, **kwargs):
+    res = django_force_unicode(*args, **kwargs)
+
+    #django not fix some "not_real_unicode" like lxml.etree._ElementUnicodeResult
+    #witch is bad for mysqlDb
+    if res.__class__ is not unicode:
+        res = unicode(res)
+
+    return res
 
 class ConvertError(Exception):
     pass
@@ -42,7 +53,7 @@ def read_fb2_meta(filepath):
     if 'series' in res:
         series = {'name': res['series']}
         if 'series_index' in res and res['series_index'] is not None:
-            series['index'] = unicode(res['series_index'], encoding='utf-8')
+            series['index'] = force_unicode(res['series_index'])
         res['series'] = [series]
 
     if 'pubdate' in res and isinstance(res['pubdate'], date):
@@ -57,16 +68,17 @@ def read_fb2_meta(filepath):
             res[our_key] = res[calibre_prop]
             del res[calibre_prop]
 
-    for fix_string_key in ('publisher', 'language', 'isbn'):
+    for fix_string_key in ('title', 'language', 'annotation',
+                           'isbn', 'publisher'):
         if fix_string_key in res and \
            res[fix_string_key] is not None and \
-           not isinstance(res[fix_string_key], unicode):
-            res[fix_string_key] = unicode(res[fix_string_key], encoding='utf-8')
+           res[fix_string_key].__class__ is not unicode: #only real_unicode, not unicode extends
+            res[fix_string_key] = force_unicode(res[fix_string_key])
 
     if 'annotation' in res:
         res['annotation'] = res['annotation'].strip()
 
-    valid_keys = ['authors', 'title', 'language', 'tags', 'series', 'annotation',
+    valid_keys = ['authors', 'title', 'language', 'genres', 'series', 'annotation',
                   'isbn', 'publisher', 'pubyear']
 
     #return {key: res[key] for key in valid_keys} #wait for py2.7

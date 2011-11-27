@@ -50,8 +50,8 @@ class AuthorManager(_BaseManager):
 
 class GenreManager(_BaseManager):
 
-    def get_by_name_or_create(self, name):
-        return self._get_or_create('name', name)
+    def get_by_code_or_create(self, code):
+        return self._get_or_create('code', code, create_args={'value' : u'Unknown (%s)' % code})
 
 class SeriesManager(_BaseManager):
 
