@@ -18,7 +18,7 @@ class Migration(SchemaMigration):
         db.send_create_signal('ponylib', ['Series'])
 
         # Adding model 'Genre'
-        db.create_table('ponylib_genree', (
+        db.create_table('ponylib_genre', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('code', self.gf('django.db.models.fields.CharField')(max_length=40)),
             ('value', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
@@ -97,7 +97,7 @@ class Migration(SchemaMigration):
         db.delete_table('ponylib_series')
 
         # Deleting model 'Genre'
-        db.delete_table('ponylib_genree')
+        db.delete_table('ponylib_genre')
 
         # Deleting model 'Author'
         db.delete_table('ponylib_author')
@@ -168,7 +168,7 @@ class Migration(SchemaMigration):
             'series': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ponylib.Series']"})
         },
         'ponylib.genre': {
-            'Meta': {'object_name': 'Genre', 'db_table': "'ponylib_genree'"},
+            'Meta': {'object_name': 'Genre', 'db_table': "'ponylib_genre'"},
             'code': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'protect': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
