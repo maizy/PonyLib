@@ -14,10 +14,19 @@ from django.template import RequestContext
 
 def index(request):
 
-    c = {}
-    return render_to_response('search/index_n_results.html', c, context_instance=RequestContext(request))
+    c = {
+        'page': {
+            'title': 'Search',
+        }
+    }
+    return render_to_response('search/search_form.html', c, context_instance=RequestContext(request))
 
 
 def results(request):
 
-    return HttpResponse(u'Ping-pong')
+    c = {
+        'page': {
+            'title': 'Search Results',
+        }
+    }
+    return render_to_response('search/results.html', c, context_instance=RequestContext(request))

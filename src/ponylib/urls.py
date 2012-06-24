@@ -15,12 +15,12 @@ from django.views.generic import RedirectView
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^$', RedirectView.as_view(url='search/', permanent=False)),
+    url(r'^$', RedirectView.as_view(url='search/', permanent=False), name='index'),
 )
 
 urlpatterns += patterns('ponylib.view.search',
-    (r'^search/$', 'index'),
-    (r'^search/results/$', 'results'),
+    url(r'^search/$', 'index', name='search'),
+    url(r'^search/results/$', 'results'),
 )
 
 #urlpatterns += patterns('',
