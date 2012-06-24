@@ -18,5 +18,14 @@ ehthumbs.db
 Thumbs.db
 Desktop.ini
 
-# local config files
+#virtualenv
+bin/
+build/
+include/
+lib/
+local/
+.Python
+
+# project specific
 devserver-default-host
+var/

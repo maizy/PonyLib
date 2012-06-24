@@ -1,30 +1,31 @@
 # _*_ coding: utf-8 _*_
 
 __license__         = "GPL3"
-__copyright__       = "Copyright 2011 maizy.ru"
+__copyright__       = "Copyright 2011-2012 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
 __version__         = "0.1"
 __doc__             = ""
 
 
-import os
 import sys
-import os.path
+import os.path as path
 import platform
 
 
 # Ponylib settings
 
-PROJECT_ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+PROJECT_ROOT = path.realpath(path.join(path.dirname(__file__), '..', '..'))
 
-WEB_ROOT = os.path.join(PROJECT_ROOT, 'work')
+WEB_ROOT = path.join(PROJECT_ROOT, 'src', 'work')
 
-VAR_ROOT = os.path.join(PROJECT_ROOT, 'var')
+VAR_ROOT = path.join(PROJECT_ROOT, 'var')
 
-BIN_ROOT = os.path.join(PROJECT_ROOT, 'bin')
+BIN_ROOT = path.join(PROJECT_ROOT, 'bin')
 
-LIB_ROOT = os.path.join(PROJECT_ROOT, 'libs')
+WINEBIN_ROOT = path.join(PROJECT_ROOT, 'wine_bin')
+
+LIB_ROOT = path.join(PROJECT_ROOT, 'src', 'libs')
 
 #libs
 if LIB_ROOT not in sys.path:
@@ -32,7 +33,7 @@ if LIB_ROOT not in sys.path:
 
 
 #fb2lrf
-PONYLIB_BIN_FB2LRF = os.path.join(BIN_ROOT, 'fb2lrf_console', 'fb2lrf_c.exe')
+PONYLIB_BIN_FB2LRF = path.join(WINEBIN_ROOT, 'fb2lrf_console', 'fb2lrf_c.exe')
 PONYLIB_BIN_FB2LRF_USE_WINE = (platform.system() != 'Window') #Set False on Windows
 
 #wine
@@ -91,7 +92,7 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(VAR_ROOT, 'media')
+MEDIA_ROOT = path.join(VAR_ROOT, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -102,7 +103,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(VAR_ROOT, 'static-deploy')
+STATIC_ROOT = path.join(VAR_ROOT, 'static-deploy')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -115,7 +116,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    os.path.join(WEB_ROOT, 'static'),
+    path.join(WEB_ROOT, 'static'),
 )
 
 STATICFILES_FINDERS = (

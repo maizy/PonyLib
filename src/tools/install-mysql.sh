@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # License: GPL v3
-# Copyright: 2011 maizy.ru"
+# Copyright: 2011-2012 maizy.ru"
 # Author: Nikita Kovaliov <nikita@maizy.ru>
 # Version: 0.1
 
@@ -9,7 +9,9 @@
 # TODO: auto write django configs
 
 SCRIPT_PATH=$(cd ${0%/*} && echo $PWD/${0##*/})
-WEB_ROOT="`dirname "$SCRIPT_PATH"`/ponylib"
+PROJECT_ROOT=`dirname "$SCRIPT_PATH"`
+PROJECT_ROOT=`dirname "$PROJECT_ROOT"`
+WEB_ROOT="$PROJECT_ROOT/src/ponylib"
 
 
 echo '* Add mysql database and user'

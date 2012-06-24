@@ -1,4 +1,5 @@
 # _*_ coding: utf-8 _*_
+from src.ponylib import scanner, meta
 
 __license__         = "GPL3"
 __copyright__       = "Copyright 2010-2011 maizy.ru"
@@ -11,16 +12,12 @@ import os.path
 import sys
 import traceback
 
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
+from django.core.management.base import BaseCommand
 
 from upprint import pprint
 
-from ponylib import scanner
-from ponylib import meta
-
-from ponylib.models import Root, Series, Author, Book, Genre
-from ponylib.models import BookSeries, BookGenre, BookAuthor
+from src.ponylib.models import Root, Series, Author, Book, Genre
+from src.ponylib.models import BookSeries, BookGenre, BookAuthor
 
 
 class Command(BaseCommand):
