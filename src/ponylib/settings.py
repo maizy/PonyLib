@@ -50,32 +50,6 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'ponylib',                      # Or path to database file if using sqlite3.
-        'USER': 'ponylib',                      # Not used with sqlite3.
-        'PASSWORD': 'ponylib',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-        'OPTIONS' : {
-            'init_command': 'SET storage_engine=INNODB'
-        }
-    }
-}
-
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# On Unix systems, a value of None will cause Django to use the same
-# timezone as the operating system.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'Europe/Moscow'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'ru-ru'
 
 SITE_ID = 1
 
@@ -157,25 +131,91 @@ INSTALLED_APPS = (
     'south'
 )
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+
+# Load additional settings from PROJECT_ROOT/settings/*.py
+_additional = [
+
+    #TIME_ZONE
+    {
+        'key': 'TIME_ZONE',
+        'module': 'settings_time_zone',
+        'default': None
+    },
+
+    #LANGUAGE_CODE
+    {
+        'key': 'LANGUAGE_CODE',
+        'module': 'settings_lang',
+        'default': 'en-US',
+    },
+
+    #DB
+    {
+        'key': 'DATABASES',
+        'module': 'settings_db',
+        'default': {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql', # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+                'NAME': 'ponylib',
+                'USER': 'ponylib',
+                'PASSWORD': '',
+                'HOST': '',
+                'PORT': '',
+                'OPTIONS' : {
+                    'init_command': 'SET storage_engine=INNODB,  SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED'
+                }
+            }
         }
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
-}
+
+    #Loggind
+    {
+        'key': 'LOGGING',
+        'module': 'settings_logging',
+        'default': {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'handlers': {
+                'mail_admins': {
+                    'level': 'ERROR',
+                    'class': 'django.utils.log.AdminEmailHandler'
+                }
+            },
+            'loggers': {
+                'django.request': {
+                    'handlers': ['mail_admins'],
+                    'level': 'ERROR',
+                    'propagate': True,
+                },
+            }
+        }
+    },
+]
+
+_bkp_sys_path = sys.path
+sys.path = [path.join(PROJECT_ROOT, 'settings')]
+
+for spec in _additional:
+
+    res = None
+    try:
+       module = __import__(spec['module'], globals(), locals(), [], -1)
+       if callable(module.get):
+           res = module.get(globals())
+       del module
+
+    except ImportError:
+        pass
+
+    if res is None:
+        res = spec['default']
+
+    globals()[spec['key']] = res
+
+    del spec
+    del res
+
+del _additional
+
+sys.path = _bkp_sys_path
+del _bkp_sys_path

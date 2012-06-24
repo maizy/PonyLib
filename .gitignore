@@ -29,3 +29,4 @@ local/
 # project specific
 devserver-default-host
 var/
+settings/*.py
