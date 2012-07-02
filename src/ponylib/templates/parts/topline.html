@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load url from future %}
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -7,12 +8,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </a>
-        <a class="brand" href="{% url 'index' %}">PonyLib</a>
+        <a class="brand" href="{% url 'index' %}">{% trans "PonyLib" %}</a>
         <div class="nav-collapse">
             <ul class="nav">
-                <li><a href="{% url 'search' %}">Search</a></li>
-                <li><a href="#">Browse</a></li>
-                <li><a href="#">About</a></li>
+                <li><a href="{% url 'search' %}">{% trans "Search" %}</a></li>
+                <li><a href="#">{% trans "Browse" %}</a></li>
+                <li><a href="#">{% trans "About" %}</a></li>
             </ul>
         </div>
     </div>

@@ -1,0 +1,20 @@
+# Russian translation
+# Copyright (C) 2012 dev.maizy.ru
+# This file is distributed under the same license as the PACKAGE package.
+# Nikita Kovaliov <nikita@maizy.ru>
+#
+#: templates/parts/topline.html:11
+msgid "PonyLib"
+msgstr ""
+
+#: templates/parts/topline.html:14
+msgid "Search"
+msgstr "Поиск"
+
+#: templates/parts/topline.html:15
+msgid "Browse"
+msgstr "Обзор"
+
+#: templates/parts/topline.html:16
+msgid "About"
+msgstr "О приложении"
