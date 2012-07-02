@@ -30,3 +30,4 @@ local/
 devserver-default-host
 var/
 settings/*.py
+data/test-fb2/
