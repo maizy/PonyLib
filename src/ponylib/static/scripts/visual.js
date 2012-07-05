@@ -46,3 +46,20 @@ var mainSl = new ponylib.Visual.SetLanguage({
     sel : '#set-language',
     url : '/i18n/setlang/'
 });
+
+ns('ponylib.Visual', 'Todo', (function() {
+    var td = function() {
+        $(_.bind(this._init, this));
+    };
+
+    td.prototype._init = function() {
+        $('.todo').tooltip({
+            placement: 'bottom',
+            template: '<div class="tooltip"><div class="tooltip-arrow"></div>' +
+                '<div class="tooltip-inner" style="background: red;"></div></div>'
+        });
+    };
+
+    return new td();
+})());
+

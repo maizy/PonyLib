@@ -12,8 +12,8 @@
         <div class="nav-collapse">
             <ul class="nav">
                 <li><a href="{% url 'search' %}">{% trans "Search" %}</a></li>
-                <li><a href="#">{% trans "Browse" %}</a></li>
-                <li><a href="#">{% trans "About" %}</a></li>
+                <li><a href="#" title="TODO" class="todo">{% trans "Browse" %}</a></li>
+                <li><a href="{% url 'about' %}">{% trans "About" %}</a></li>
             </ul>
             <form class="navbar-search pull-left" action="{% url 'search' %}">
                 <input type="text" class="search-query span2" placeholder="{% trans "Quick search" %}">

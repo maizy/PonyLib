@@ -11,8 +11,6 @@ __doc__             = ""
 from django.conf.urls.defaults import include, url, patterns
 from django.views.generic import RedirectView
 
-from ponylib.view import debug
-
 # from django.contrib import admin
 # admin.autodiscover()
 
@@ -26,8 +24,9 @@ urlpatterns += patterns('ponylib.view.search',
 )
 
 urlpatterns += patterns('',
-    (r'^i18n/', include('django.conf.urls.i18n')),
-    #(r'^debug/', debug),
+    url(r'^i18n/', include('django.conf.urls.i18n'), name='set-language'),
+    url(r'^about/', 'ponylib.view.global.about', name='about'),
+    url(r'^debug/', 'ponylib.view.global.debug', name='debug'),
 )
 
 #urlpatterns += patterns('',

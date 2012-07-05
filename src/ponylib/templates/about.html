@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="hero-unit">
+    <h1>Ponylib</h1>
+    <p>{{ version.string }}</p>
+    <hr />
+    <p>
+        {% trans 'Project homepage' %}:
+        <a href="https://github.com/maizy/PonyLib" target="_blank">
+            github.com/maizy/PonyLib
+        </a>
+    </p>
+    <p>
+        {% trans 'Author' %}: {{ authors|join:", " }}
+    </p>
+    <p>
+        {% trans 'License' %}:
+        <a href="http://www.gnu.org/licenses/gpl-3.0.html" target="_blank">
+            GPL v3</a> (GNU GENERAL PUBLIC LICENSE Version 3)
+    </p>
+    <h2>{% trans 'Powered by' %}:</h2>
+    <ul>
+        <li>Django {{ django_version }}</li>
+        <li>Twitter Bootstrap 2.0.3</li>
+    </ul>
+</div>
+{% endblock %}

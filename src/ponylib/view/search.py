@@ -7,11 +7,9 @@ __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 __version__         = "0.1"
 __doc__             = ""
 
-from django.http import HttpResponse
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+from annoying.decorators import render_to
 
-
+@render_to('search/search_form.html')
 def index(request):
 
     c = {
@@ -19,9 +17,10 @@ def index(request):
             'title': 'Search',
         }
     }
-    return render_to_response('search/search_form.html', c, context_instance=RequestContext(request))
 
+    return c
 
+@render_to('search/results.html')
 def results(request):
 
     c = {
@@ -29,4 +28,5 @@ def results(request):
             'title': 'Search Results',
         }
     }
-    return render_to_response('search/results.html', c, context_instance=RequestContext(request))
+
+    return c

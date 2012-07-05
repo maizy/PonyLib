@@ -4,6 +4,8 @@ South==0.7.5
 distribute==0.6.27
 wsgiref==0.1.2
 flup
+# Djongo battaries
+django-annoying==0.7.6
 # mysql client
 MySQL-python==1.2.3
 # fb2 parser
