@@ -1,6 +1,4 @@
 # _*_ coding: utf-8 _*_
-from src.ponylib import scanner, meta
-
 __license__         = "GPL3"
 __copyright__       = "Copyright 2010-2011 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
@@ -16,8 +14,9 @@ from django.core.management.base import BaseCommand
 
 from upprint import pprint
 
-from src.ponylib.models import Root, Series, Author, Book, Genre
-from src.ponylib.models import BookSeries, BookGenre, BookAuthor
+from ponylib.models import Root, Series, Author, Book, Genre
+from ponylib.models import BookSeries, BookGenre, BookAuthor
+from ponylib import scanner, meta
 
 
 class Command(BaseCommand):
@@ -80,7 +79,7 @@ class Command(BaseCommand):
 
                     if 'genres' in mi:
                         for genree_code in mi['genres']:
-                            genree = Genre.objects.get_by_code_or_create(genree_code+u'u')
+                            genree = Genre.objects.get_by_code_or_create(genree_code)
                             genree_link = BookGenre()
                             genree_link.book = book
                             genree_link.genre = genree
