@@ -25,6 +25,7 @@ include/
 lib/
 local/
 .Python
+.venv
 
 # project specific
 devserver-default-host
