@@ -44,6 +44,8 @@ class Command(BaseCommand):
         parse_errors = 0
         first = True
         start_time = None
+        total_parse_time = 0.0
+        total_db_time = 0.0
         try:
             for (lib_path, file_path) in iter:
                 total += 1
@@ -62,8 +64,11 @@ class Command(BaseCommand):
                 self.stdout.write('File: %s\n' % full_path)
                 mi = None
                 try:
+                    before = datetime.datetime.now()
                     mi = meta.read_fb2_meta(full_path)
+                    total_parse_time += (datetime.datetime.now() - before).total_seconds()
 
+                    before = datetime.datetime.now()
                     #pprint(mi)
 
                     book = Book()
@@ -103,6 +108,7 @@ class Command(BaseCommand):
                                 series_link.number = in_series['index']
                             series_link.save()
 
+                    total_db_time += (datetime.datetime.now() - before).total_seconds()
 
                     ok += 1
 
@@ -125,8 +131,14 @@ class Command(BaseCommand):
             seconds = (datetime.datetime.now() - start_time).total_seconds()
             if seconds > 0:
                 fps = float(total) / seconds
-                stat = u'scan time: %0.0f sec (%0.4f fps)\n' \
-                        % (seconds, fps)
+                stat = (u'total time: %(total_time)0.2f sec\n'
+                        u'\tmeta data parsing: %(parse_time)0.0f sec (%(parse_percent)0.0f%%)\n'
+                        u'\tdb: %(db_time)0.0f sec (%(db_percent)0.0f%%)\n'
+                        u'fps: %(fps)0.4f\n') \
+                        % {'total_time' : seconds, 'fps': fps,
+                           'parse_time' : total_parse_time, 'parse_percent': total_parse_time/seconds*100,
+                           'db_time' : total_db_time, 'db_percent': total_db_time/seconds*100,
+                           }
 
         sys.stdout.write((u'files processed: %d\n'
                           u'\tsuccessful: %d\n'
