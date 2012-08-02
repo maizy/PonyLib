@@ -87,22 +87,27 @@ class Command(BaseCommand):
                     before_db_links = datetime.datetime.now()
 
                     if 'authors' in mi:
+                        author_links = []
                         for author_fullname in mi['authors']:
                             author = Author.objects.get_by_fullname_or_create(author_fullname)
                             author_link = BookAuthor()
                             author_link.book = book
                             author_link.author = author
-                            author_link.save()
+                            author_links.append(author_link)
+                        BookAuthor.objects.bulk_create(author_links)
 
                     if 'genres' in mi:
+                        genree_links = []
                         for genree_code in mi['genres']:
                             genree = Genre.objects.get_by_code_or_create(genree_code)
                             genree_link = BookGenre()
                             genree_link.book = book
                             genree_link.genre = genree
-                            genree_link.save()
+                            genree_links.append(genree_link)
+                        BookGenre.objects.bulk_create(genree_links)
 
                     if 'series' in mi:
+                        series_links = []
                         for in_series in mi['series']:
                             series = Series.objects.get_by_name_or_create(in_series['name'])
                             series_link = BookSeries()
@@ -110,7 +115,7 @@ class Command(BaseCommand):
                             series_link.book = book
                             if 'index' in in_series:
                                 series_link.number = in_series['index']
-                            series_link.save()
+                        BookSeries.objects.bulk_create(series_links)
 
                     total_db_links_time += (datetime.datetime.now() - before_db_links).total_seconds()
                     total_db_time += (datetime.datetime.now() - before_db).total_seconds()
