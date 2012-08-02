@@ -1,4 +1,4 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 import datetime
 from south.db import db
 from south.v2 import DataMigration
@@ -10,10 +10,8 @@ class Migration(DataMigration):
         from django.core.management import call_command
         call_command("loaddata", "genres.json")
 
-
     def backwards(self, orm):
         pass
-
 
     models = {
         'ponylib.author': {
@@ -38,7 +36,7 @@ class Migration(DataMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'isbn': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'publisher': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'pubyear': ('django.db.models.fields.IntegerField', [], {'blank': 'True'}),
+            'pubyear': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'rel_path': ('django.db.models.fields.TextField', [], {}),
             'root': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'Books'", 'to': "orm['ponylib.Root']"}),
             'series': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['ponylib.Series']", 'symmetrical': 'False', 'through': "orm['ponylib.BookSeries']", 'blank': 'True'}),
@@ -65,11 +63,12 @@ class Migration(DataMigration):
             'series': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ponylib.Series']"})
         },
         'ponylib.genre': {
-            'Meta': {'object_name': 'Genre', 'db_table': "'ponylib_genree'"},
-            'code': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
+            'Meta': {'object_name': 'Genre'},
+            'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'protect': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'value': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'})
+            'value_en': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'value_ru': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'})
         },
         'ponylib.root': {
             'Meta': {'object_name': 'Root'},
@@ -88,3 +87,4 @@ class Migration(DataMigration):
     }
 
     complete_apps = ['ponylib']
+    symmetrical = True

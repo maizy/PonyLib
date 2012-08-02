@@ -2,7 +2,6 @@
 sf_action               Боевая Фантастика
 sf_epic                 Эпическая Фантастика
 sf_heroic               Героическая фантастика
-sf_detective            Детективная Фантастика
 sf_cyberpunk            Киберпанк
 sf_space                Космическая Фантастика
 sf_social               Социальная фантастика
@@ -10,7 +9,6 @@ sf_horror               Ужасы и Мистика
 sf_humor                Юмористическая фантастика
 sf_fantasy              Фэнтези
 sf                      Научная Фантастика
-child_sf                Детская Фантастика
 det_classic             Классический Детектив
 det_police              Полицейский Детектив
 det_action              Боевики
@@ -38,7 +36,6 @@ child_prose             Детская Проза
 love                    Любовные романы
 love_contemporary       Современные Любовные Романы
 love_history            Исторические Любовные Романы
-love_detective          Остросюжетные Любовные Романы
 love_short              Короткие Любовные Романы
 love_erotica            Эротика
 adv_western             Вестерны
@@ -46,22 +43,15 @@ adv_history             Исторические Приключения
 adv_indian              Приключения: Индейцы
 adv_maritime            Морские Приключения
 adv_geo                 Путешествия и География
-adv_animal              Природа и Животные
 adventure               Приключения: Прочее
 child_adv               Детские Приключения
 children                Детское
 child_tale              Сказки
 child_verse             Детские Стихи
-child_prose             Детская Проза
 child_sf                Детская Фантастика
-child_det               Детские Остросюжетные
-child_adv               Детские Приключения
 child_education         Детская Образовательная литература
-children                Детское: Прочее
 poetry                  Поэзия
 dramaturgy              Драматургия
-humor_verse             Юмористические Стихи
-child_verse             Детские Стихи
 antique_ant             Античная Литература
 antique_european        Европейская Старинная Литература
 antique_russian         Древнерусская Литература
@@ -84,7 +74,6 @@ sci_chem                Химия
 sci_biology             Биология
 sci_tech                Технические
 science                 Научно-образовательная: Прочее
-adv_animal              Природа и Животные
 comp_www                Интернет
 comp_programming        Программирование
 comp_hard               Компьютерное Железо
@@ -107,10 +96,7 @@ religion                Религия
 religion_rel            Религия
 religion_esoterics      Эзотерика
 religion_self           Самосовершенствование
-religion                Религия и духовность: Прочее
-sci_religion            Религиоведение
 humor_anecdote          Анекдоты
-humor_prose             Юмористическая Проза
 humor_verse             Юмористические Стихи
 humor                   Юмор: Прочее
 home_cooking            Кулинария

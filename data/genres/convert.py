@@ -18,16 +18,21 @@ for line in f:
     match = reg.match(line)
     print '%s match: "%s" => "%s"' % (i, match.group(1), match.group(2))
 
+    code = match.group(1)
+    value_ru = match.group(2)
+    value_en = ' '.join([word[0].capitalize() + word[1:] for word in code.split('_')])
+
     w.write(u"""{
   "model": "ponylib.Genre",
   "pk": %s,
   "fields": {
     "code": "%s",
-    "value": "%s",
+    "value_ru": "%s",
+    "value_en": "%s",
     "protect": 1
   }
 },
-""" % (i, match.group(1), match.group(2)))
+""" % (i, code, value_ru, value_en))
     i += 1
 
 w.seek(-2, os.SEEK_CUR)

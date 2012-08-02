@@ -73,8 +73,9 @@ class Series(models.Model):
 
 class Genre(models.Model):
 
-    code = models.CharField(max_length=40)
-    value = models.CharField(max_length=255, blank=True)
+    code = models.CharField(max_length=40, unique=True)
+    value_ru = models.CharField(max_length=255, blank=True)
+    value_en = models.CharField(max_length=255, blank=True)
     protect = models.BooleanField(default=False)
 
     objects = GenreManager()

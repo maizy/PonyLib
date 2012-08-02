@@ -4,7 +4,8 @@
   "pk": 1,
   "fields": {
     "code": "﻿sf_history",
-    "value": "Альтернативная история",
+    "value_ru": "Альтернативная история",
+    "value_en": "﻿sf History",
     "protect": 1
   }
 },
@@ -13,7 +14,8 @@
   "pk": 2,
   "fields": {
     "code": "sf_action",
-    "value": "Боевая Фантастика",
+    "value_ru": "Боевая Фантастика",
+    "value_en": "Sf Action",
     "protect": 1
   }
 },
@@ -22,7 +24,8 @@
   "pk": 3,
   "fields": {
     "code": "sf_epic",
-    "value": "Эпическая Фантастика",
+    "value_ru": "Эпическая Фантастика",
+    "value_en": "Sf Epic",
     "protect": 1
   }
 },
@@ -31,7 +34,8 @@
   "pk": 4,
   "fields": {
     "code": "sf_heroic",
-    "value": "Героическая фантастика",
+    "value_ru": "Героическая фантастика",
+    "value_en": "Sf Heroic",
     "protect": 1
   }
 },
@@ -39,8 +43,9 @@
   "model": "ponylib.Genre",
   "pk": 5,
   "fields": {
-    "code": "sf_detective",
-    "value": "Детективная Фантастика",
+    "code": "sf_cyberpunk",
+    "value_ru": "Киберпанк",
+    "value_en": "Sf Cyberpunk",
     "protect": 1
   }
 },
@@ -48,8 +53,9 @@
   "model": "ponylib.Genre",
   "pk": 6,
   "fields": {
-    "code": "sf_cyberpunk",
-    "value": "Киберпанк",
+    "code": "sf_space",
+    "value_ru": "Космическая Фантастика",
+    "value_en": "Sf Space",
     "protect": 1
   }
 },
@@ -57,8 +63,9 @@
   "model": "ponylib.Genre",
   "pk": 7,
   "fields": {
-    "code": "sf_space",
-    "value": "Космическая Фантастика",
+    "code": "sf_social",
+    "value_ru": "Социальная фантастика",
+    "value_en": "Sf Social",
     "protect": 1
   }
 },
@@ -66,8 +73,9 @@
   "model": "ponylib.Genre",
   "pk": 8,
   "fields": {
-    "code": "sf_social",
-    "value": "Социальная фантастика",
+    "code": "sf_horror",
+    "value_ru": "Ужасы и Мистика",
+    "value_en": "Sf Horror",
     "protect": 1
   }
 },
@@ -75,8 +83,9 @@
   "model": "ponylib.Genre",
   "pk": 9,
   "fields": {
-    "code": "sf_horror",
-    "value": "Ужасы и Мистика",
+    "code": "sf_humor",
+    "value_ru": "Юмористическая фантастика",
+    "value_en": "Sf Humor",
     "protect": 1
   }
 },
@@ -84,8 +93,9 @@
   "model": "ponylib.Genre",
   "pk": 10,
   "fields": {
-    "code": "sf_humor",
-    "value": "Юмористическая фантастика",
+    "code": "sf_fantasy",
+    "value_ru": "Фэнтези",
+    "value_en": "Sf Fantasy",
     "protect": 1
   }
 },
@@ -93,8 +103,9 @@
   "model": "ponylib.Genre",
   "pk": 11,
   "fields": {
-    "code": "sf_fantasy",
-    "value": "Фэнтези",
+    "code": "sf",
+    "value_ru": "Научная Фантастика",
+    "value_en": "Sf",
     "protect": 1
   }
 },
@@ -102,8 +113,9 @@
   "model": "ponylib.Genre",
   "pk": 12,
   "fields": {
-    "code": "sf",
-    "value": "Научная Фантастика",
+    "code": "det_classic",
+    "value_ru": "Классический Детектив",
+    "value_en": "Det Classic",
     "protect": 1
   }
 },
@@ -111,8 +123,9 @@
   "model": "ponylib.Genre",
   "pk": 13,
   "fields": {
-    "code": "child_sf",
-    "value": "Детская Фантастика",
+    "code": "det_police",
+    "value_ru": "Полицейский Детектив",
+    "value_en": "Det Police",
     "protect": 1
   }
 },
@@ -120,8 +133,9 @@
   "model": "ponylib.Genre",
   "pk": 14,
   "fields": {
-    "code": "det_classic",
-    "value": "Классический Детектив",
+    "code": "det_action",
+    "value_ru": "Боевики",
+    "value_en": "Det Action",
     "protect": 1
   }
 },
@@ -129,8 +143,9 @@
   "model": "ponylib.Genre",
   "pk": 15,
   "fields": {
-    "code": "det_police",
-    "value": "Полицейский Детектив",
+    "code": "det_irony",
+    "value_ru": "Иронический Детектив",
+    "value_en": "Det Irony",
     "protect": 1
   }
 },
@@ -138,8 +153,9 @@
   "model": "ponylib.Genre",
   "pk": 16,
   "fields": {
-    "code": "det_action",
-    "value": "Боевики",
+    "code": "det_history",
+    "value_ru": "Исторический Детектив",
+    "value_en": "Det History",
     "protect": 1
   }
 },
@@ -147,8 +163,9 @@
   "model": "ponylib.Genre",
   "pk": 17,
   "fields": {
-    "code": "det_irony",
-    "value": "Иронический Детектив",
+    "code": "det_espionage",
+    "value_ru": "Шпионский Детектив",
+    "value_en": "Det Espionage",
     "protect": 1
   }
 },
@@ -156,8 +173,9 @@
   "model": "ponylib.Genre",
   "pk": 18,
   "fields": {
-    "code": "det_history",
-    "value": "Исторический Детектив",
+    "code": "det_crime",
+    "value_ru": "Криминальный Детектив",
+    "value_en": "Det Crime",
     "protect": 1
   }
 },
@@ -165,8 +183,9 @@
   "model": "ponylib.Genre",
   "pk": 19,
   "fields": {
-    "code": "det_espionage",
-    "value": "Шпионский Детектив",
+    "code": "det_political",
+    "value_ru": "Политический Детектив",
+    "value_en": "Det Political",
     "protect": 1
   }
 },
@@ -174,8 +193,9 @@
   "model": "ponylib.Genre",
   "pk": 20,
   "fields": {
-    "code": "det_crime",
-    "value": "Криминальный Детектив",
+    "code": "det_maniac",
+    "value_ru": "Маньяки",
+    "value_en": "Det Maniac",
     "protect": 1
   }
 },
@@ -183,8 +203,9 @@
   "model": "ponylib.Genre",
   "pk": 21,
   "fields": {
-    "code": "det_political",
-    "value": "Политический Детектив",
+    "code": "det_hard",
+    "value_ru": "Крутой Детектив",
+    "value_en": "Det Hard",
     "protect": 1
   }
 },
@@ -192,8 +213,9 @@
   "model": "ponylib.Genre",
   "pk": 22,
   "fields": {
-    "code": "det_maniac",
-    "value": "Маньяки",
+    "code": "thriller",
+    "value_ru": "Триллеры",
+    "value_en": "Thriller",
     "protect": 1
   }
 },
@@ -201,8 +223,9 @@
   "model": "ponylib.Genre",
   "pk": 23,
   "fields": {
-    "code": "det_hard",
-    "value": "Крутой Детектив",
+    "code": "detective",
+    "value_ru": "Детектив",
+    "value_en": "Detective",
     "protect": 1
   }
 },
@@ -210,8 +233,9 @@
   "model": "ponylib.Genre",
   "pk": 24,
   "fields": {
-    "code": "thriller",
-    "value": "Триллеры",
+    "code": "sf_detective",
+    "value_ru": "Детективная Фантастика",
+    "value_en": "Sf Detective",
     "protect": 1
   }
 },
@@ -219,8 +243,9 @@
   "model": "ponylib.Genre",
   "pk": 25,
   "fields": {
-    "code": "detective",
-    "value": "Детектив",
+    "code": "child_det",
+    "value_ru": "Детские Остросюжетные",
+    "value_en": "Child Det",
     "protect": 1
   }
 },
@@ -228,8 +253,9 @@
   "model": "ponylib.Genre",
   "pk": 26,
   "fields": {
-    "code": "sf_detective",
-    "value": "Детективная Фантастика",
+    "code": "love_detective",
+    "value_ru": "Остросюжетные Любовные Романы",
+    "value_en": "Love Detective",
     "protect": 1
   }
 },
@@ -237,8 +263,9 @@
   "model": "ponylib.Genre",
   "pk": 27,
   "fields": {
-    "code": "child_det",
-    "value": "Детские Остросюжетные",
+    "code": "prose",
+    "value_ru": "Проза",
+    "value_en": "Prose",
     "protect": 1
   }
 },
@@ -246,8 +273,9 @@
   "model": "ponylib.Genre",
   "pk": 28,
   "fields": {
-    "code": "love_detective",
-    "value": "Остросюжетные Любовные Романы",
+    "code": "prose_classic",
+    "value_ru": "Классическая Проза",
+    "value_en": "Prose Classic",
     "protect": 1
   }
 },
@@ -255,8 +283,9 @@
   "model": "ponylib.Genre",
   "pk": 29,
   "fields": {
-    "code": "prose",
-    "value": "Проза",
+    "code": "prose_history",
+    "value_ru": "Историческая Проза",
+    "value_en": "Prose History",
     "protect": 1
   }
 },
@@ -264,8 +293,9 @@
   "model": "ponylib.Genre",
   "pk": 30,
   "fields": {
-    "code": "prose_classic",
-    "value": "Классическая Проза",
+    "code": "prose_contemporary",
+    "value_ru": "Современная Проза",
+    "value_en": "Prose Contemporary",
     "protect": 1
   }
 },
@@ -273,8 +303,9 @@
   "model": "ponylib.Genre",
   "pk": 31,
   "fields": {
-    "code": "prose_history",
-    "value": "Историческая Проза",
+    "code": "prose_counter",
+    "value_ru": "Контркультура",
+    "value_en": "Prose Counter",
     "protect": 1
   }
 },
@@ -282,8 +313,9 @@
   "model": "ponylib.Genre",
   "pk": 32,
   "fields": {
-    "code": "prose_contemporary",
-    "value": "Современная Проза",
+    "code": "prose_rus_classic",
+    "value_ru": "Русская Классика",
+    "value_en": "Prose Rus Classic",
     "protect": 1
   }
 },
@@ -291,8 +323,9 @@
   "model": "ponylib.Genre",
   "pk": 33,
   "fields": {
-    "code": "prose_counter",
-    "value": "Контркультура",
+    "code": "prose_su_classics",
+    "value_ru": "Советская Классика",
+    "value_en": "Prose Su Classics",
     "protect": 1
   }
 },
@@ -300,8 +333,9 @@
   "model": "ponylib.Genre",
   "pk": 34,
   "fields": {
-    "code": "prose_rus_classic",
-    "value": "Русская Классика",
+    "code": "humor_prose",
+    "value_ru": "Юмористическая Проза",
+    "value_en": "Humor Prose",
     "protect": 1
   }
 },
@@ -309,8 +343,9 @@
   "model": "ponylib.Genre",
   "pk": 35,
   "fields": {
-    "code": "prose_su_classics",
-    "value": "Советская Классика",
+    "code": "child_prose",
+    "value_ru": "Детская Проза",
+    "value_en": "Child Prose",
     "protect": 1
   }
 },
@@ -318,8 +353,9 @@
   "model": "ponylib.Genre",
   "pk": 36,
   "fields": {
-    "code": "humor_prose",
-    "value": "Юмористическая Проза",
+    "code": "love",
+    "value_ru": "Любовные романы",
+    "value_en": "Love",
     "protect": 1
   }
 },
@@ -327,8 +363,9 @@
   "model": "ponylib.Genre",
   "pk": 37,
   "fields": {
-    "code": "child_prose",
-    "value": "Детская Проза",
+    "code": "love_contemporary",
+    "value_ru": "Современные Любовные Романы",
+    "value_en": "Love Contemporary",
     "protect": 1
   }
 },
@@ -336,8 +373,9 @@
   "model": "ponylib.Genre",
   "pk": 38,
   "fields": {
-    "code": "love",
-    "value": "Любовные романы",
+    "code": "love_history",
+    "value_ru": "Исторические Любовные Романы",
+    "value_en": "Love History",
     "protect": 1
   }
 },
@@ -345,8 +383,9 @@
   "model": "ponylib.Genre",
   "pk": 39,
   "fields": {
-    "code": "love_contemporary",
-    "value": "Современные Любовные Романы",
+    "code": "love_short",
+    "value_ru": "Короткие Любовные Романы",
+    "value_en": "Love Short",
     "protect": 1
   }
 },
@@ -354,8 +393,9 @@
   "model": "ponylib.Genre",
   "pk": 40,
   "fields": {
-    "code": "love_history",
-    "value": "Исторические Любовные Романы",
+    "code": "love_erotica",
+    "value_ru": "Эротика",
+    "value_en": "Love Erotica",
     "protect": 1
   }
 },
@@ -363,8 +403,9 @@
   "model": "ponylib.Genre",
   "pk": 41,
   "fields": {
-    "code": "love_detective",
-    "value": "Остросюжетные Любовные Романы",
+    "code": "adv_western",
+    "value_ru": "Вестерны",
+    "value_en": "Adv Western",
     "protect": 1
   }
 },
@@ -372,8 +413,9 @@
   "model": "ponylib.Genre",
   "pk": 42,
   "fields": {
-    "code": "love_short",
-    "value": "Короткие Любовные Романы",
+    "code": "adv_history",
+    "value_ru": "Исторические Приключения",
+    "value_en": "Adv History",
     "protect": 1
   }
 },
@@ -381,8 +423,9 @@
   "model": "ponylib.Genre",
   "pk": 43,
   "fields": {
-    "code": "love_erotica",
-    "value": "Эротика",
+    "code": "adv_indian",
+    "value_ru": "Приключения: Индейцы",
+    "value_en": "Adv Indian",
     "protect": 1
   }
 },
@@ -390,8 +433,9 @@
   "model": "ponylib.Genre",
   "pk": 44,
   "fields": {
-    "code": "adv_western",
-    "value": "Вестерны",
+    "code": "adv_maritime",
+    "value_ru": "Морские Приключения",
+    "value_en": "Adv Maritime",
     "protect": 1
   }
 },
@@ -399,8 +443,9 @@
   "model": "ponylib.Genre",
   "pk": 45,
   "fields": {
-    "code": "adv_history",
-    "value": "Исторические Приключения",
+    "code": "adv_geo",
+    "value_ru": "Путешествия и География",
+    "value_en": "Adv Geo",
     "protect": 1
   }
 },
@@ -408,8 +453,9 @@
   "model": "ponylib.Genre",
   "pk": 46,
   "fields": {
-    "code": "adv_indian",
-    "value": "Приключения: Индейцы",
+    "code": "adventure",
+    "value_ru": "Приключения: Прочее",
+    "value_en": "Adventure",
     "protect": 1
   }
 },
@@ -417,8 +463,9 @@
   "model": "ponylib.Genre",
   "pk": 47,
   "fields": {
-    "code": "adv_maritime",
-    "value": "Морские Приключения",
+    "code": "child_adv",
+    "value_ru": "Детские Приключения",
+    "value_en": "Child Adv",
     "protect": 1
   }
 },
@@ -426,8 +473,9 @@
   "model": "ponylib.Genre",
   "pk": 48,
   "fields": {
-    "code": "adv_geo",
-    "value": "Путешествия и География",
+    "code": "children",
+    "value_ru": "Детское",
+    "value_en": "Children",
     "protect": 1
   }
 },
@@ -435,8 +483,9 @@
   "model": "ponylib.Genre",
   "pk": 49,
   "fields": {
-    "code": "adv_animal",
-    "value": "Природа и Животные",
+    "code": "child_tale",
+    "value_ru": "Сказки",
+    "value_en": "Child Tale",
     "protect": 1
   }
 },
@@ -444,8 +493,9 @@
   "model": "ponylib.Genre",
   "pk": 50,
   "fields": {
-    "code": "adventure",
-    "value": "Приключения: Прочее",
+    "code": "child_verse",
+    "value_ru": "Детские Стихи",
+    "value_en": "Child Verse",
     "protect": 1
   }
 },
@@ -453,8 +503,9 @@
   "model": "ponylib.Genre",
   "pk": 51,
   "fields": {
-    "code": "child_adv",
-    "value": "Детские Приключения",
+    "code": "child_sf",
+    "value_ru": "Детская Фантастика",
+    "value_en": "Child Sf",
     "protect": 1
   }
 },
@@ -462,8 +513,9 @@
   "model": "ponylib.Genre",
   "pk": 52,
   "fields": {
-    "code": "children",
-    "value": "Детское",
+    "code": "child_education",
+    "value_ru": "Детская Образовательная литература",
+    "value_en": "Child Education",
     "protect": 1
   }
 },
@@ -471,8 +523,9 @@
   "model": "ponylib.Genre",
   "pk": 53,
   "fields": {
-    "code": "child_tale",
-    "value": "Сказки",
+    "code": "poetry",
+    "value_ru": "Поэзия",
+    "value_en": "Poetry",
     "protect": 1
   }
 },
@@ -480,8 +533,9 @@
   "model": "ponylib.Genre",
   "pk": 54,
   "fields": {
-    "code": "child_verse",
-    "value": "Детские Стихи",
+    "code": "dramaturgy",
+    "value_ru": "Драматургия",
+    "value_en": "Dramaturgy",
     "protect": 1
   }
 },
@@ -489,8 +543,9 @@
   "model": "ponylib.Genre",
   "pk": 55,
   "fields": {
-    "code": "child_prose",
-    "value": "Детская Проза",
+    "code": "antique_ant",
+    "value_ru": "Античная Литература",
+    "value_en": "Antique Ant",
     "protect": 1
   }
 },
@@ -498,8 +553,9 @@
   "model": "ponylib.Genre",
   "pk": 56,
   "fields": {
-    "code": "child_sf",
-    "value": "Детская Фантастика",
+    "code": "antique_european",
+    "value_ru": "Европейская Старинная Литература",
+    "value_en": "Antique European",
     "protect": 1
   }
 },
@@ -507,8 +563,9 @@
   "model": "ponylib.Genre",
   "pk": 57,
   "fields": {
-    "code": "child_det",
-    "value": "Детские Остросюжетные",
+    "code": "antique_russian",
+    "value_ru": "Древнерусская Литература",
+    "value_en": "Antique Russian",
     "protect": 1
   }
 },
@@ -516,8 +573,9 @@
   "model": "ponylib.Genre",
   "pk": 58,
   "fields": {
-    "code": "child_adv",
-    "value": "Детские Приключения",
+    "code": "antique_east",
+    "value_ru": "Древневосточная Литература",
+    "value_en": "Antique East",
     "protect": 1
   }
 },
@@ -525,8 +583,9 @@
   "model": "ponylib.Genre",
   "pk": 59,
   "fields": {
-    "code": "child_education",
-    "value": "Детская Образовательная литература",
+    "code": "antique_myths",
+    "value_ru": "Мифы. Легенды. Эпос",
+    "value_en": "Antique Myths",
     "protect": 1
   }
 },
@@ -534,8 +593,9 @@
   "model": "ponylib.Genre",
   "pk": 60,
   "fields": {
-    "code": "children",
-    "value": "Детское: Прочее",
+    "code": "antique",
+    "value_ru": "Старинная Литература: Прочее",
+    "value_en": "Antique",
     "protect": 1
   }
 },
@@ -543,8 +603,9 @@
   "model": "ponylib.Genre",
   "pk": 61,
   "fields": {
-    "code": "poetry",
-    "value": "Поэзия",
+    "code": "sci_history",
+    "value_ru": "История",
+    "value_en": "Sci History",
     "protect": 1
   }
 },
@@ -552,8 +613,9 @@
   "model": "ponylib.Genre",
   "pk": 62,
   "fields": {
-    "code": "dramaturgy",
-    "value": "Драматургия",
+    "code": "sci_psychology",
+    "value_ru": "Психология",
+    "value_en": "Sci Psychology",
     "protect": 1
   }
 },
@@ -561,8 +623,9 @@
   "model": "ponylib.Genre",
   "pk": 63,
   "fields": {
-    "code": "humor_verse",
-    "value": "Юмористические Стихи",
+    "code": "sci_culture",
+    "value_ru": "Культурология",
+    "value_en": "Sci Culture",
     "protect": 1
   }
 },
@@ -570,8 +633,9 @@
   "model": "ponylib.Genre",
   "pk": 64,
   "fields": {
-    "code": "child_verse",
-    "value": "Детские Стихи",
+    "code": "sci_religion",
+    "value_ru": "Религиоведение",
+    "value_en": "Sci Religion",
     "protect": 1
   }
 },
@@ -579,8 +643,9 @@
   "model": "ponylib.Genre",
   "pk": 65,
   "fields": {
-    "code": "antique_ant",
-    "value": "Античная Литература",
+    "code": "sci_philosophy",
+    "value_ru": "Философия",
+    "value_en": "Sci Philosophy",
     "protect": 1
   }
 },
@@ -588,8 +653,9 @@
   "model": "ponylib.Genre",
   "pk": 66,
   "fields": {
-    "code": "antique_european",
-    "value": "Европейская Старинная Литература",
+    "code": "sci_politics",
+    "value_ru": "Политика",
+    "value_en": "Sci Politics",
     "protect": 1
   }
 },
@@ -597,8 +663,9 @@
   "model": "ponylib.Genre",
   "pk": 67,
   "fields": {
-    "code": "antique_russian",
-    "value": "Древнерусская Литература",
+    "code": "sci_business",
+    "value_ru": "Деловая литература",
+    "value_en": "Sci Business",
     "protect": 1
   }
 },
@@ -606,8 +673,9 @@
   "model": "ponylib.Genre",
   "pk": 68,
   "fields": {
-    "code": "antique_east",
-    "value": "Древневосточная Литература",
+    "code": "sci_juris",
+    "value_ru": "Юриспруденция",
+    "value_en": "Sci Juris",
     "protect": 1
   }
 },
@@ -615,8 +683,9 @@
   "model": "ponylib.Genre",
   "pk": 69,
   "fields": {
-    "code": "antique_myths",
-    "value": "Мифы. Легенды. Эпос",
+    "code": "sci_linguistic",
+    "value_ru": "Языкознание",
+    "value_en": "Sci Linguistic",
     "protect": 1
   }
 },
@@ -624,8 +693,9 @@
   "model": "ponylib.Genre",
   "pk": 70,
   "fields": {
-    "code": "antique",
-    "value": "Старинная Литература: Прочее",
+    "code": "sci_medicine",
+    "value_ru": "Медицина",
+    "value_en": "Sci Medicine",
     "protect": 1
   }
 },
@@ -633,8 +703,9 @@
   "model": "ponylib.Genre",
   "pk": 71,
   "fields": {
-    "code": "sci_history",
-    "value": "История",
+    "code": "sci_phys",
+    "value_ru": "Физика",
+    "value_en": "Sci Phys",
     "protect": 1
   }
 },
@@ -642,8 +713,9 @@
   "model": "ponylib.Genre",
   "pk": 72,
   "fields": {
-    "code": "sci_psychology",
-    "value": "Психология",
+    "code": "sci_math",
+    "value_ru": "Математика",
+    "value_en": "Sci Math",
     "protect": 1
   }
 },
@@ -651,8 +723,9 @@
   "model": "ponylib.Genre",
   "pk": 73,
   "fields": {
-    "code": "sci_culture",
-    "value": "Культурология",
+    "code": "sci_chem",
+    "value_ru": "Химия",
+    "value_en": "Sci Chem",
     "protect": 1
   }
 },
@@ -660,8 +733,9 @@
   "model": "ponylib.Genre",
   "pk": 74,
   "fields": {
-    "code": "sci_religion",
-    "value": "Религиоведение",
+    "code": "sci_biology",
+    "value_ru": "Биология",
+    "value_en": "Sci Biology",
     "protect": 1
   }
 },
@@ -669,8 +743,9 @@
   "model": "ponylib.Genre",
   "pk": 75,
   "fields": {
-    "code": "sci_philosophy",
-    "value": "Философия",
+    "code": "sci_tech",
+    "value_ru": "Технические",
+    "value_en": "Sci Tech",
     "protect": 1
   }
 },
@@ -678,8 +753,9 @@
   "model": "ponylib.Genre",
   "pk": 76,
   "fields": {
-    "code": "sci_politics",
-    "value": "Политика",
+    "code": "science",
+    "value_ru": "Научно-образовательная: Прочее",
+    "value_en": "Science",
     "protect": 1
   }
 },
@@ -687,8 +763,9 @@
   "model": "ponylib.Genre",
   "pk": 77,
   "fields": {
-    "code": "sci_business",
-    "value": "Деловая литература",
+    "code": "comp_www",
+    "value_ru": "Интернет",
+    "value_en": "Comp Www",
     "protect": 1
   }
 },
@@ -696,8 +773,9 @@
   "model": "ponylib.Genre",
   "pk": 78,
   "fields": {
-    "code": "sci_juris",
-    "value": "Юриспруденция",
+    "code": "comp_programming",
+    "value_ru": "Программирование",
+    "value_en": "Comp Programming",
     "protect": 1
   }
 },
@@ -705,8 +783,9 @@
   "model": "ponylib.Genre",
   "pk": 79,
   "fields": {
-    "code": "sci_linguistic",
-    "value": "Языкознание",
+    "code": "comp_hard",
+    "value_ru": "Компьютерное Железо",
+    "value_en": "Comp Hard",
     "protect": 1
   }
 },
@@ -714,8 +793,9 @@
   "model": "ponylib.Genre",
   "pk": 80,
   "fields": {
-    "code": "sci_medicine",
-    "value": "Медицина",
+    "code": "comp_soft",
+    "value_ru": "Программы",
+    "value_en": "Comp Soft",
     "protect": 1
   }
 },
@@ -723,8 +803,9 @@
   "model": "ponylib.Genre",
   "pk": 81,
   "fields": {
-    "code": "sci_phys",
-    "value": "Физика",
+    "code": "comp_db",
+    "value_ru": "Базы Данных",
+    "value_en": "Comp Db",
     "protect": 1
   }
 },
@@ -732,8 +813,9 @@
   "model": "ponylib.Genre",
   "pk": 82,
   "fields": {
-    "code": "sci_math",
-    "value": "Математика",
+    "code": "comp_osnet",
+    "value_ru": "ОС и Сети",
+    "value_en": "Comp Osnet",
     "protect": 1
   }
 },
@@ -741,8 +823,9 @@
   "model": "ponylib.Genre",
   "pk": 83,
   "fields": {
-    "code": "sci_chem",
-    "value": "Химия",
+    "code": "computers",
+    "value_ru": "Компьютеры: Прочее",
+    "value_en": "Computers",
     "protect": 1
   }
 },
@@ -750,8 +833,9 @@
   "model": "ponylib.Genre",
   "pk": 84,
   "fields": {
-    "code": "sci_biology",
-    "value": "Биология",
+    "code": "ref_encyc",
+    "value_ru": "Энциклопедии",
+    "value_en": "Ref Encyc",
     "protect": 1
   }
 },
@@ -759,8 +843,9 @@
   "model": "ponylib.Genre",
   "pk": 85,
   "fields": {
-    "code": "sci_tech",
-    "value": "Технические",
+    "code": "ref_dict",
+    "value_ru": "Словари",
+    "value_en": "Ref Dict",
     "protect": 1
   }
 },
@@ -768,8 +853,9 @@
   "model": "ponylib.Genre",
   "pk": 86,
   "fields": {
-    "code": "science",
-    "value": "Научно-образовательная: Прочее",
+    "code": "ref_ref",
+    "value_ru": "Справочники",
+    "value_en": "Ref Ref",
     "protect": 1
   }
 },
@@ -777,8 +863,9 @@
   "model": "ponylib.Genre",
   "pk": 87,
   "fields": {
-    "code": "adv_animal",
-    "value": "Природа и Животные",
+    "code": "ref_guide",
+    "value_ru": "Руководства",
+    "value_en": "Ref Guide",
     "protect": 1
   }
 },
@@ -786,8 +873,9 @@
   "model": "ponylib.Genre",
   "pk": 88,
   "fields": {
-    "code": "comp_www",
-    "value": "Интернет",
+    "code": "reference",
+    "value_ru": "Справочная Литература: Прочее",
+    "value_en": "Reference",
     "protect": 1
   }
 },
@@ -795,8 +883,9 @@
   "model": "ponylib.Genre",
   "pk": 89,
   "fields": {
-    "code": "comp_programming",
-    "value": "Программирование",
+    "code": "nonf_biography",
+    "value_ru": "Биографии и Мемуары",
+    "value_en": "Nonf Biography",
     "protect": 1
   }
 },
@@ -804,8 +893,9 @@
   "model": "ponylib.Genre",
   "pk": 90,
   "fields": {
-    "code": "comp_hard",
-    "value": "Компьютерное Железо",
+    "code": "nonf_publicism",
+    "value_ru": "Публицистика",
+    "value_en": "Nonf Publicism",
     "protect": 1
   }
 },
@@ -813,8 +903,9 @@
   "model": "ponylib.Genre",
   "pk": 91,
   "fields": {
-    "code": "comp_soft",
-    "value": "Программы",
+    "code": "nonf_criticism",
+    "value_ru": "Критика",
+    "value_en": "Nonf Criticism",
     "protect": 1
   }
 },
@@ -822,8 +913,9 @@
   "model": "ponylib.Genre",
   "pk": 92,
   "fields": {
-    "code": "comp_db",
-    "value": "Базы Данных",
+    "code": "nonfiction",
+    "value_ru": "Документальное: Прочее",
+    "value_en": "Nonfiction",
     "protect": 1
   }
 },
@@ -831,8 +923,9 @@
   "model": "ponylib.Genre",
   "pk": 93,
   "fields": {
-    "code": "comp_osnet",
-    "value": "ОС и Сети",
+    "code": "design",
+    "value_ru": "Искусство, Дизайн",
+    "value_en": "Design",
     "protect": 1
   }
 },
@@ -840,8 +933,9 @@
   "model": "ponylib.Genre",
   "pk": 94,
   "fields": {
-    "code": "computers",
-    "value": "Компьютеры: Прочее",
+    "code": "adv_animal",
+    "value_ru": "Природа и Животные",
+    "value_en": "Adv Animal",
     "protect": 1
   }
 },
@@ -849,8 +943,9 @@
   "model": "ponylib.Genre",
   "pk": 95,
   "fields": {
-    "code": "ref_encyc",
-    "value": "Энциклопедии",
+    "code": "religion",
+    "value_ru": "Религия",
+    "value_en": "Religion",
     "protect": 1
   }
 },
@@ -858,8 +953,9 @@
   "model": "ponylib.Genre",
   "pk": 96,
   "fields": {
-    "code": "ref_dict",
-    "value": "Словари",
+    "code": "religion_rel",
+    "value_ru": "Религия",
+    "value_en": "Religion Rel",
     "protect": 1
   }
 },
@@ -867,8 +963,9 @@
   "model": "ponylib.Genre",
   "pk": 97,
   "fields": {
-    "code": "ref_ref",
-    "value": "Справочники",
+    "code": "religion_esoterics",
+    "value_ru": "Эзотерика",
+    "value_en": "Religion Esoterics",
     "protect": 1
   }
 },
@@ -876,8 +973,9 @@
   "model": "ponylib.Genre",
   "pk": 98,
   "fields": {
-    "code": "ref_guide",
-    "value": "Руководства",
+    "code": "religion_self",
+    "value_ru": "Самосовершенствование",
+    "value_en": "Religion Self",
     "protect": 1
   }
 },
@@ -885,8 +983,9 @@
   "model": "ponylib.Genre",
   "pk": 99,
   "fields": {
-    "code": "reference",
-    "value": "Справочная Литература: Прочее",
+    "code": "humor_anecdote",
+    "value_ru": "Анекдоты",
+    "value_en": "Humor Anecdote",
     "protect": 1
   }
 },
@@ -894,8 +993,9 @@
   "model": "ponylib.Genre",
   "pk": 100,
   "fields": {
-    "code": "nonf_biography",
-    "value": "Биографии и Мемуары",
+    "code": "humor_verse",
+    "value_ru": "Юмористические Стихи",
+    "value_en": "Humor Verse",
     "protect": 1
   }
 },
@@ -903,8 +1003,9 @@
   "model": "ponylib.Genre",
   "pk": 101,
   "fields": {
-    "code": "nonf_publicism",
-    "value": "Публицистика",
+    "code": "humor",
+    "value_ru": "Юмор: Прочее",
+    "value_en": "Humor",
     "protect": 1
   }
 },
@@ -912,8 +1013,9 @@
   "model": "ponylib.Genre",
   "pk": 102,
   "fields": {
-    "code": "nonf_criticism",
-    "value": "Критика",
+    "code": "home_cooking",
+    "value_ru": "Кулинария",
+    "value_en": "Home Cooking",
     "protect": 1
   }
 },
@@ -921,8 +1023,9 @@
   "model": "ponylib.Genre",
   "pk": 103,
   "fields": {
-    "code": "nonfiction",
-    "value": "Документальное: Прочее",
+    "code": "home_pets",
+    "value_ru": "Домашние Животные",
+    "value_en": "Home Pets",
     "protect": 1
   }
 },
@@ -930,8 +1033,9 @@
   "model": "ponylib.Genre",
   "pk": 104,
   "fields": {
-    "code": "design",
-    "value": "Искусство, Дизайн",
+    "code": "home_crafts",
+    "value_ru": "Хобби, Ремесла",
+    "value_en": "Home Crafts",
     "protect": 1
   }
 },
@@ -939,8 +1043,9 @@
   "model": "ponylib.Genre",
   "pk": 105,
   "fields": {
-    "code": "adv_animal",
-    "value": "Природа и Животные",
+    "code": "home_entertain",
+    "value_ru": "Развлечения",
+    "value_en": "Home Entertain",
     "protect": 1
   }
 },
@@ -948,8 +1053,9 @@
   "model": "ponylib.Genre",
   "pk": 106,
   "fields": {
-    "code": "religion",
-    "value": "Религия",
+    "code": "home_health",
+    "value_ru": "Здоровье",
+    "value_en": "Home Health",
     "protect": 1
   }
 },
@@ -957,8 +1063,9 @@
   "model": "ponylib.Genre",
   "pk": 107,
   "fields": {
-    "code": "religion_rel",
-    "value": "Религия",
+    "code": "home_garden",
+    "value_ru": "Сад и Огород",
+    "value_en": "Home Garden",
     "protect": 1
   }
 },
@@ -966,8 +1073,9 @@
   "model": "ponylib.Genre",
   "pk": 108,
   "fields": {
-    "code": "religion_esoterics",
-    "value": "Эзотерика",
+    "code": "home_diy",
+    "value_ru": "Сделай Сам",
+    "value_en": "Home Diy",
     "protect": 1
   }
 },
@@ -975,8 +1083,9 @@
   "model": "ponylib.Genre",
   "pk": 109,
   "fields": {
-    "code": "religion_self",
-    "value": "Самосовершенствование",
+    "code": "home_sport",
+    "value_ru": "Спорт",
+    "value_en": "Home Sport",
     "protect": 1
   }
 },
@@ -984,8 +1093,9 @@
   "model": "ponylib.Genre",
   "pk": 110,
   "fields": {
-    "code": "religion",
-    "value": "Религия и духовность: Прочее",
+    "code": "home_sex",
+    "value_ru": "Эротика, Секс",
+    "value_en": "Home Sex",
     "protect": 1
   }
 },
@@ -993,134 +1103,9 @@
   "model": "ponylib.Genre",
   "pk": 111,
   "fields": {
-    "code": "sci_religion",
-    "value": "Религиоведение",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 112,
-  "fields": {
-    "code": "humor_anecdote",
-    "value": "Анекдоты",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 113,
-  "fields": {
-    "code": "humor_prose",
-    "value": "Юмористическая Проза",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 114,
-  "fields": {
-    "code": "humor_verse",
-    "value": "Юмористические Стихи",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 115,
-  "fields": {
-    "code": "humor",
-    "value": "Юмор: Прочее",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 116,
-  "fields": {
-    "code": "home_cooking",
-    "value": "Кулинария",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 117,
-  "fields": {
-    "code": "home_pets",
-    "value": "Домашние Животные",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 118,
-  "fields": {
-    "code": "home_crafts",
-    "value": "Хобби, Ремесла",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 119,
-  "fields": {
-    "code": "home_entertain",
-    "value": "Развлечения",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 120,
-  "fields": {
-    "code": "home_health",
-    "value": "Здоровье",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 121,
-  "fields": {
-    "code": "home_garden",
-    "value": "Сад и Огород",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 122,
-  "fields": {
-    "code": "home_diy",
-    "value": "Сделай Сам",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 123,
-  "fields": {
-    "code": "home_sport",
-    "value": "Спорт",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 124,
-  "fields": {
-    "code": "home_sex",
-    "value": "Эротика, Секс",
-    "protect": 1
-  }
-},
-{
-  "model": "ponylib.Genre",
-  "pk": 125,
-  "fields": {
     "code": "home",
-    "value": "Дом и Семья: Прочее",
+    "value_ru": "Дом и Семья: Прочее",
+    "value_en": "Home",
     "protect": 1
   }
 }

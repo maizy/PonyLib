@@ -1,13 +1,13 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
         # Adding model 'Series'
         db.create_table('ponylib_series', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -20,8 +20,9 @@ class Migration(SchemaMigration):
         # Adding model 'Genre'
         db.create_table('ponylib_genre', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('code', self.gf('django.db.models.fields.CharField')(max_length=40)),
-            ('value', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('code', self.gf('django.db.models.fields.CharField')(unique=True, max_length=40)),
+            ('value_ru', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('value_en', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
             ('protect', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('ponylib', ['Genre'])
@@ -58,7 +59,7 @@ class Migration(SchemaMigration):
             ('isbn', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('annotation', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('publisher', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('pubyear', self.gf('django.db.models.fields.IntegerField')(blank=True)),
+            ('pubyear', self.gf('django.db.models.fields.IntegerField')(null=True)),
             ('root', self.gf('django.db.models.fields.related.ForeignKey')(related_name='Books', to=orm['ponylib.Root'])),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
@@ -92,7 +93,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
         # Deleting model 'Series'
         db.delete_table('ponylib_series')
 
@@ -141,7 +141,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'isbn': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'publisher': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'pubyear': ('django.db.models.fields.IntegerField', [], {'blank': 'True'}),
+            'pubyear': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'rel_path': ('django.db.models.fields.TextField', [], {}),
             'root': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'Books'", 'to': "orm['ponylib.Root']"}),
             'series': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['ponylib.Series']", 'symmetrical': 'False', 'through': "orm['ponylib.BookSeries']", 'blank': 'True'}),
@@ -168,11 +168,12 @@ class Migration(SchemaMigration):
             'series': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ponylib.Series']"})
         },
         'ponylib.genre': {
-            'Meta': {'object_name': 'Genre', 'db_table': "'ponylib_genre'"},
-            'code': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
+            'Meta': {'object_name': 'Genre'},
+            'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'protect': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'value': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'})
+            'value_en': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'value_ru': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'})
         },
         'ponylib.root': {
             'Meta': {'object_name': 'Root'},
