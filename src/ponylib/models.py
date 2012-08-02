@@ -51,7 +51,10 @@ class AuthorManager(_BaseManager):
 class GenreManager(_BaseManager):
 
     def get_by_code_or_create(self, code):
-        return self._get_or_create('code', code, create_args={'value' : u'Unknown (%s)' % code})
+        return self._get_or_create('code', code, create_args={
+            'value_en' : u'Unknown (%s)' % code,
+            'value_ru' : u'Неизвестно (%s)' % code,
+        })
 
 class SeriesManager(_BaseManager):
 
