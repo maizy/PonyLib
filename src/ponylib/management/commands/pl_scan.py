@@ -46,6 +46,8 @@ class Command(BaseCommand):
         start_time = None
         total_parse_time = 0.0
         total_db_time = 0.0
+        total_db_links_time = 0.0
+
         try:
             for (lib_path, file_path) in iter:
                 total += 1
@@ -68,7 +70,7 @@ class Command(BaseCommand):
                     mi = meta.read_fb2_meta(full_path)
                     total_parse_time += (datetime.datetime.now() - before).total_seconds()
 
-                    before = datetime.datetime.now()
+                    before_db = datetime.datetime.now()
                     #pprint(mi)
 
                     book = Book()
@@ -81,6 +83,8 @@ class Command(BaseCommand):
                             setattr(book, addit_field, mi[addit_field])
 
                     book.save()
+
+                    before_db_links = datetime.datetime.now()
 
                     if 'authors' in mi:
                         for author_fullname in mi['authors']:
@@ -108,7 +112,8 @@ class Command(BaseCommand):
                                 series_link.number = in_series['index']
                             series_link.save()
 
-                    total_db_time += (datetime.datetime.now() - before).total_seconds()
+                    total_db_links_time += (datetime.datetime.now() - before_db_links).total_seconds()
+                    total_db_time += (datetime.datetime.now() - before_db).total_seconds()
 
                     ok += 1
 
@@ -134,10 +139,15 @@ class Command(BaseCommand):
                 stat = (u'total time: %(total_time)0.2f sec\n'
                         u'\tmeta data parsing: %(parse_time)0.0f sec (%(parse_percent)0.0f%%)\n'
                         u'\tdb: %(db_time)0.0f sec (%(db_percent)0.0f%%)\n'
+                        u'\t\tcreate books: %(db_c_books_time)0.0f sec (%(db_c_books_percent)0.0f%%)\n'
+                        u'\t\tcreate books links: %(db_c_links_time)0.0f sec (%(db_c_links_percent)0.0f%%)\n'
                         u'fps: %(fps)0.4f\n') \
                         % {'total_time' : seconds, 'fps': fps,
                            'parse_time' : total_parse_time, 'parse_percent': total_parse_time/seconds*100,
                            'db_time' : total_db_time, 'db_percent': total_db_time/seconds*100,
+                           'db_c_links_time' : total_db_links_time, 'db_c_links_percent': total_db_links_time/seconds*100,
+                           'db_c_books_time' : (total_db_time-total_db_links_time),
+                           'db_c_books_percent': (total_db_time-total_db_links_time)/seconds*100,
                            }
 
         sys.stdout.write((u'files processed: %d\n'
