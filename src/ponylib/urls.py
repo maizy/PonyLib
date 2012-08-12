@@ -20,7 +20,7 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('ponylib.view.search',
     url(r'^search/$', 'index', name='search'),
-    url(r'^search/results/$', 'results'),
+    url(r'^search/results/$', 'results', name='search-results'),
 )
 
 urlpatterns += patterns('',

@@ -1,5 +1,10 @@
 {% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% endblock %}
+
 
 {% block content %}
-Search form
+    <h2>{% trans "Quick search" %}</h2>
+    {% include 'parts/search/simple_form.html' %}
 {% endblock %}

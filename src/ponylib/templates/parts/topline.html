@@ -15,9 +15,12 @@
                 <li><a href="#" title="TODO" class="todo">{% trans "Browse" %}</a></li>
                 <li><a href="{% url 'about' %}">{% trans "About" %}</a></li>
             </ul>
-            <form class="navbar-search pull-left" action="{% url 'search' %}">
-                <input type="text" class="search-query span2" placeholder="{% trans "Quick search" %}">
+            {% if not disable_quick_search %}
+            <form class="navbar-search pull-left" action="{% url 'search-results' %}" method="get">
+                <input type="text" name="query" class="search-query span2" placeholder="{% trans "Quick search" %}">
+                <input type="hidden" name="type" value="simple">
             </form>
+            {% endif %}
             <ul class="nav pull-right">
             <li class="divider-vertical"></li>
             <li class="dropdown">

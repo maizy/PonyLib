@@ -7,15 +7,20 @@ __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 __version__         = "0.1"
 __doc__             = ""
 
+from upprint import pformat
+
 from annoying.decorators import render_to
+from django.utils.translation import gettext as _
+from django.conf import settings
 
 @render_to('search/search_form.html')
 def index(request):
 
     c = {
         'page': {
-            'title': 'Search',
-        }
+            'title': _('Search'),
+        },
+        'disable_quick_search' : True,
     }
 
     return c
@@ -25,8 +30,20 @@ def results(request):
 
     c = {
         'page': {
-            'title': 'Search Results',
+            'title': _('Search Results'),
         }
     }
+
+    #use post, than get
+    request_qdict = request.REQUEST
+
+    type = request_qdict.get('type', u'simple')
+    if type not in ['simple', 'adv']:
+        type = 'simple'
+
+    c['type'] = type
+
+    if settings.DEBUG:
+        c['debug'] = {'params' : pformat(request_qdict)}
 
     return c

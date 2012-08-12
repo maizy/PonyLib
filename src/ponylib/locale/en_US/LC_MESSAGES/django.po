@@ -1,7 +1,8 @@
-# Russian translation
-# Copyright (C) 2012 dev.maizy.ru
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Nikita Kovaliov <nikita@maizy.ru>
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 #, fuzzy
 msgid ""
 msgstr ""
@@ -9,24 +10,24 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-12 17:46+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Nikita Kovaliov <nikita@maizy.ru>\n"
-"Language-Team: Nikita Kovaliov <nikita@maizy.ru>\n"
-"Language: Russian\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: templates/about.html:10
 msgid "Project homepage"
-msgstr "Домашняя страница проекта"
+msgstr ""
 
 #: templates/about.html:16
 msgid "Author"
-msgstr "Автор"
+msgstr ""
 
 #: templates/about.html:19
 msgid "License"
-msgstr "Лицензия"
+msgstr ""
 
 #: templates/about.html:23
 msgid "Powered by"
@@ -38,37 +39,36 @@ msgstr ""
 
 #: templates/parts/topline.html:14 view/search.py:21
 msgid "Search"
-msgstr "Поиск"
+msgstr ""
 
 #: templates/parts/topline.html:15
 msgid "Browse"
-msgstr "Обзор"
+msgstr ""
 
 #: templates/parts/topline.html:16
 msgid "About"
-msgstr "О приложении"
+msgstr ""
 
 #: templates/parts/topline.html:20 templates/search/search_form.html:8
 msgid "Quick search"
-msgstr "Быстрый поиск"
+msgstr ""
 
 #: templates/parts/topline.html:28
 msgid "Language"
-msgstr "Язык"
+msgstr ""
 
 #: templates/parts/topline.html:31
 msgid "Russian"
-msgstr "Русский"
+msgstr ""
 
 #: templates/parts/topline.html:32
 msgid "English"
-msgstr "Английский"
+msgstr ""
 
 #: templates/parts/search/simple_form.html:6
 msgid "Search_OK_Label"
-msgstr "Искать"
+msgstr "Search"
 
 #: view/search.py:33
-#, fuzzy
 msgid "Search Results"
-msgstr "Результаты поиска"
+msgstr ""
