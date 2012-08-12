@@ -20,3 +20,7 @@ class MyPrettyPrinter(PrettyPrinter):
 def pprint(obj, stream=None, indent=1, width=80, depth=None):
     printer = MyPrettyPrinter(stream=stream, indent=indent, width=width, depth=depth)
     printer.pprint(obj)
+
+def pformat(object, indent=1, width=80, depth=None):
+    """Format a Python object into a pretty-printed representation."""
+    return MyPrettyPrinter(indent=indent, width=width, depth=depth).pformat(object)
