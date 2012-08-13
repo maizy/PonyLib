@@ -17,7 +17,7 @@ import platform
 
 PROJECT_ROOT = path.realpath(path.join(path.dirname(__file__), '..', '..'))
 
-WEB_ROOT = path.join(PROJECT_ROOT, 'src', 'work')
+WEB_ROOT = path.join(PROJECT_ROOT, 'src', 'ponylib')
 
 VAR_ROOT = path.join(PROJECT_ROOT, 'var')
 
