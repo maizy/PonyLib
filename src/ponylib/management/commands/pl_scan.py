@@ -127,9 +127,21 @@ class Command(BaseCommand):
                     self.stderr.write('Error in %s, skipping\n' % full_path)
                     self.stderr.write('-'*60+'\n')
                     self.stderr.write('Meta info: ')
-                    pprint(mi, self.stderr)
+
+                    # ignore pprint exceptions here
+                    try:
+                        pprint(mi, self.stderr)
+                    except Exception:
+                        self.stderr.write('!Unable to print meta info')
+
                     self.stderr.write('-'*60+'\n')
-                    traceback.print_exc(file=self.stderr)
+
+                    # ignore traceback exception here
+                    try:
+                        traceback.print_exc(file=self.stderr)
+                    except Exception:
+                        self.stderr.write('!Unable to print traceback info')
+
                     self.stderr.write('-'*60+'\n')
 
         except KeyboardInterrupt:
