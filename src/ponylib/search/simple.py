@@ -10,7 +10,7 @@ __doc__             = "Simple BookFinder for Fast search form"
 from django.db.models import Q
 from django.utils.text import force_unicode
 
-from ponylib.search.errors import NoQuery, TooShortQuery
+from ponylib.search.errors import SearchError, NoQuery, TooShortQuery
 from ponylib.models import Book
 
 class BookFinder(object):
@@ -19,8 +19,16 @@ class BookFinder(object):
     _query = None
     checked = False
 
-    def __init__(self, **params):
 
+
+    def __init__(self, **params):
+        """
+        Init finder.
+
+        One instance should use only once.
+
+        @keyword query: user query
+        """
         if 'query' in params:
             self._query = force_unicode(params['query'])
             del params['query']
@@ -28,7 +36,20 @@ class BookFinder(object):
         self._params = params
 
 
-    def check_query(self):
+
+    def check_query(self, raise_=True):
+
+        if raise_:
+            self._check_query()
+        else:
+            try:
+                return self._check_query()
+            except SearchError:
+                return False
+
+
+    def _check_query(self):
+
         if self.checked:
             return True
 
@@ -50,7 +71,7 @@ class BookFinder(object):
         return self.checked
 
 
-    def get_as_dict(self, limit = 30, offset = 0):
+    def get_as_dict(self, limit=30, offset=0):
 
         self.check_query()
         qs = self.get_as_queryset()
@@ -58,6 +79,10 @@ class BookFinder(object):
 
 
     def get_as_queryset(self):
+        """
+        @return: Query as Django ORM QuerySet
+        @rtype: django.db.models.query.QuerySet
+        """
         self.check_query()
 
         query = self.query
@@ -67,6 +92,7 @@ class BookFinder(object):
 
         qs = Book.objects.filter(cond)
         qs.order_by('title')
+
         return qs
 
 

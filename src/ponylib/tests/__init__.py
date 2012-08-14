@@ -15,7 +15,7 @@ import search
 def suite():
     """
     Choose test suite depends on test runner (with db or not)
-    @return:unittest.TestSuite
+    @rtype:unittest.TestSuite
     """
     if settings.NO_DB_TESTS:
         return no_db_suite()
@@ -26,7 +26,7 @@ def suite():
 def db_suite():
     """
     Fully-functional tests, with db access, fixtures etc.
-    @return:unittest.TestSuite
+    @rtype:unittest.TestSuite
     """
 
     search_tests_suite = unittest.TestLoader().loadTestsFromModule(search)
@@ -42,7 +42,7 @@ def no_db_suite():
     Check object APIs, std errors etc
 
     Faster than db_suite.
-    @return:unittest.TestSuite
+    @rtype:unittest.TestSuite
     """
 
     search_tests_suite = unittest.TestLoader().loadTestsFromTestCase(search.BookFinderApiTestCase)
