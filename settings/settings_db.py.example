@@ -11,6 +11,11 @@ def get(settings):
             'PORT': '',                      # Set to empty string for default,
             'OPTIONS' : {
                 'init_command': 'SET storage_engine=INNODB, SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED'
-            }
+            },
+
+            # for testing
+            #'TEST_COLLATION': 'utf8_general_ci',
+            #'TEST_CHARSET': 'utf8',
+            #'TEST_NAME' : 'ponylib_test'
         }
     }

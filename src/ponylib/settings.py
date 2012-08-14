@@ -113,6 +113,10 @@ ROOT_URLCONF = 'ponylib.urls'
 
 TEMPLATE_DIRS = ()
 
+SKIP_SOUTH_TESTS = True
+
+NO_DB_TESTS = False
+
 INSTALLED_APPS = (
     'ponylib',
     #'django.contrib.auth',
