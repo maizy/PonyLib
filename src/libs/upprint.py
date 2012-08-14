@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 
-__author__          = u'Леонид Швечиков'
+__author__ = u'Леонид Швечиков, Nikita Kovaliov'
 # http://softwaremaniacs.org/forum/python/25696/
 
 import sys
@@ -14,7 +14,8 @@ class MyPrettyPrinter(PrettyPrinter):
             if repr[0] in ('"', "'"):
                 repr = repr.decode('string_escape')
             elif repr[0:2] in ("u'", 'u"'):
-                repr = repr.decode('unicode_escape').encode(sys.stdout.encoding)
+                enc = sys.stdout.encoding and sys.stdout.encoding or 'UTF-8'
+                repr = repr.decode('unicode_escape').encode(enc)
         return repr, readable, recursive
 
 def pprint(obj, stream=None, indent=1, width=80, depth=None):
