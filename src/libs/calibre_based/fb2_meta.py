@@ -80,7 +80,8 @@ def xml_to_unicode(raw, verbose=False, strip_encoding_pats=False,
                 encoding = match.group(1)
                 break
         if encoding is None:
-            encoding = force_encoding(raw, verbose, assume_utf8=assume_utf8)
+            encoding = 'utf-8'
+
         try:
             if encoding.lower().strip() == 'macintosh':
                 encoding = 'mac-roman'
@@ -101,6 +102,8 @@ def xml_to_unicode(raw, verbose=False, strip_encoding_pats=False,
     #    raw = substitute_entites(raw)
 
     return raw, encoding
+
+
 # -------------------------------------------
 
 NAMESPACES = {
