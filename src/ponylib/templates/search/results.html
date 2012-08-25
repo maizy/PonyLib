@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-Results here, type {{ type }}, params {{ debug.params }}
+    <div class="debug">
+        Type <code>{{ type }}</code>.<br/>
+        Params:
+        <pre>{{ debug.request_params }}</pre>
+
+        Query:
+        <pre>{{ debug.qs_query }}</pre>
+
+        Results:
+        <pre>{{ debug.results_pformat }}</pre>
+
+    </div>
+
+
 {% endblock %}

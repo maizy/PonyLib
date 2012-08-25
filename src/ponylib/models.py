@@ -7,6 +7,8 @@ __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 __version__         = "0.1"
 __doc__             = ""
 
+import os
+path = os.path
 
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -129,6 +131,12 @@ class Book(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def get_basename(self):
+        return path.basename(self.rel_path)
+
+    def __unicode__(self):
+        return u"id=%d, title='%s', file='%s'" % (self.id, self.title, self.get_basename())
 
 
 # -------------------------------------------

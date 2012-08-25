@@ -1,11 +1,14 @@
 # _*_ coding: utf-8 _*_
+from __future__ import unicode_literals
 
 __license__         = "GPL3"
 __copyright__       = "Copyright 2012 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
 __version__         = "0.1"
-__doc__             = "Simple BookFinder for Fast search form"
+__doc__             = "Simple SimpleBookFinder for Fast search form"
+
+import re
 
 from django.db.models import Q
 from django.utils.text import force_unicode
@@ -13,12 +16,17 @@ from django.utils.text import force_unicode
 from ponylib.search.errors import SearchError, NoQuery, TooShortQuery
 from ponylib.models import Book
 
-class BookFinder(object):
+_SPLIT_BY_WORDS_RE = re.compile(r'\s+', re.MULTILINE | re.UNICODE)
+
+MIN_WORD_LEN = 3
+
+class SimpleBookFinder(object):
 
     _params = {}
     _query = None
-    checked = False
+    _words = None
 
+    checked = False
 
 
     def __init__(self, **params):
@@ -55,44 +63,77 @@ class BookFinder(object):
 
         query = self.query
 
-        if query is None:
+        if query is None or len(query) == 0:
             e = NoQuery()
             e.finder = self
             raise e
 
-        if len(query) < 3:
+        words = self.get_query_words()
+        if len(words) == 0:
             e = TooShortQuery()
             e.finder = self
-            e.expected = 3
-            e.actual = len(query)
+            e.min_len = MIN_WORD_LEN
             raise e
 
         self.checked = True
         return self.checked
 
 
-    def get_as_dict(self, limit=30, offset=0):
+#    def get_as_dict(self, limit=30, offset=0):
+#        """
+#
+#
+#
+#        @param limit:
+#        @param offset:
+#        @return: dict
+#        """
+#
+#        self.check_query()
+#        qs = self.get_as_queryset()[offset:limit]
+#
+#        vals = qs.values()
+#
+#        return qs and dict(qs[offset:limit]) or None
 
-        self.check_query()
-        qs = self.get_as_queryset()
-        return qs and dict(qs[offset:limit]) or None
+    def get_query_words(self):
+
+        if self._words is not None:
+            return self._words
+
+        query = self.query
+        words = re.split(_SPLIT_BY_WORDS_RE, query)
+        words = [x for x in words if len(x) >= MIN_WORD_LEN]
+        self._words = words
+
+        return words
 
 
     def get_as_queryset(self):
+
         """
         @return: Query as Django ORM QuerySet
         @rtype: django.db.models.query.QuerySet
         """
         self.check_query()
 
-        query = self.query
+        words = self.get_query_words()
 
-        cond = Q(title__icontains = query)
-        cond = cond | Q(authors__fullname__icontains = query)
+        #TODO: add django-like queries with escaping before
+        #TODO: use annotation = like '%word1%word2%'
+        #TODO: use Concat(`author`, `title`) LIKE '%word1%word2%'
+        and_conds = []
+        for word in words:
+            cond = Q(title__icontains = word)
+            cond = cond | Q(annotation__icontains = word)
+            cond = cond | Q(authors__fullname__icontains = word)
+            and_conds.append(cond)
 
-        qs = Book.objects.filter(cond)
-        qs.order_by('title')
+        qs = Book.objects
+        for cond in and_conds:
+            qs = qs.filter(cond)
 
+        qs.order_by('title', 'id')
         return qs
 
 

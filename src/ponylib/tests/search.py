@@ -1,5 +1,6 @@
 # _*_ coding: utf-8 _*_
 
+from __future__ import unicode_literals
 
 __license__ = ''
 __copyright__ = 'Copyright 2011 maizy.ru'
@@ -11,7 +12,7 @@ __doc__ = ''
 from django.utils import unittest
 from django.test import TestCase
 
-from ponylib.search.simple import BookFinder
+from ponylib.search.simple import SimpleBookFinder, MIN_WORD_LEN
 import ponylib.search.errors as search_errors
 
 #class BookFinderDbTestCase(TestCase):
@@ -41,13 +42,13 @@ class BookFinderApiTestCase(unittest.TestCase):
 
     def test_set_query(self):
 
-        test_query_str = 'test query'
-        test_query_unicode = u'test query'
+        test_query_str = b'test query'
+        test_query_unicode = 'test query'
 
-        finder = BookFinder(query=test_query_unicode)
+        finder = SimpleBookFinder(query=test_query_unicode)
         self.assertEqual(finder.query, test_query_unicode)
 
-        finder = BookFinder(query=test_query_str)
+        finder = SimpleBookFinder(query=test_query_str)
         self.assertIsInstance(finder.query, unicode, 'Str should convert to unicode')
 
 
@@ -56,10 +57,7 @@ class BookFinderApiTestCase(unittest.TestCase):
 
         short_q, exception_ = self.perform_short_q()
 
-        self.assertIsNotNone(exception_.expected, 'TooShortQuery.expected')
-        self.assertIsNotNone(exception_.actual, 'TooShortQuery.actual')
-        self.assertGreaterEqual(exception_.expected, exception_.actual, 'expected >= actual')
-        self.assertEqual(exception_.actual, 2)
+        self.assertIsNotNone(exception_.min_len, MIN_WORD_LEN)
 
 
     def test_check_query_not_raised(self):
@@ -74,16 +72,35 @@ class BookFinderApiTestCase(unittest.TestCase):
 
     def test_empty_query(self):
 
-        empty_q = BookFinder()
-
+        empty_q = SimpleBookFinder()
         with self.assertRaises(search_errors.NoQuery):
             empty_q.check_query()
 
+        empty_q2 = SimpleBookFinder(query='')
+        with self.assertRaises(search_errors.NoQuery):
+            empty_q2.check_query()
+
+
+    def test_query_split(self):
+        fixtures = [
+            ('some', ['some'], None),
+            ('apple orange', ['apple', 'orange'], 'words should be splited'),
+            ('абвг\nabcd', ['абвг', 'abcd'], 'new line should be ignored and process as space'),
+            ('zx\nabcd', ['abcd'], 'short words should be ignored'),
+        ]
+
+        for query, expected, mes in fixtures:
+            finder = SimpleBookFinder(query=query)
+            actual = finder.get_query_words()
+            self.assertEqual(expected, actual, mes)
+
+    # -------------------------------------------
 
     def perform_short_q(self):
 
-        short_q = BookFinder(query=u'42')
+        short_q = SimpleBookFinder(query='42')
         with self.assertRaises(search_errors.TooShortQuery) as e:
             short_q.check_query()
         exception_ = e.exception
         return short_q, exception_
+
