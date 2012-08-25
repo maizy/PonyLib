@@ -185,8 +185,7 @@ def _parse_authors(root):
             author = _parse_author(au)
             if author:
                 authors.append(author)
-        if author:
-            break
+                break
 
     # if no author so far
     if not authors:
