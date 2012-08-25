@@ -71,12 +71,15 @@ class Command(BaseCommand):
                     total_parse_time += (datetime.datetime.now() - before).total_seconds()
 
                     before_db = datetime.datetime.now()
-                    #pprint(mi)
+                    pprint(mi)
 
                     book = Book()
                     book.root = root
                     book.rel_path=file_path
-                    book.title=mi['title']
+                    book.title=mi.get('title')
+                    if not book.title:
+                        #name without ext
+                        book.title = os.path.splitext(os.path.basename(file_path))[0]
 
                     for addit_field in ('title', 'isbn', 'publisher', 'annotation', 'pubyear'):
                         if addit_field in mi and mi[addit_field] is not None:
