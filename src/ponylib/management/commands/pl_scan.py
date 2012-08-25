@@ -71,7 +71,7 @@ class Command(BaseCommand):
                     total_parse_time += (datetime.datetime.now() - before).total_seconds()
 
                     before_db = datetime.datetime.now()
-                    pprint(mi)
+                    #pprint(mi)
 
                     book = Book()
                     book.root = root
