@@ -116,7 +116,12 @@ tostring = partial(etree.tostring, method='text', encoding=unicode)
 def get_metadata(stream):
     ''' Return fb2 metadata as a L{MetaInformation} object '''
 
+    mi = type('lamdbaobject', (object,), {})()
+
     root = _get_fbroot(stream)
+    if root is None:
+        return mi
+
     book_title = _parse_book_title(root)
     authors = _parse_authors(root)
 
@@ -128,17 +133,8 @@ def get_metadata(stream):
 #            os.path.basename(getattr(stream, 'name',
 #                _('Unknown'))))[0])
         book_title = force_unicode(getattr(stream, 'name'))
-
-    mi = type('lamdbaobject', (object,), {})()
-
     mi.book_title = book_title
     mi.authors = authors
-
-    #TODO add from calibre
-#    try:
-#        _parse_cover(root, mi)
-#    except:
-#        pass
 
     try:
         _parse_comments(root, mi)
@@ -229,15 +225,6 @@ def _parse_book_title(root):
     book_title = XPath('normalize-space(%s|%s|%s)' % (xp_ti, xp_pi, xp_si))(root)
 
     return book_title
-
-def _parse_cover(root, mi):
-    # pickup from <title-info>, if not exists it fallbacks to <src-title-info>
-    imgid = XPath('substring-after(string(//fb2:coverpage/fb2:image/@xlink:href), "#")')(root)
-    if imgid:
-        try:
-            _parse_cover_data(root, imgid, mi)
-        except:
-            pass
 
 #TODO add from calibre
 #def _parse_cover_data(root, imgid, mi):
