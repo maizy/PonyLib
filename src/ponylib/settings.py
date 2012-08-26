@@ -11,6 +11,7 @@ __doc__             = ""
 import sys
 import os.path as path
 import platform
+import importlib
 
 
 # Ponylib settings
@@ -103,10 +104,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-
-    #'django.middleware.csrf.CsrfViewMiddleware',
-    #'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 ROOT_URLCONF = 'ponylib.urls'
@@ -119,15 +116,10 @@ NO_DB_TESTS = False
 
 INSTALLED_APPS = (
     'ponylib',
-    #'django.contrib.auth',
-    #'django.contrib.contenttypes',
     'django.contrib.sessions',
-    #'django.contrib.sites',
-    #'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'django.contrib.admin',
     'django_like',
-    'south'
+    'south',
 )
 
 
@@ -137,32 +129,31 @@ _additional = [
     #TIME_ZONE
     {
         'key': 'TIME_ZONE',
-        'module': 'settings_time_zone',
-        'default': None
+        'module': 'time_zone',
+        'default': 'Europe/Moscow'
     },
 
     #LANGUAGE_CODE
     {
         'key': 'LANGUAGE_CODE',
-        'module': 'settings_lang',
+        'module': 'lang',
         'default': 'en-US',
     },
 
     #DB
     {
         'key': 'DATABASES',
-        'module': 'settings_db',
+        'module': 'db',
         'default': {
             'default': {
-                'ENGINE': 'django.db.backends.mysql', # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+                # 'postgresql_psycopg2', 'mysql', 'sqlite3' supported
+                # 'postgresql_psycopg2' is recomended
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
                 'NAME': 'ponylib',
                 'USER': 'ponylib',
                 'PASSWORD': '',
                 'HOST': '',
                 'PORT': '',
-                'OPTIONS' : {
-                    'init_command': 'SET storage_engine=INNODB,  SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED'
-                }
             }
         }
     },
@@ -170,7 +161,7 @@ _additional = [
     #Loggind
     {
         'key': 'LOGGING',
-        'module': 'settings_logging',
+        'module': 'logging',
         'default': {
             'version': 1,
             'disable_existing_loggers': False,
@@ -198,7 +189,7 @@ for spec in _additional:
 
     res = None
     try:
-       module = __import__(spec['module'], globals(), locals(), [], -1)
+       module = importlib.import_module(spec['module'])
        if callable(module.get):
            res = module.get(globals())
        del module

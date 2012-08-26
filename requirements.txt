@@ -7,8 +7,6 @@ flup
 # Djongo battaries
 django-annoying==0.7.6
 django-like=0.0.3
-# mysql client
-MySQL-python==1.2.3
 # fb2 parser
 lxml==2.3.4
 # venv
