@@ -1,18 +1,43 @@
 {% extends "base.html" %}
 
+{% block head_css %}
+    {# TMP for debug  #}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/prettify.css?{{ STATIC_KEY }}" />
+{% endblock %}
+
+{% block head_scripts %}
+    {# TMP for debug  #}
+    <script type="text/javascript" src="{{ STATIC_URL }}scripts/min/prettify.js?{{ STATIC_KEY }}"></script>
+    <script type="text/javascript">
+    jQuery(window).on('load', prettyPrint);
+    </script>
+{% endblock %}
+
 {% block content %}
     <div class="debug">
         Type <code>{{ type }}</code>.<br/>
-        Params:
-        <pre>{{ debug.request_params }}</pre>
+        Request params:
+        <pre class="prettyprint linenums languague-python">{{ debug.request_params }}</pre>
 
         Query:
-        <pre>{{ debug.qs_query }}</pre>
-
-        Results:
-        <pre>{{ debug.results_pformat }}</pre>
-
+        <pre class="prettyprint linenums languague-sql">{{ debug.qs_query }}</pre>
     </div>
 
+    <div>
+    {% for book in results %}
+        <div class="book">
+            <h3>{{ book.title }}</h3>
+            <ul>
+                <li>Authors: {{ book.authors.all }}</li>
+                <li>Genres: {{ book.genres.all }}</li>
+                <li>Annotation: {{ book.annotation }}</li>
+            </ul>
+
+        </div>
+    {% empty %}
+        <p class="no_results">No results</div>
+    {% endfor %}
+
+    </div>
 
 {% endblock %}

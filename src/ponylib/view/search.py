@@ -53,16 +53,15 @@ def results(request):
     qs = None
     if type == 'simple':
         finder = SimpleBookFinder(query=request_qdict['query'])
-        qs = finder.get_as_queryset()
+        qs = finder.get_as_queryset(limit=limit, offset=offset)
 
     #format results
     if qs is not None:
-        c['total'] = len(qs) #how fast this in django?
-        c['results'] = qs[offset:limit]
+        #c['total'] = qs.count()
+        c['results'] = qs
 
         if settings.DEBUG:
-            c['debug']['results_pformat'] = pformat(c['results'])
-            c['debug']['qs_query'] = unicode(qs.query)
+            c['debug']['qs_query'] = qs.query.sql
 
     if settings.DEBUG:
         c['debug']['request_params'] = pformat(request_qdict)

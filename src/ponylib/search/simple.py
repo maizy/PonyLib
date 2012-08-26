@@ -10,16 +10,19 @@ __doc__             = "Simple SimpleBookFinder for Fast search form"
 
 import re
 
+from django.db import connection
 from django.db.models import Q
 from django.utils.text import force_unicode
 
-from ponylib.search.errors import SearchError, NoQuery, TooShortQuery
-from ponylib.models import Book
-from ponylib.search import escape_for_like
+from ponylib.search.errors import SearchError, NoQuery, TooShortQuery, DbNotSupported
+from ponylib.models import Book, Author, Series, \
+                           BookAuthor, BookSeries
+from ponylib.search import escape_for_like, is_sqlite, is_supported_db
+
 
 _SPLIT_BY_WORDS_RE = re.compile(r'\s+', re.MULTILINE | re.UNICODE)
-
 MIN_WORD_LEN = 3
+qn = connection.ops.quote_name
 
 class SimpleBookFinder(object):
 
@@ -63,6 +66,14 @@ class SimpleBookFinder(object):
             return True
 
         query = self.query
+
+        if not is_supported_db():
+            raise DbNotSupported
+
+        # FIXME tmp
+        if is_sqlite():
+            raise DbNotSupported, 'SQLite not supported yet, will be in future releases'
+
 
         if query is None or len(query) == 0:
             e = NoQuery()
@@ -110,7 +121,7 @@ class SimpleBookFinder(object):
         return words
 
 
-    def get_as_queryset(self):
+    def get_as_queryset(self, limit = None, offset = None):
 
         """
         @return: Query as Django ORM QuerySet
@@ -120,25 +131,111 @@ class SimpleBookFinder(object):
 
         words = self.get_query_words()
 
-        words_like = '%' + '%'.join([escape_for_like(x) for x in words]) + '%'
+        words_like = '%'.join([escape_for_like(x) for x in words])
+        words_like_inside = '%' + words_like + '%'
 
-        #TODO: add django-like queries with escaping before
-        #TODO: use annotation = like '%word1%word2%'
+#        qs = Book.objects
+
+        #1. match conditions
         #TODO: use Concat(`author`, `title`) LIKE '%word1%word2%'
-        and_conds = []
-        for word in words:
-            cond = Q(title__ilike = words_like)
-            cond = cond | Q(annotation__ilike = words_like)
-            cond = cond | Q(authors__fullname__ilike = words_like)
-            and_conds.append(cond)
+        match_conds = []
 
-        qs = Book.objects
-        for cond in and_conds:
-            qs = qs.filter(cond)
+        #XXX: django-like use UPPER(a) = UPPER(b) instead of ILIKE
+        #     that may be optimized, but it have a different ways on a different RDBMS
+#        cond = Q(title__ilike = words_like_inside)
+#        cond = cond | Q(annotation__ilike = words_like_inside)
+#        cond = cond | Q(authors__fullname__ilike = words_like_inside)
+#        cond = cond | Q(series__name__ilike = words_like_inside)
+#        match_conds.append(cond)
+#
+#        for cond in match_conds:
+#            qs = qs.filter(cond)
 
-        qs.order_by('title', 'id')
-        return qs
+        #2. relevance conditions
+        # For now thouse table ever exists in query
+        # MM: ponylib_book_author, ponylib_book_series, ponylib_series
+        # Relations: ponylib_book, ponylib_author, ponylib_series
+        raw_cases = []
 
+        like_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(like)s'
+        left_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(left)s'
+        right_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(right)s'
+
+        #TODO: CONCAT(book title, ' ', author) same
+        #TODO: CONCAT(book title, ' ', author) starts
+
+        #book title same
+        raw_cases.append(like_tpl % {'table': qn('ponylib_book'), 'field' : qn('title')})
+
+        #book title starts
+        raw_cases.append(left_tpl % {'table': qn('ponylib_book'), 'field' : qn('title')})
+
+        #author name starts
+        raw_cases.append(like_tpl % {'table': qn('ponylib_author'), 'field' : qn('fullname')})
+
+        relation_field = 'CASE'
+        cases_amount = len(raw_cases)
+        for ind, case in enumerate(raw_cases):
+            rel_value = cases_amount - ind + 1
+            relation_field += ' WHEN (%s) THEN %d' % (case, rel_value)
+
+        relation_field += ' ELSE 0 END'
+
+#        qs = qs.extra(
+#            select={
+#                'relation' : relation_field},
+#
+#            select_params=({
+#                   'like' : words_like,
+#                   'inside': words_like_inside,
+#                   'left' : words_like + '%',
+#                   'right' : '%' + words_like,},)
+#        )
+
+#        qs = qs.distinct('id').order_by('id' , 'title')
+
+#        return qs
+
+        # %(param)s - build params
+        # %%(param)s - query params
+        select = 'SELECT %(book_t)s.*  \n' \
+                 'FROM %(book_t_fq)s AS %(book_t)s \n' \
+                 'LEFT OUTER JOIN %(book_author_t_fq)s AS %(book_author_t)s \n' \
+                 '  ON (%(book_t)s.%(id)s = %(book_author_t)s.%(book_id)s) \n' \
+                 'LEFT OUTER JOIN %(author_t_fq)s AS %(author_t)s \n' \
+                 '  ON (%(book_author_t)s.%(author_id)s = %(author_t)s.%(id)s) \n' \
+                 'LEFT OUTER JOIN "ponylib_book_series" ON (%(book_t)s.%(id)s = "ponylib_book_series"."book_id") \n' \
+                 'LEFT OUTER JOIN "ponylib_series" ON ("ponylib_book_series"."series_id" = "ponylib_series".%(id)s) \n' \
+                 'GROUP BY %(book_t)s.%(id)s \n' \
+                 'LIMIT 100 \n' \
+                 'OFFSET 0'
+
+        subs = {
+            'book_t' : 'b',
+            'book_author_t' : 'b_a_link',
+            'author_t' : 'a',
+            'book_series_t' : 'b_s_link',
+            'series_t' : 's',
+
+            'book_t_fq' : Book._meta.db_table,
+            'book_author_t_fq' : BookAuthor._meta.db_table,
+            'author_t_fq' : Author._meta.db_table,
+            'book_series_t_fq' : BookSeries._meta.db_table,
+            'series_t_fq' : Series._meta.db_table,
+
+            'id' : 'id',
+            'title' : 'title',
+            'annotation' : 'annotation',
+            'author_id' : 'author_id',
+            'book_id' : 'book_id',
+            'series_id' : 'series_id',
+        }
+
+        subs = {key:qn(value) for key, value in subs.iteritems()}
+
+        builded_select = select % subs
+
+        return Book.objects.raw(builded_select)
 
     # -------------------------------------------
 
