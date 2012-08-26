@@ -15,6 +15,7 @@ from django.utils.text import force_unicode
 
 from ponylib.search.errors import SearchError, NoQuery, TooShortQuery
 from ponylib.models import Book
+from ponylib.search import escape_for_like
 
 _SPLIT_BY_WORDS_RE = re.compile(r'\s+', re.MULTILINE | re.UNICODE)
 
@@ -119,14 +120,16 @@ class SimpleBookFinder(object):
 
         words = self.get_query_words()
 
+        words_like = '%' + '%'.join([escape_for_like(x) for x in words]) + '%'
+
         #TODO: add django-like queries with escaping before
         #TODO: use annotation = like '%word1%word2%'
         #TODO: use Concat(`author`, `title`) LIKE '%word1%word2%'
         and_conds = []
         for word in words:
-            cond = Q(title__icontains = word)
-            cond = cond | Q(annotation__icontains = word)
-            cond = cond | Q(authors__fullname__icontains = word)
+            cond = Q(title__ilike = words_like)
+            cond = cond | Q(annotation__ilike = words_like)
+            cond = cond | Q(authors__fullname__ilike = words_like)
             and_conds.append(cond)
 
         qs = Book.objects
