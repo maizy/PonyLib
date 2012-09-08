@@ -117,23 +117,6 @@ class SimpleBookFinder(object):
         words_like = '%'.join([escape_for_like(x) for x in words])
         words_like_inside = '%' + words_like + '%'
 
-#        qs = Book.objects
-
-        #1. match conditions
-        #TODO: use Concat(`author`, `title`) LIKE '%word1%word2%'
-        match_conds = []
-
-        #XXX: django-like use UPPER(a) = UPPER(b) instead of ILIKE
-        #     that may be optimized, but it have a different ways on a different RDBMS
-#        cond = Q(title__ilike = words_like_inside)
-#        cond = cond | Q(annotation__ilike = words_like_inside)
-#        cond = cond | Q(authors__fullname__ilike = words_like_inside)
-#        cond = cond | Q(series__name__ilike = words_like_inside)
-#        match_conds.append(cond)
-#
-#        for cond in match_conds:
-#            qs = qs.filter(cond)
-
         #2. relevance conditions
         # For now thouse table ever exists in query
         # MM: ponylib_book_author, ponylib_book_series, ponylib_series
@@ -186,29 +169,41 @@ class SimpleBookFinder(object):
         #1. distinct on book.id
         select_parts.append('SELECT DISTINCT on (%(book_t)s.%(id)s) %(book_t)s.*')
 
-        #2.joins
+        #2.relevation
+
+        #3.joins
         select_parts.append('FROM %(book_t_fq)s AS %(book_t)s')
 
         select_parts.append('LEFT OUTER JOIN %(book_author_t_fq)s AS %(book_author_t)s \n'
-                            'ON (%(book_t)s.%(id)s = %(book_author_t)s.%(book_id)s)')
+                            '  ON (%(book_t)s.%(id)s = %(book_author_t)s.%(book_id)s)')
 
         select_parts.append('LEFT OUTER JOIN %(author_t_fq)s AS %(author_t)s \n'
-                            'ON (%(book_author_t)s.%(author_id)s = %(author_t)s.%(id)s)')
+                            '  ON (%(book_author_t)s.%(author_id)s = %(author_t)s.%(id)s)')
 
-        select_parts.append('LEFT OUTER JOIN "ponylib_book_series" \n'
-                            'ON (%(book_t)s.%(id)s = "ponylib_book_series"."book_id")')
+        select_parts.append('LEFT OUTER JOIN %(book_series_t_fq)s AS %(book_series_t)s \n'
+                            '  ON (%(book_series_t)s.%(book_id)s = %(book_t)s.%(id)s)')
 
-        select_parts.append('LEFT OUTER JOIN "ponylib_series" \n'
-                            'ON ("ponylib_book_series"."series_id" = "ponylib_series".%(id)s)')
+        select_parts.append('LEFT OUTER JOIN %(series_t_fq)s AS %(series_t)s \n'
+                            '  ON (%(book_series_t)s.%(series_id)s = %(series_t)s.%(id)s)')
 
-        #3.match conditions
+        #4.match conditions
+        select_parts.append('WHERE (')
+        select_parts.append('%(book_t)s.%(title)s ILIKE %(words_like_inside)s')
+        select_parts.append('OR %(book_t)s.%(annotation)s ILIKE %(words_like_inside)s')
+        select_parts.append('OR %(author_t)s.%(fullname)s ILIKE %(words_like_inside)s')
+        select_parts.append('OR %(series_t)s.%(name)s ILIKE %(words_like_inside)s')
+        select_parts.append(')')
 
-        #4.relevation conditions
 
         #5. limit, offset
-        select_parts.append('LIMIT 100')
-        select_parts.append('OFFSET 0')
+        if limit is not None:
+            select_parts.append('LIMIT %(limit)s')
 
+        if offset is not None and offset > 0:
+            select_parts.append('OFFSET %(offset)s')
+
+
+        subs = {}
 
         qn_subs = {
             'book_t' : 'b',
@@ -226,18 +221,27 @@ class SimpleBookFinder(object):
             'id' : 'id',
             'title' : 'title',
             'annotation' : 'annotation',
+            'fullname' : 'fullname',
+            'name' : 'name',
             'author_id' : 'author_id',
             'book_id' : 'book_id',
             'series_id' : 'series_id',
         }
+        subs.update({key:qn(value) for key, value in qn_subs.iteritems()})
 
-        qn_subs = {key:qn(value) for key, value in qn_subs.iteritems()}
+        vars_subs = ['words_like', 'words_like_inside', 'limit', 'offset']
+        subs.update({key:'%('+key+')s' for key in vars_subs})
 
         select = ' \n'.join(select_parts)
 
-        builded_select = select % qn_subs
+        builded_select = select % subs
 
-        return Book.objects.raw(builded_select)
+        return Book.objects.raw(builded_select, params={
+            'words_like' : words_like,
+            'words_like_inside' : words_like_inside,
+            'limit' : limit,
+            'offset' : offset,
+        })
 
     # -------------------------------------------
 

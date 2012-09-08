@@ -26,7 +26,7 @@
     <div>
     {% for book in results %}
         <div class="book">
-            <h3>{{ book.title }}</h3>
+            <h3>{{ book.title }}{% if debug %} (id: {{ book.id }}){% endif %}</h3>
             <ul>
                 <li>Authors: {{ book.authors.all }}</li>
                 <li>Genres: {{ book.genres.all }}</li>

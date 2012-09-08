@@ -1,5 +1,5 @@
 # _*_ coding: utf-8 _*_
-
+from __future__ import unicode_literals
 __license__         = "GPLv3"
 __copyright__       = "Copyright 2011 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
@@ -54,8 +54,8 @@ class GenreManager(_BaseManager):
 
     def get_by_code_or_create(self, code):
         return self._get_or_create('code', code, create_args={
-            'value_en' : u'Unknown (%s)' % code,
-            'value_ru' : u'Неизвестно (%s)' % code,
+            'value_en' : 'Unknown (%s)' % code,
+            'value_ru' : 'Неизвестно (%s)' % code,
         })
 
 class SeriesManager(_BaseManager):
@@ -75,6 +75,9 @@ class Series(models.Model):
 
     objects = SeriesManager()
 
+    def __unicode__(self):
+        return self.name
+
 
 class Genre(models.Model):
 
@@ -84,6 +87,9 @@ class Genre(models.Model):
     protect = models.BooleanField(default=False)
 
     objects = GenreManager()
+
+    def __unicode__(self):
+        return self.code
 
 
 class Author(models.Model):
@@ -104,6 +110,9 @@ class Author(models.Model):
 
     objects = AuthorManager()
 
+    def __unicode__(self):
+        return self.fullname
+
 
 class Root(models.Model):
 
@@ -112,6 +121,9 @@ class Root(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     objects = RootManager()
+
+    def __unicode__(self):
+        return self.path
 
 
 class Book(models.Model):
@@ -136,7 +148,7 @@ class Book(models.Model):
         return path.basename(self.rel_path)
 
     def __unicode__(self):
-        return u"id=%d, title='%s', file='%s'" % (self.id, self.title, self.get_basename())
+        return "id=%d, title='%s', file='%s'" % (self.id, self.title, self.get_basename())
 
 
 # -------------------------------------------
