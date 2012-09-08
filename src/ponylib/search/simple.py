@@ -11,7 +11,6 @@ __doc__             = "Simple SimpleBookFinder for Fast search form"
 import re
 
 from django.db import connection
-from django.db.models import Q
 from django.utils.text import force_unicode
 
 from ponylib.search.errors import SearchError, NoQuery, TooShortQuery, DbNotSupported
@@ -20,7 +19,7 @@ from ponylib.models import Book, Author, Series, \
 from ponylib.search import escape_for_like, is_sqlite, is_postgre, is_supported_db
 
 
-_SPLIT_BY_WORDS_RE = re.compile(r'\s+', re.MULTILINE | re.UNICODE)
+_SPLIT_BY_WORDS_RE = re.compile(r'[\s\-\,]+', re.MULTILINE | re.UNICODE)
 MIN_WORD_LEN = 3
 qn = connection.ops.quote_name
 
@@ -98,15 +97,21 @@ class SimpleBookFinder(object):
 
         query = self.query
         words = re.split(_SPLIT_BY_WORDS_RE, query)
-        words = [x for x in words if len(x) >= MIN_WORD_LEN]
-        self._words = words
+        words = [x for x in words if len(x) > 0]
 
-        return words
+        for word in words:
+            if len(word) >= MIN_WORD_LEN:
+                return words
+
+        return []
 
 
     def get_as_queryset(self, limit = None, offset = None):
 
         """
+
+        XXX: bad performance query, should be optimized
+
         @return: Query as Django ORM RawQuerySet
         @rtype: django.db.models.query.RawQuerySet
         """
@@ -115,61 +120,57 @@ class SimpleBookFinder(object):
         words = self.get_query_words()
 
         words_like = '%'.join([escape_for_like(x) for x in words])
-        words_like_inside = '%' + words_like + '%'
-
-        #2. relevance conditions
-        # For now thouse table ever exists in query
-        # MM: ponylib_book_author, ponylib_book_series, ponylib_series
-        # Relations: ponylib_book, ponylib_author, ponylib_series
-        raw_cases = []
-
-#        like_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(like)s'
-#        left_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(left)s'
-#        right_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(right)s'
-#
-#        #TODO: CONCAT(book title, ' ', author) same
-#        #TODO: CONCAT(book title, ' ', author) starts
-#
-#        #book title same
-#        raw_cases.append(like_tpl % {'table': qn('ponylib_book'), 'field' : qn('title')})
-#
-#        #book title starts
-#        raw_cases.append(left_tpl % {'table': qn('ponylib_book'), 'field' : qn('title')})
-#
-#        #author name starts
-#        raw_cases.append(like_tpl % {'table': qn('ponylib_author'), 'field' : qn('fullname')})
-#
-#        relation_field = 'CASE'
-#        cases_amount = len(raw_cases)
-#        for ind, case in enumerate(raw_cases):
-#            rel_value = cases_amount - ind + 1
-#            relation_field += ' WHEN (%s) THEN %d' % (case, rel_value)
-#
-#        relation_field += ' ELSE 0 END'
-
-#        qs = qs.extra(
-#            select={
-#                'relation' : relation_field},
-#
-#            select_params=({
-#                   'like' : words_like,
-#                   'inside': words_like_inside,
-#                   'left' : words_like + '%',
-#                   'right' : '%' + words_like,},)
-#        )
-
-#        qs = qs.distinct('id').order_by('id' , 'title')
-
-#        return qs
+        words_like_contains = '%' + words_like + '%'
+        words_like_ends = '%' + words_like
+        words_like_starts =  words_like + '%'
 
         # %(param)s - build params
         # %%(param)s - query params
         select_parts = []
 
         #1. distinct on book.id
-        select_parts.append('SELECT DISTINCT on (%(book_t)s.%(id)s) %(book_t)s.*')
+        select_parts.append('SELECT DISTINCT on (%(book_t)s.%(id)s)')
+        select_parts.append('%(book_t)s.*, ')
 
-        #2.relevation
+        #2.relevance
+        relevance_cases = []
+
+        #title same
+        relevance_cases.append('%(book_t)s.%(title)s ILIKE %(words_like)s')
+
+        #author + title same
+        relevance_cases.append("( %(author_t)s.%(fullname)s || ' ' || %(book_t)s.%(title)s ) ILIKE %(words_like)s")
+
+        #title + author same
+        relevance_cases.append("( %(book_t)s.%(title)s || ' ' || %(author_t)s.%(fullname)s ) ILIKE %(words_like)s")
+
+        #title contains
+        relevance_cases.append('%(book_t)s.%(title)s ILIKE %(words_like_contains)s')
+
+        #author + title contains
+        relevance_cases.append("( %(author_t)s.%(fullname)s || ' ' || %(book_t)s.%(title)s )"
+                               " ILIKE %(words_like_contains)s")
+
+        #title + author contains
+        relevance_cases.append("( %(book_t)s.%(title)s || ' ' || %(author_t)s.%(fullname)s )"
+                               " ILIKE %(words_like_contains)s")
+
+        #author contains
+        relevance_cases.append('%(author_t)s.%(fullname)s ILIKE %(words_like_contains)s')
+
+        #series contains
+        relevance_cases.append('%(series_t)s.%(name)s ILIKE %(words_like_contains)s')
+
+        select_parts.append('(')
+
+        select_parts.append('CASE')
+        cases_amount = len(relevance_cases)
+        for ind, case in enumerate(relevance_cases):
+            rel_value = cases_amount - ind
+            select_parts.append(' WHEN (%s) THEN %d' % (case, rel_value))
+
+        select_parts.append(' ELSE 0 END')
+        select_parts.append(') AS %(relevance)s')
 
         #3.joins
         select_parts.append('FROM %(book_t_fq)s AS %(book_t)s')
@@ -188,14 +189,31 @@ class SimpleBookFinder(object):
 
         #4.match conditions
         select_parts.append('WHERE (')
-        select_parts.append('%(book_t)s.%(title)s ILIKE %(words_like_inside)s')
-        select_parts.append('OR %(book_t)s.%(annotation)s ILIKE %(words_like_inside)s')
-        select_parts.append('OR %(author_t)s.%(fullname)s ILIKE %(words_like_inside)s')
-        select_parts.append('OR %(series_t)s.%(name)s ILIKE %(words_like_inside)s')
+        #author + title
+        select_parts.append('(%(book_t)s.%(title)s || %(author_t)s.%(fullname)s) ILIKE %(words_like_contains)s')
+        select_parts.append('OR (%(author_t)s.%(fullname)s || %(book_t)s.%(title)s) ILIKE %(words_like_contains)s')
+
+        #series + author
+        select_parts.append('OR (%(series_t)s.%(name)s || %(author_t)s.%(fullname)s) ILIKE %(words_like_contains)s')
+        select_parts.append('OR (%(author_t)s.%(fullname)s || %(series_t)s.%(name)s) ILIKE %(words_like_contains)s')
+
+        #serier + title
+        select_parts.append('OR (%(series_t)s.%(name)s || %(book_t)s.%(title)s) ILIKE %(words_like_contains)s')
+        select_parts.append('OR (%(book_t)s.%(title)s || %(series_t)s.%(name)s) ILIKE %(words_like_contains)s')
+
+        #annotation
+        select_parts.append('OR %(book_t)s.%(annotation)s ILIKE %(words_like_contains)s')
         select_parts.append(')')
 
+        #5. wrap on temp table
+        select_parts.insert(0, 'SELECT %(tmp)s.* FROM(')
+        select_parts.append(') AS %(tmp)s')
 
-        #5. limit, offset
+        #6.order
+        select_parts.append('ORDER BY %(tmp)s.%(relevance)s DESC, %(tmp)s.%(title)s')
+
+
+        #7. limit, offset
         if limit is not None:
             select_parts.append('LIMIT %(limit)s')
 
@@ -211,6 +229,7 @@ class SimpleBookFinder(object):
             'author_t' : 'a',
             'book_series_t' : 'b_s_link',
             'series_t' : 's',
+            'tmp' : 'tmp',
 
             'book_t_fq' : Book._meta.db_table,
             'book_author_t_fq' : BookAuthor._meta.db_table,
@@ -219,17 +238,21 @@ class SimpleBookFinder(object):
             'series_t_fq' : Series._meta.db_table,
 
             'id' : 'id',
-            'title' : 'title',
-            'annotation' : 'annotation',
-            'fullname' : 'fullname',
-            'name' : 'name',
             'author_id' : 'author_id',
             'book_id' : 'book_id',
             'series_id' : 'series_id',
+
+            'title' : 'title',
+            'annotation' : 'annotation',
+            'fullname' : 'fullname',
+            'relevance' : 'relevance',
+            'name' : 'name',
+
         }
         subs.update({key:qn(value) for key, value in qn_subs.iteritems()})
 
-        vars_subs = ['words_like', 'words_like_inside', 'limit', 'offset']
+        vars_subs = ['words_like', 'words_like_contains', 'words_like_starts',
+                     'words_like_ends', 'limit', 'offset']
         subs.update({key:'%('+key+')s' for key in vars_subs})
 
         select = ' \n'.join(select_parts)
@@ -238,7 +261,9 @@ class SimpleBookFinder(object):
 
         return Book.objects.raw(builded_select, params={
             'words_like' : words_like,
-            'words_like_inside' : words_like_inside,
+            'words_like_contains' : words_like_contains,
+            'words_like_starts' : words_like_starts,
+            'words_like_ends' : words_like_ends,
             'limit' : limit,
             'offset' : offset,
         })
