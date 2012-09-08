@@ -17,7 +17,7 @@ from django.utils.text import force_unicode
 from ponylib.search.errors import SearchError, NoQuery, TooShortQuery, DbNotSupported
 from ponylib.models import Book, Author, Series, \
                            BookAuthor, BookSeries
-from ponylib.search import escape_for_like, is_sqlite, is_supported_db
+from ponylib.search import escape_for_like, is_sqlite, is_postgre, is_supported_db
 
 
 _SPLIT_BY_WORDS_RE = re.compile(r'\s+', re.MULTILINE | re.UNICODE)
@@ -71,8 +71,8 @@ class SimpleBookFinder(object):
             raise DbNotSupported
 
         # FIXME tmp
-        if is_sqlite():
-            raise DbNotSupported, 'SQLite not supported yet, will be in future releases'
+        if not is_postgre():
+            raise DbNotSupported, 'SQLite and MySql aren\'t supported yet, will be in future releases'
 
 
         if query is None or len(query) == 0:
@@ -91,23 +91,6 @@ class SimpleBookFinder(object):
         return self.checked
 
 
-#    def get_as_dict(self, limit=30, offset=0):
-#        """
-#
-#
-#
-#        @param limit:
-#        @param offset:
-#        @return: dict
-#        """
-#
-#        self.check_query()
-#        qs = self.get_as_queryset()[offset:limit]
-#
-#        vals = qs.values()
-#
-#        return qs and dict(qs[offset:limit]) or None
-
     def get_query_words(self):
 
         if self._words is not None:
@@ -124,8 +107,8 @@ class SimpleBookFinder(object):
     def get_as_queryset(self, limit = None, offset = None):
 
         """
-        @return: Query as Django ORM QuerySet
-        @rtype: django.db.models.query.QuerySet
+        @return: Query as Django ORM RawQuerySet
+        @rtype: django.db.models.query.RawQuerySet
         """
         self.check_query()
 
@@ -157,29 +140,29 @@ class SimpleBookFinder(object):
         # Relations: ponylib_book, ponylib_author, ponylib_series
         raw_cases = []
 
-        like_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(like)s'
-        left_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(left)s'
-        right_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(right)s'
-
-        #TODO: CONCAT(book title, ' ', author) same
-        #TODO: CONCAT(book title, ' ', author) starts
-
-        #book title same
-        raw_cases.append(like_tpl % {'table': qn('ponylib_book'), 'field' : qn('title')})
-
-        #book title starts
-        raw_cases.append(left_tpl % {'table': qn('ponylib_book'), 'field' : qn('title')})
-
-        #author name starts
-        raw_cases.append(like_tpl % {'table': qn('ponylib_author'), 'field' : qn('fullname')})
-
-        relation_field = 'CASE'
-        cases_amount = len(raw_cases)
-        for ind, case in enumerate(raw_cases):
-            rel_value = cases_amount - ind + 1
-            relation_field += ' WHEN (%s) THEN %d' % (case, rel_value)
-
-        relation_field += ' ELSE 0 END'
+#        like_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(like)s'
+#        left_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(left)s'
+#        right_tpl = 'UPPER(%(table)s.%(field)s) LIKE %%(right)s'
+#
+#        #TODO: CONCAT(book title, ' ', author) same
+#        #TODO: CONCAT(book title, ' ', author) starts
+#
+#        #book title same
+#        raw_cases.append(like_tpl % {'table': qn('ponylib_book'), 'field' : qn('title')})
+#
+#        #book title starts
+#        raw_cases.append(left_tpl % {'table': qn('ponylib_book'), 'field' : qn('title')})
+#
+#        #author name starts
+#        raw_cases.append(like_tpl % {'table': qn('ponylib_author'), 'field' : qn('fullname')})
+#
+#        relation_field = 'CASE'
+#        cases_amount = len(raw_cases)
+#        for ind, case in enumerate(raw_cases):
+#            rel_value = cases_amount - ind + 1
+#            relation_field += ' WHEN (%s) THEN %d' % (case, rel_value)
+#
+#        relation_field += ' ELSE 0 END'
 
 #        qs = qs.extra(
 #            select={
@@ -198,19 +181,36 @@ class SimpleBookFinder(object):
 
         # %(param)s - build params
         # %%(param)s - query params
-        select = 'SELECT %(book_t)s.*  \n' \
-                 'FROM %(book_t_fq)s AS %(book_t)s \n' \
-                 'LEFT OUTER JOIN %(book_author_t_fq)s AS %(book_author_t)s \n' \
-                 '  ON (%(book_t)s.%(id)s = %(book_author_t)s.%(book_id)s) \n' \
-                 'LEFT OUTER JOIN %(author_t_fq)s AS %(author_t)s \n' \
-                 '  ON (%(book_author_t)s.%(author_id)s = %(author_t)s.%(id)s) \n' \
-                 'LEFT OUTER JOIN "ponylib_book_series" ON (%(book_t)s.%(id)s = "ponylib_book_series"."book_id") \n' \
-                 'LEFT OUTER JOIN "ponylib_series" ON ("ponylib_book_series"."series_id" = "ponylib_series".%(id)s) \n' \
-                 'GROUP BY %(book_t)s.%(id)s \n' \
-                 'LIMIT 100 \n' \
-                 'OFFSET 0'
+        select_parts = []
 
-        subs = {
+        #1. distinct on book.id
+        select_parts.append('SELECT DISTINCT on (%(book_t)s.%(id)s) %(book_t)s.*')
+
+        #2.joins
+        select_parts.append('FROM %(book_t_fq)s AS %(book_t)s')
+
+        select_parts.append('LEFT OUTER JOIN %(book_author_t_fq)s AS %(book_author_t)s \n'
+                            'ON (%(book_t)s.%(id)s = %(book_author_t)s.%(book_id)s)')
+
+        select_parts.append('LEFT OUTER JOIN %(author_t_fq)s AS %(author_t)s \n'
+                            'ON (%(book_author_t)s.%(author_id)s = %(author_t)s.%(id)s)')
+
+        select_parts.append('LEFT OUTER JOIN "ponylib_book_series" \n'
+                            'ON (%(book_t)s.%(id)s = "ponylib_book_series"."book_id")')
+
+        select_parts.append('LEFT OUTER JOIN "ponylib_series" \n'
+                            'ON ("ponylib_book_series"."series_id" = "ponylib_series".%(id)s)')
+
+        #3.match conditions
+
+        #4.relevation conditions
+
+        #5. limit, offset
+        select_parts.append('LIMIT 100')
+        select_parts.append('OFFSET 0')
+
+
+        qn_subs = {
             'book_t' : 'b',
             'book_author_t' : 'b_a_link',
             'author_t' : 'a',
@@ -231,9 +231,11 @@ class SimpleBookFinder(object):
             'series_id' : 'series_id',
         }
 
-        subs = {key:qn(value) for key, value in subs.iteritems()}
+        qn_subs = {key:qn(value) for key, value in qn_subs.iteritems()}
 
-        builded_select = select % subs
+        select = ' \n'.join(select_parts)
+
+        builded_select = select % qn_subs
 
         return Book.objects.raw(builded_select)
 
