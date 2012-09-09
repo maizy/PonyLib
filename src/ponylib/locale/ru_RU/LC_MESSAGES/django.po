@@ -69,6 +69,8 @@ msgid "Search_OK_Label"
 msgstr "Искать"
 
 #: view/search.py:33
-#, fuzzy
 msgid "Search Results"
 msgstr "Результаты поиска"
+
+msgid "All query parts are too short or ignored"
+msgstr "Все части запроса слишком короткие или проигнорированы"

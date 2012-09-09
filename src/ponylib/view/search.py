@@ -17,6 +17,7 @@ from django.utils.text import force_unicode
 from django.conf import settings
 
 from ponylib.search.simple import SimpleBookFinder
+import ponylib.search.errors as search_errors
 
 @render_to('search/search_form.html')
 def index(request):
@@ -37,19 +38,23 @@ def results(request):
         'page': {
             'title': _('Search Results'),
         },
-        'debug' : {},
+        'disable_quick_search' : True,
+        'debug_query' : False,
+        'debug_query_data' : {},
     }
 
     #use post, than get
     request_qdict = request.REQUEST
 
+    debug_query = request.GET.get('debug_query') == '1' and settings.DEBUG
+
     type = request_qdict.get('type', u'simple')
     if type not in ['simple', 'adv']:
         type = 'simple'
+    c['type'] = type
 
     offset, limit = 0, 20
 
-    c['type'] = type
     debug_params = {
         'limit': limit,
         'offset': offset,
@@ -57,22 +62,30 @@ def results(request):
 
     #perform search
     qs = None
-    if type == 'simple':
-        query = request_qdict['query']
-        debug_params['query'] = query
-        finder = SimpleBookFinder(query=query)
-        qs = finder.get_as_queryset(limit=limit, offset=offset)
+    try:
+        if type == 'simple':
+            query = request_qdict['query']
+            debug_params['query'] = query
+            c['query'] = query
+
+            finder = SimpleBookFinder(query=query)
+            qs = finder.get_as_queryset(limit=limit, offset=offset)
+    except search_errors.SearchError, e:
+        c['has_search_errors'] = True
+        c['search_errors'] = [_(e.user_message)]
+
+
 
     #format results
     if qs is not None:
-        #c['total'] = qs.count()
         c['results'] = qs
 
-        if settings.DEBUG:
-            c['debug']['qs_query'] = qs.query.sql
-            c['debug']['qs_params'] = pformat(qs.params)
+        if debug_query:
+            c['debug_query_data']['qs_query'] = qs.query.sql
+            c['debug_query_data']['qs_params'] = pformat(qs.params)
 
-    if settings.DEBUG:
-        c['debug']['request_params'] = pformat(debug_params)
+    if debug_query:
+        c['debug_query'] = True
+        c['debug_query_data']['request_params'] = pformat(debug_params)
 
     return c

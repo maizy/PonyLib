@@ -1,14 +1,20 @@
 {% extends "base.html" %}
+{% load i18n %}
+
+
+{% block title %}{% endblock %}
+
 
 {% block head_css %}
-    {% if debug %}
+    {% if debug_query %}
     {# TMP for debug  #}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/prettify.css?{{ STATIC_KEY }}" />
     {% endif %}
 {% endblock %}
 
+
 {% block head_scripts %}
-    {% if debug %}
+    {% if debug_query %}
     <script type="text/javascript" src="{{ STATIC_URL }}scripts/min/prettify.js?{{ STATIC_KEY }}"></script>
     <script type="text/javascript">
     jQuery(window).on('load', prettyPrint);
@@ -16,37 +22,57 @@
     {% endif %}
 {% endblock %}
 
+
 {% block content %}
-    {% if debug %}
+    {% if debug_query %}
     <div class="debug">
         Type <code>{{ type }}</code>.<br/>
         Request params:
-        <pre class="prettyprint linenums languague-python">{{ debug.request_params }}</pre>
+        <pre class="prettyprint linenums languague-python">{{ debug_query_data.request_params }}</pre>
 
         Query:
-        <pre class="prettyprint linenums languague-sql">{{ debug.qs_query }}</pre>
+        <pre class="prettyprint linenums languague-sql">{{ debug_query_data.qs_query }}</pre>
 
         Query params:
-        <pre class="prettyprint linenums languague-python">{{ debug.qs_params }}</pre>
+        <pre class="prettyprint linenums languague-python">{{ debug_query_data.qs_params }}</pre>
     </div>
     {% endif %}
-    <div>
-    {% for book in results %}
-        <div class="book">
-            <h3>{{ book.title }}
-                {% if debug %} (rel: {{ book.relevance }}, id: {{ book.id }}){% endif %}
-            </h3>
-            <ul>
-                <li>Authors: {{ book.authors.all }}</li>
-                <li>Genres: {{ book.genres.all }}</li>
-                <li>Annotation: {{ book.annotation }}</li>
-            </ul>
 
+    <div class="row">
+    {% include 'parts/search/simple_form.html' %}
+
+    {% if has_search_errors %}
+        <div class="row">
+        {% for error in search_errors %}
+            <div class="alert alert-error span4">{{ error }}</div>
+        {% empty %}
+            <div class="alert">{% trans 'Unknown error' %}</div>
+        {% endfor %}
         </div>
-    {% empty %}
-        <p class="no_results">No results</div>
-    {% endfor %}
 
+    {% else %}
+
+    <h2>{% trans "Search Results" %}</h2>
+
+    <div class="results">
+        {% for book in results %}
+            <h3>{% if debug_query %}(rel: {{ book.relevance }}, id: {{ book.id }}){% endif %}</h3>
+            <div class="row book">
+                <h3>{{ book.title }}</h3>
+                <ul>
+                    <li>Authors: {{ book.authors.all }}</li>
+                    <li>Genres: {{ book.genres.all }}</li>
+                    <li>Annotation: {{ book.annotation }}</li>
+                </ul>
+
+            </div>
+        {% empty %}
+            <div class="row">
+                <div class="alert alert-info span4">{% trans 'No results' %}</div>
+            </div>
+        {% endfor %}
     </div>
+
+    {% endif %}
 
 {% endblock %}
