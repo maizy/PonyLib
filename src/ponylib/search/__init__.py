@@ -16,3 +16,34 @@ def escape_for_like(val):
     val = val.replace('_', r'\_')
 
     return val
+
+def get_db_type():
+    try:
+        from django.db import backend
+        name = backend.__name__
+        if 'mysql' in name:
+            return 'mysql'
+
+        if 'postgresql' in name:
+            return 'postgre'
+
+        if 'sqlite' in name:
+            return 'sqlite'
+    except ImportError:
+        pass
+
+    return None
+
+def is_supported_db():
+
+    db = get_db_type()
+    return db is not None
+
+def is_sqlite():
+    return get_db_type() == 'sqlite'
+
+def is_postgre():
+    return get_db_type() == 'postgre'
+
+def is_mysql():
+    return get_db_type() == 'postgre'

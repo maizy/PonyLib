@@ -25,3 +25,13 @@ class TooShortQuery(SearchError):
 class NoQuery(SearchError):
 
     user_message = 'Empty query'
+
+
+class NotSupported(SearchError):
+
+    user_message = 'Feature not supported'
+
+
+class DbNotSupported(NotSupported):
+
+    user_message = 'Feature not supported for your RDBMS'
