@@ -26,7 +26,7 @@ BIN_ROOT = path.join(PROJECT_ROOT, 'bin')
 
 WINEBIN_ROOT = path.join(PROJECT_ROOT, 'wine_bin')
 
-LIB_ROOT = path.join(PROJECT_ROOT, 'src', 'libs')
+LIB_ROOT = path.join(PROJECT_ROOT, 'src')
 
 #libs
 if LIB_ROOT not in sys.path:
@@ -42,8 +42,6 @@ PONYLIB_BIN_WINE = '/usr/bin/env wine'
 
 # Django settings
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -122,9 +120,19 @@ INSTALLED_APPS = (
     'south',
 )
 
+# DEBUG
+DEBUG = False
+TEMPLATE_DEBUG = False
 
 # Load additional settings from PROJECT_ROOT/settings/*.py
 _additional = [
+
+    #DEBUG
+    {
+        'key': 'DEBUG',
+        'module': 'debug',
+        'default': False,
+    },
 
     #TIME_ZONE
     {
@@ -209,3 +217,12 @@ del _additional
 
 sys.path = _bkp_sys_path
 del _bkp_sys_path
+
+if DEBUG:
+    TEMPLATE_DEBUG = True
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('debug_toolbar.middleware.DebugToolbarMiddleware', )
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    }
+
