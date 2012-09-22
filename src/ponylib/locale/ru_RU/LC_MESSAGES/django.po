@@ -5,9 +5,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 0.1-beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-12 17:46+0400\n"
+"POT-Creation-Date: 2012-09-22 19:09+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Nikita Kovaliov <nikita@maizy.ru>\n"
 "Language-Team: Nikita Kovaliov <nikita@maizy.ru>\n"
@@ -36,7 +36,7 @@ msgstr ""
 msgid "PonyLib"
 msgstr ""
 
-#: templates/parts/topline.html:14 view/search.py:21
+#: templates/parts/topline.html:14 view/search.py:27
 msgid "Search"
 msgstr "Поиск"
 
@@ -48,7 +48,7 @@ msgstr "Обзор"
 msgid "About"
 msgstr "О приложении"
 
-#: templates/parts/topline.html:20 templates/search/search_form.html:8
+#: templates/parts/topline.html:20
 msgid "Quick search"
 msgstr "Быстрый поиск"
 
@@ -64,13 +64,22 @@ msgstr "Русский"
 msgid "English"
 msgstr "Английский"
 
+#: templates/parts/results/book.html:83
+msgid "Download .fb2"
+msgstr "Скачать .fb2"
+
 #: templates/parts/search/simple_form.html:6
 msgid "Search_OK_Label"
 msgstr "Искать"
 
-#: view/search.py:33
+#: templates/search/results.html:49
+msgid "Unknown error"
+msgstr "Неизвестная ошибка"
+
+#: templates/search/results.html:55 view/search.py:39
 msgid "Search Results"
 msgstr "Результаты поиска"
 
-msgid "All query parts are too short or ignored"
-msgstr "Все части запроса слишком короткие или проигнорированы"
+#: templates/search/results.html:68
+msgid "No results"
+msgstr "Ничего не найдено"

@@ -147,6 +147,9 @@ class Book(models.Model):
     def get_basename(self):
         return path.basename(self.rel_path)
 
+    def get_series_links(self):
+        return BookSeries.objects.filter(book=self)
+
     def __unicode__(self):
         return "id=%d, title='%s', file='%s'" % (self.id, self.title, self.get_basename())
 

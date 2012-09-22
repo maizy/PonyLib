@@ -15,6 +15,7 @@ from annoying.decorators import render_to
 from django.utils.translation import gettext as _
 from django.utils.text import force_unicode
 from django.conf import settings
+from django.shortcuts import redirect
 
 from ponylib.search.simple import SimpleBookFinder
 import ponylib.search.errors as search_errors
@@ -55,6 +56,9 @@ def results(request):
 
     offset, limit = 0, 20
 
+    c['results_offset'] = offset
+    c['results_limit'] = limit
+
     debug_params = {
         'limit': limit,
         'offset': offset,
@@ -64,7 +68,11 @@ def results(request):
     qs = None
     try:
         if type == 'simple':
-            query = request_qdict['query']
+            query = request_qdict.get('query')
+
+            if query is None or len(query) == 0:
+                return redirect('search')
+
             debug_params['query'] = query
             c['query'] = query
 

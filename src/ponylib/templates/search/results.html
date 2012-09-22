@@ -55,22 +55,20 @@
     <h2>{% trans "Search Results" %}</h2>
 
     <div class="results">
+    {% if results %}
+        <table class="table books-table">
+        <tbody>
         {% for book in results %}
-            <h3>{% if debug_query %}(rel: {{ book.relevance }}, id: {{ book.id }}){% endif %}</h3>
-            <div class="row book">
-                <h3>{{ book.title }}</h3>
-                <ul>
-                    <li>Authors: {{ book.authors.all }}</li>
-                    <li>Genres: {{ book.genres.all }}</li>
-                    <li>Annotation: {{ book.annotation }}</li>
-                </ul>
-
-            </div>
-        {% empty %}
-            <div class="row">
-                <div class="alert alert-info span4">{% trans 'No results' %}</div>
-            </div>
+            {% include 'parts/results/book.html' %}
         {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+        <div class="row">
+            <div class="alert alert-info span4">{% trans 'No results' %}</div>
+        </div>
+    {% endif %}
+
     </div>
 
     {% endif %}

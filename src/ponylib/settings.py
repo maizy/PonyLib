@@ -224,5 +224,6 @@ if DEBUG:
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'bshell', )
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+        'INTERCEPT_REDIRECTS': False,
     }
 
