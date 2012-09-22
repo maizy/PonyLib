@@ -1,0 +1,3 @@
+-e git://github.com/maizy/django-debug-toolbar.git@0.9.4-fixes#egg=django-debug-toolbar
+bpython
+django_bshell

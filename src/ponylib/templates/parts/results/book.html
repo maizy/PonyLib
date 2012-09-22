@@ -1,0 +1,91 @@
+{% load i18n %}
+<tr>
+
+    <td class="number span1">
+        {% if results_offset %}
+            {{ forloop.counter|add:results_offset}}
+        {% else %}
+            {{ forloop.counter}}
+        {% endif %}
+
+        {% if debug_query %}
+            <br/>
+            rel: {{ book.relevance }}<br/>
+            id: {{ book.id }}
+        {% endif %}
+
+    </td>
+
+    <td class="book">
+        <div class="row">
+            <h3 class="book-title">{{ book.title }}</h3>
+        </div>
+
+        {% if book.authors.count %}
+            <div class="row">
+                <p class="book-item">
+                    <i class="icon-user"></i>
+                    <span class="author-names">
+                    {% for author in book.authors.all %}
+                        {{ author.fullname }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                    </span>
+                </p>
+            </div>
+        {% endif %}
+
+        {% if book.genres.count %}
+            <div class="row">
+                <p class="book-item">
+                    <i class="icon-tags"></i>
+                    <i>
+                    {% for genre in book.genres.all %}
+                        {% if LANGUAGE_CODE == "ru" %}
+                            {{ genre.value_ru }}{% if not forloop.last %}, {% endif %}
+                        {% else %}
+                            {{ genre.value_en }}{% if not forloop.last %}, {% endif %}
+                        {% endif %}
+
+                    {% endfor %}
+                    </i>
+                </p>
+            </div>
+        {% endif %}
+
+        {% if book.get_series_links.count %}
+            <div class="row">
+                <p class="book-item">
+                    <i class="icon-briefcase"></i>
+                    <i>
+                    {% for series_link in book.get_series_links %}
+                        {{ series_link.series.name }}
+                        {% if series_link.number %}
+                            ({{ series_link.number }})
+                        {% endif %}
+
+                        {% if not forloop.last %}, {% endif %}
+
+                    {% endfor %}
+                    </i>
+                </p>
+            </div>
+        {% endif %}
+
+
+        {% if book.annotation %}
+        <div class="row annotation">
+            <p class="book-item">
+                <i class="icon-info-sign"></i> {{ book.annotation|linebreaksbr }}
+            </p>
+        </div>
+        {% endif %}
+
+        <a href="#down" class="btn btn-mini btn-primary">{% trans "Download .fb2" %}</a>
+
+
+    </td>
+
+    <td class="span3">
+
+    </td>
+</tr>

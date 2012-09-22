@@ -1,0 +1,17 @@
+.results .book-item {
+    margin-left: 5px;
+}
+
+.results h3.book-title {
+    margin-bottom: 15px;
+}
+
+.results div.author-names {
+    margin-top: -10px;
+    margin-bottom: 15px;
+    float: left;
+}
+
+.results .number {
+    white-space: nowrap;
+}

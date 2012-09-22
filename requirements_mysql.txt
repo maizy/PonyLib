@@ -1,2 +1,4 @@
-# mysql client
-MySQL-python==1.2.3
+-r requirements/django.txt
+-r requirements/parsers.txt
+-r requirements/deploy.txt
+-r requirements/mysql.txt

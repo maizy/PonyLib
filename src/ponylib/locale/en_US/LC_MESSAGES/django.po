@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-12 17:46+0400\n"
+"POT-Creation-Date: 2012-09-22 19:09+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "PonyLib"
 msgstr ""
 
-#: templates/parts/topline.html:14 view/search.py:21
+#: templates/parts/topline.html:14 view/search.py:27
 msgid "Search"
 msgstr ""
 
@@ -49,7 +49,7 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: templates/parts/topline.html:20 templates/search/search_form.html:8
+#: templates/parts/topline.html:20
 msgid "Quick search"
 msgstr ""
 
@@ -65,10 +65,22 @@ msgstr ""
 msgid "English"
 msgstr ""
 
+#: templates/parts/results/book.html:83
+msgid "Download .fb2"
+msgstr ""
+
 #: templates/parts/search/simple_form.html:6
 msgid "Search_OK_Label"
 msgstr "Search"
 
-#: view/search.py:33
+#: templates/search/results.html:49
+msgid "Unknown error"
+msgstr ""
+
+#: templates/search/results.html:55 view/search.py:39
 msgid "Search Results"
+msgstr ""
+
+#: templates/search/results.html:68
+msgid "No results"
 msgstr ""
