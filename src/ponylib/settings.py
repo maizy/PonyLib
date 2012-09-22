@@ -221,7 +221,7 @@ del _bkp_sys_path
 if DEBUG:
     TEMPLATE_DEBUG = True
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('debug_toolbar.middleware.DebugToolbarMiddleware', )
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'bshell', )
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: True,
     }
