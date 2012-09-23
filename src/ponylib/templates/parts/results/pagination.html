@@ -1,0 +1,19 @@
+{% if paginator and paginator_page %}
+<div class="pagination">
+<ul>
+{% if paginator_page.has_previous %}
+    <li><a href="?query={{ query|urlencode }}&type={{ type|urlencode }}&page={{ paginator_page.previous_page_number }}">«</a></li>
+{% else %}
+    <li class="disabled"><span>«</span></li>
+{% endif %}
+
+<li class="active"><span>{{ paginator_page.number }}</span></li>
+
+{% if paginator_page.has_next %}
+    <li><a href="?query={{ query|urlencode }}&type={{ type|urlencode }}&page={{ paginator_page.next_page_number }}">»</a></li>
+{% else %}
+    <li class="disabled"><span>»</span></li>
+{% endif %}
+</ul>
+</div>
+{% endif %}

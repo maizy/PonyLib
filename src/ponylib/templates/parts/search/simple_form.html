@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load url from future %}
 <form class="well form-search" action="{% url "search-results" %}" method="get">
-    <input type="text" name="query" class="input-xxlarge search-query" value="{{ query }}">
+    <input type="text" name="query" class="input-xxlarge" value="{{ query }}">
     <input type="hidden" name="type" value="simple">
     <button type="submit" class="btn">{% trans "Search_OK_Label" %}</button>
 </form>

@@ -23,13 +23,54 @@ _SPLIT_BY_WORDS_RE = re.compile(r'[\s\-\,]+', re.MULTILINE | re.UNICODE)
 MIN_WORD_LEN = 3
 qn = connection.ops.quote_name
 
-class SimpleBookFinder(object):
+class _Finder(object):
+
+    # -------------------------------------------
+    # pagination support
+
+    def count(self):
+        return len(self)
+
+    def __getitem__(self, k):
+
+        if not isinstance(k, (slice, int, long)):
+            raise TypeError
+
+        assert ((not isinstance(k, slice) and (k >= 0))
+                or (isinstance(k, slice) and (k.start is None or k.start >= 0)
+                    and (k.stop is None or k.stop >= 0))), \
+                "Negative indexing is not supported."
+
+        offset = 0
+        limit = None
+
+        if isinstance(k, slice):
+            if k.start is not None:
+                offset = int(k.start)
+
+            if k.stop is not None:
+                limit = int(k.stop) - offset
+        else:
+            limit = 1
+            offset = k
+
+        return self.build_queryset(limit, offset)
+
+    def build_queryset(self, limit=None, offset=0):
+        raise SearchError('Not implemented')
+
+    def __len__(self):
+        raise SearchError('Not implemented')
+
+
+class SimpleBookFinder(_Finder):
 
     _params = {}
     _query = None
     _words = None
 
     checked = False
+    _qs = None
 
 
     def __init__(self, **params):
@@ -106,7 +147,7 @@ class SimpleBookFinder(object):
         return []
 
 
-    def get_as_queryset(self, limit = None, offset = None):
+    def build_queryset(self, limit=None, offset=0):
 
         """
 
@@ -259,7 +300,7 @@ class SimpleBookFinder(object):
 
         builded_select = select % subs
 
-        return Book.objects.raw(builded_select, params={
+        qs = Book.objects.raw(builded_select, params={
             'words_like' : words_like,
             'words_like_contains' : words_like_contains,
             'words_like_starts' : words_like_starts,
@@ -267,6 +308,11 @@ class SimpleBookFinder(object):
             'limit' : limit,
             'offset' : offset,
         })
+
+        return qs
+
+    def __len__(self):
+        return len(list(self.build_queryset())) #tmp
 
     # -------------------------------------------
 

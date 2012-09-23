@@ -4,6 +4,7 @@
 
 .results h3.book-title {
     margin-bottom: 15px;
+    margin-top: 0;
 }
 
 .results div.author-names {
@@ -13,5 +14,5 @@
 }
 
 .results .number {
-    white-space: nowrap;
+    padding-top: 18px;
 }
