@@ -1,18 +1,14 @@
-.results .book-item {
-    margin-left: 5px;
+.results .book-row {
+    margin-top: 20px;
+}
+.results .book-row .book-title-row {
 }
 
-.results h3.book-title {
-    margin-bottom: 15px;
-    margin-top: 0;
+.results .book-row .author-names-row {
 }
 
-.results div.author-names {
-    margin-top: -10px;
-    margin-bottom: 15px;
-    float: left;
-}
-
-.results .number {
-    padding-top: 18px;
+.results .book-row .number {
+    padding-top: 20px;
+    color: #555;
+    width: 40px;
 }

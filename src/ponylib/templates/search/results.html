@@ -56,13 +56,11 @@
 
     <div class="results">
     {% if results %}
-        <table class="table books-table">
-        <tbody>
+        <div class="books-list">
         {% for book in results %}
             {% include 'parts/results/book.html' %}
         {% endfor %}
-        </tbody>
-        </table>
+        </div>
     {% else %}
         <div class="row">
             <div class="alert alert-info span4">{% trans 'No results' %}</div>

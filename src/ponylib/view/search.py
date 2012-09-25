@@ -62,7 +62,7 @@ def results(request):
     paginator = None
     paginator_page = None
     results = None
-    per_page = 2
+    per_page = 10
     try:
         #perform search
         if type == 'simple':
