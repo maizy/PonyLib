@@ -10,9 +10,9 @@
 <li class="active"><span>{{ paginator_page.number }}</span></li>
 
 {% if paginator_page.has_next %}
-    <li><a href="?query={{ query|urlencode }}&type={{ type|urlencode }}&page={{ paginator_page.next_page_number }}">»</a></li>
+    <li class="next"><a href="?query={{ query|urlencode }}&type={{ type|urlencode }}&page={{ paginator_page.next_page_number }}">»</a></li>
 {% else %}
-    <li class="disabled"><span>»</span></li>
+    <li class="disabled next"><span>»</span></li>
 {% endif %}
 </ul>
 </div>

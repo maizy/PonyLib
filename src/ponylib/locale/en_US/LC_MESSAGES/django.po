@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-22 19:09+0400\n"
+"POT-Creation-Date: 2012-09-27 21:53+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,26 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: search/errors.py:15 templates/search/results.html:65
+msgid "Unknown error"
+msgstr ""
+
+#: search/errors.py:22
+msgid "All query parts are too short or ignored"
+msgstr ""
+
+#: search/errors.py:27
+msgid "Empty query"
+msgstr ""
+
+#: search/errors.py:32
+msgid "Feature not supported"
+msgstr ""
+
+#: search/errors.py:37
+msgid "Feature not supported for your RDBMS"
+msgstr ""
 
 #: templates/about.html:10
 msgid "Project homepage"
@@ -37,7 +57,7 @@ msgstr ""
 msgid "PonyLib"
 msgstr ""
 
-#: templates/parts/topline.html:14 view/search.py:27
+#: templates/parts/topline.html:14 view/search.py:31
 msgid "Search"
 msgstr ""
 
@@ -65,7 +85,7 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-#: templates/parts/results/book.html:83
+#: templates/parts/results/book.html:82
 msgid "Download .fb2"
 msgstr ""
 
@@ -73,14 +93,18 @@ msgstr ""
 msgid "Search_OK_Label"
 msgstr "Search"
 
-#: templates/search/results.html:49
-msgid "Unknown error"
+#: templates/search/results.html:34
+msgid "Loading ..."
 msgstr ""
 
-#: templates/search/results.html:55 view/search.py:39
+#: templates/search/results.html:72 view/search.py:44
 msgid "Search Results"
 msgstr ""
 
-#: templates/search/results.html:68
+#: templates/search/results.html:78
+msgid "Total"
+msgstr ""
+
+#: templates/search/results.html:89
 msgid "No results"
 msgstr ""

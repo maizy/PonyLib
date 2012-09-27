@@ -74,7 +74,7 @@
         {% if book.annotation %}
         <div class="row annotation-row">
             <p>
-                <i class="icon-info-sign"></i> {{ book.annotation|linebreaksbr }}
+                <i class="icon-info-sign"></i> {{ book.annotation|truncatewords:300|linebreaksbr }}
             </p>
         </div>
         {% endif %}
