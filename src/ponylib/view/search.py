@@ -13,7 +13,7 @@ from upprint import pformat
 
 
 from annoying.decorators import render_to
-from django.utils.translation import gettext as _
+from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.shortcuts import redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage

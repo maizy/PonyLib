@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load url from future %}
 <div class="row book-row">
     <div class="number span1">
         {% if results_offset %}
@@ -79,7 +80,7 @@
         </div>
         {% endif %}
 
-        <a href="#down" class="btn btn-mini btn-primary">{% trans "Download .fb2" %}</a>
+        <a href="{% url 'download-fb2' book.id %}" class="btn btn-mini btn-primary">{% trans "Download .fb2" %}</a>
 
 
     </div>

@@ -4,7 +4,7 @@
         {% block html_head %}
 
         <meta charset="utf-8">
-        <title>{{ page.title }} - Ponylib</title>
+        <title>{% if page.title %}{{ page.title }} - {% endif %}Ponylib</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="PonyLib - fb2 search">

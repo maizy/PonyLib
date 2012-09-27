@@ -72,7 +72,7 @@
     <h2>{% trans "Search Results" %}</h2>
 
     <div class="results">
-    {% if results %}
+    {% if total_count > 0 %}
         <div class="row results-info">
             <div class="span1 offset11">
                 <span class="label">{% trans 'Total' %}: {{ total_count }}</span>
@@ -84,22 +84,23 @@
             {% include 'parts/results/book.html' %}
         {% endfor %}
         </div>
+
+        <script type="text/javascript">
+            (function() {
+                var navination = new (ns('Ponylib.Results.Navigation'));
+                ns('Ponylib.Instances', 'navigation', navination);
+            })();
+        </script>
+
+        {% include 'parts/results/pagination.html' %}
+
     {% else %}
         <div class="row">
             <div class="alert alert-info span4">{% trans 'No results' %}</div>
         </div>
     {% endif %}
 
-    {% include 'parts/results/pagination.html' %}
-
     </div>
-
-    <script type="text/javascript">
-        (function() {
-            var navination = new (ns('Ponylib.Results.Navigation'));
-            ns('Ponylib.Instances', 'navigation', navination);
-        })();
-    </script>
 
     {% endif %}
 

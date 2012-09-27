@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-27 21:53+0400\n"
+"POT-Creation-Date: 2012-09-27 23:20+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,7 +85,7 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-#: templates/parts/results/book.html:82
+#: templates/parts/results/book.html:83
 msgid "Download .fb2"
 msgstr ""
 
@@ -107,4 +107,17 @@ msgstr ""
 
 #: templates/search/results.html:89
 msgid "No results"
+msgstr ""
+
+#: view/download.py:27
+msgid "This book doesn't exist"
+msgstr ""
+
+#: view/download.py:30
+#, python-format
+msgid "Book file \"%s\" was missing somewhere"
+msgstr ""
+
+#: view/download.py:41
+msgid "Download"
 msgstr ""

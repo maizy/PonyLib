@@ -23,6 +23,10 @@ urlpatterns += patterns('ponylib.view.search',
     url(r'^search/results/$', 'results', name='search-results'),
 )
 
+urlpatterns += patterns('ponylib.view.download',
+    url(r'^download/fb2/(?P<book_id>\d{1,})/$', 'fb2', name='download-fb2'),
+)
+
 urlpatterns += patterns('',
     url(r'^i18n/', include('django.conf.urls.i18n'), name='set-language'),
     url(r'^about/', 'ponylib.view.global.about', name='about'),

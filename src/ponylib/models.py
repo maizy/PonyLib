@@ -147,6 +147,15 @@ class Book(models.Model):
     def get_basename(self):
         return path.basename(self.rel_path)
 
+    basename = property(get_basename)
+
+    @property
+    def full_path(self):
+        return path.join(self.root.path, self.rel_path)
+
+    def is_file_exists(self):
+        return os.path.isfile(self.full_path)
+
     def get_series_links(self):
         return BookSeries.objects.filter(book=self)
 

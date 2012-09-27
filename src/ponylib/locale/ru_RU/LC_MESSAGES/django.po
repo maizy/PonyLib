@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1-beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-27 21:53+0400\n"
+"POT-Creation-Date: 2012-09-27 23:20+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Nikita Kovaliov <nikita@maizy.ru>\n"
 "Language-Team: Nikita Kovaliov <nikita@maizy.ru>\n"
@@ -84,7 +84,7 @@ msgstr "Русский"
 msgid "English"
 msgstr "Английский"
 
-#: templates/parts/results/book.html:82
+#: templates/parts/results/book.html:83
 msgid "Download .fb2"
 msgstr "Скачать .fb2"
 
@@ -107,3 +107,16 @@ msgstr "Всего"
 #: templates/search/results.html:89
 msgid "No results"
 msgstr "Ничего не найдено"
+
+#: view/download.py:27
+msgid "This book doesn't exist"
+msgstr "Такой книжки у нас никогда не было"
+
+#: view/download.py:30
+#, python-format
+msgid "Book file \"%s\" was missing somewhere"
+msgstr "Файл книжки \"%s\" где-то потерялся"
+
+#: view/download.py:41
+msgid "Download"
+msgstr "Скачать"

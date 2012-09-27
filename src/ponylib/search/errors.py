@@ -1,6 +1,6 @@
 # _*_ coding: utf-8 _*_
 from __future__ import unicode_literals
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 __license__ = 'GPLv3'
 __copyright__ = 'Copyright 2012 maizy.ru'
