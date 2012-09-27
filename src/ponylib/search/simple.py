@@ -150,9 +150,6 @@ class SimpleBookFinder(_Finder):
     def build_queryset(self, limit=None, offset=0):
 
         """
-
-        XXX: bad performance query, should be optimized
-
         @return: Query as Django ORM RawQuerySet
         @rtype: django.db.models.query.RawQuerySet
         """
@@ -170,88 +167,93 @@ class SimpleBookFinder(_Finder):
         select_parts = []
 
         #1. distinct on book.id
-        select_parts.append('SELECT DISTINCT on (%(book_t)s.%(id)s)')
-        select_parts.append('%(book_t)s.*, ')
+        select_parts.append('SELECT *')
+
+        # FIXME: bad performance query. should build text index table
+
+#        select_parts.append('SELECT DISTINCT on (%(book_t)s.%(id)s)')
+#        select_parts.append('%(book_t)s.* ')
 
         #2.relevance
-        relevance_cases = []
+#        relevance_cases = []
+#
+#        #title same
+#        relevance_cases.append('%(book_t)s.%(title)s ILIKE %(words_like)s')
+#
+#        #author + title same
+#        relevance_cases.append("( %(author_t)s.%(fullname)s || ' ' || %(book_t)s.%(title)s ) ILIKE %(words_like)s")
+#
+#        #title + author same
+#        relevance_cases.append("( %(book_t)s.%(title)s || ' ' || %(author_t)s.%(fullname)s ) ILIKE %(words_like)s")
+#
+#        #title contains
+#        relevance_cases.append('%(book_t)s.%(title)s ILIKE %(words_like_contains)s')
+#
+#        #author + title contains
+#        relevance_cases.append("( %(author_t)s.%(fullname)s || ' ' || %(book_t)s.%(title)s )"
+#                               " ILIKE %(words_like_contains)s")
+#
+#        #title + author contains
+#        relevance_cases.append("( %(book_t)s.%(title)s || ' ' || %(author_t)s.%(fullname)s )"
+#                               " ILIKE %(words_like_contains)s")
+#
+#        #author contains
+#        relevance_cases.append('%(author_t)s.%(fullname)s ILIKE %(words_like_contains)s')
+#
+#        #series contains
+#        relevance_cases.append('%(series_t)s.%(name)s ILIKE %(words_like_contains)s')
 
-        #title same
-        relevance_cases.append('%(book_t)s.%(title)s ILIKE %(words_like)s')
-
-        #author + title same
-        relevance_cases.append("( %(author_t)s.%(fullname)s || ' ' || %(book_t)s.%(title)s ) ILIKE %(words_like)s")
-
-        #title + author same
-        relevance_cases.append("( %(book_t)s.%(title)s || ' ' || %(author_t)s.%(fullname)s ) ILIKE %(words_like)s")
-
-        #title contains
-        relevance_cases.append('%(book_t)s.%(title)s ILIKE %(words_like_contains)s')
-
-        #author + title contains
-        relevance_cases.append("( %(author_t)s.%(fullname)s || ' ' || %(book_t)s.%(title)s )"
-                               " ILIKE %(words_like_contains)s")
-
-        #title + author contains
-        relevance_cases.append("( %(book_t)s.%(title)s || ' ' || %(author_t)s.%(fullname)s )"
-                               " ILIKE %(words_like_contains)s")
-
-        #author contains
-        relevance_cases.append('%(author_t)s.%(fullname)s ILIKE %(words_like_contains)s')
-
-        #series contains
-        relevance_cases.append('%(series_t)s.%(name)s ILIKE %(words_like_contains)s')
-
-        select_parts.append('(')
-
-        select_parts.append('CASE')
-        cases_amount = len(relevance_cases)
-        for ind, case in enumerate(relevance_cases):
-            rel_value = cases_amount - ind
-            select_parts.append(' WHEN (%s) THEN %d' % (case, rel_value))
-
-        select_parts.append(' ELSE 0 END')
-        select_parts.append(') AS %(relevance)s')
+#        select_parts.append('(')
+#
+#        select_parts.append('CASE')
+#        cases_amount = len(relevance_cases)
+#        for ind, case in enumerate(relevance_cases):
+#            rel_value = cases_amount - ind
+#            select_parts.append(' WHEN (%s) THEN %d' % (case, rel_value))
+#
+#        select_parts.append(' ELSE 0 END')
+#        select_parts.append(') AS %(relevance)s')
 
         #3.joins
         select_parts.append('FROM %(book_t_fq)s AS %(book_t)s')
 
-        select_parts.append('LEFT OUTER JOIN %(book_author_t_fq)s AS %(book_author_t)s \n'
-                            '  ON (%(book_t)s.%(id)s = %(book_author_t)s.%(book_id)s)')
-
-        select_parts.append('LEFT OUTER JOIN %(author_t_fq)s AS %(author_t)s \n'
-                            '  ON (%(book_author_t)s.%(author_id)s = %(author_t)s.%(id)s)')
-
-        select_parts.append('LEFT OUTER JOIN %(book_series_t_fq)s AS %(book_series_t)s \n'
-                            '  ON (%(book_series_t)s.%(book_id)s = %(book_t)s.%(id)s)')
-
-        select_parts.append('LEFT OUTER JOIN %(series_t_fq)s AS %(series_t)s \n'
-                            '  ON (%(book_series_t)s.%(series_id)s = %(series_t)s.%(id)s)')
+#        select_parts.append('LEFT OUTER JOIN %(book_author_t_fq)s AS %(book_author_t)s \n'
+#                            '  ON (%(book_t)s.%(id)s = %(book_author_t)s.%(book_id)s)')
+#
+#        select_parts.append('LEFT OUTER JOIN %(author_t_fq)s AS %(author_t)s \n'
+#                            '  ON (%(book_author_t)s.%(author_id)s = %(author_t)s.%(id)s)')
+#
+#        select_parts.append('LEFT OUTER JOIN %(book_series_t_fq)s AS %(book_series_t)s \n'
+#                            '  ON (%(book_series_t)s.%(book_id)s = %(book_t)s.%(id)s)')
+#
+#        select_parts.append('LEFT OUTER JOIN %(series_t_fq)s AS %(series_t)s \n'
+#                            '  ON (%(book_series_t)s.%(series_id)s = %(series_t)s.%(id)s)')
 
         #4.match conditions
         select_parts.append('WHERE (')
-        #author + title
-        select_parts.append('(%(book_t)s.%(title)s || %(author_t)s.%(fullname)s) ILIKE %(words_like_contains)s')
-        select_parts.append('OR (%(author_t)s.%(fullname)s || %(book_t)s.%(title)s) ILIKE %(words_like_contains)s')
-
-        #series + author
-        select_parts.append('OR (%(series_t)s.%(name)s || %(author_t)s.%(fullname)s) ILIKE %(words_like_contains)s')
-        select_parts.append('OR (%(author_t)s.%(fullname)s || %(series_t)s.%(name)s) ILIKE %(words_like_contains)s')
-
-        #serier + title
-        select_parts.append('OR (%(series_t)s.%(name)s || %(book_t)s.%(title)s) ILIKE %(words_like_contains)s')
-        select_parts.append('OR (%(book_t)s.%(title)s || %(series_t)s.%(name)s) ILIKE %(words_like_contains)s')
+#        #author + title
+#        select_parts.append('(%(book_t)s.%(title)s || %(author_t)s.%(fullname)s) ILIKE %(words_like_contains)s')
+#        select_parts.append('OR (%(author_t)s.%(fullname)s || %(book_t)s.%(title)s) ILIKE %(words_like_contains)s')
+#
+#        #series + author
+#        select_parts.append('OR (%(series_t)s.%(name)s || %(author_t)s.%(fullname)s) ILIKE %(words_like_contains)s')
+#        select_parts.append('OR (%(author_t)s.%(fullname)s || %(series_t)s.%(name)s) ILIKE %(words_like_contains)s')
+#
+#        #serier + title
+#        select_parts.append('OR (%(series_t)s.%(name)s || %(book_t)s.%(title)s) ILIKE %(words_like_contains)s')
+#        select_parts.append('OR (%(book_t)s.%(title)s || %(series_t)s.%(name)s) ILIKE %(words_like_contains)s')
 
         #annotation
-        select_parts.append('OR %(book_t)s.%(annotation)s ILIKE %(words_like_contains)s')
+        select_parts.append('%(book_t)s.%(title)s LIKE %(words_like_contains)s')
         select_parts.append(')')
 
         #5. wrap on temp table
-        select_parts.insert(0, 'SELECT %(tmp)s.* FROM(')
-        select_parts.append(') AS %(tmp)s')
+#        select_parts.insert(0, 'SELECT %(tmp)s.* FROM(')
+#        select_parts.append(') AS %(tmp)s')
 
         #6.order
-        select_parts.append('ORDER BY %(tmp)s.%(relevance)s DESC, %(tmp)s.%(title)s')
+#        select_parts.append('ORDER BY %(tmp)s.%(relevance)s DESC, %(tmp)s.%(title)s')
+        select_parts.append('ORDER BY %(book_t)s.%(title)s')
 
 
         #7. limit, offset
