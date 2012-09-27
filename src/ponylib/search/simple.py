@@ -244,7 +244,7 @@ class SimpleBookFinder(_Finder):
 #        select_parts.append('OR (%(book_t)s.%(title)s || %(series_t)s.%(name)s) ILIKE %(words_like_contains)s')
 
         #annotation
-        select_parts.append('%(book_t)s.%(title)s LIKE %(words_like_contains)s')
+        select_parts.append('%(book_t)s.%(title)s ILIKE %(words_like_contains)s')
         select_parts.append(')')
 
         #5. wrap on temp table
