@@ -12,22 +12,39 @@ ns('Ponylib.Results', 'Navigation', (function() {
          * @private
          */
         this._paginator = undefined;
+        this._loaderHtml = '';
     };
 
     n.prototype.onReady = function() {
 
-        var loaderHtml = jQuery('.loader').html();
+        this._loaderHtml = jQuery('.loader').html();
         if (jQuery.ias) {
             this._paginator = jQuery.ias({
                 container : '.books-list',
                 item: '.book-row',
                 pagination: '.pagination',
                 next: 'li.next a',
-                loader: loaderHtml
+                loader: '',
+                customLoaderProc:_.bind(this._showLoaderAndScroll, this)
             });
         }
 
         return this;
+    };
+
+    n.prototype._showLoaderAndScroll = function() {
+        var loader = $(".ias_loader");
+
+        if (loader.length == 0) {
+            loader = $("<div class='ias_loader'>"+this._loaderHtml+"</div>");
+            loader.css('visible', 'none');
+        }
+        var lastEl = $('.books-list').find('.book-row').last();
+        lastEl.after(loader);
+        //fix iOS Safari problem with partially visible loader
+        loader.fadeIn(function() {
+            jQuery("html, body").animate({ scrollTop: $(document).height() }, "slow");
+        });
     };
 
     /**
