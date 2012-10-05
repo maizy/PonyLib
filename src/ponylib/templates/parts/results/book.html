@@ -80,7 +80,7 @@
         </div>
         {% endif %}
 
-        <a href="{% url 'download-fb2' book.id %}" class="btn btn-mini btn-primary">{% trans "Download .fb2" %}</a>
+        <a href="{% url 'download-fb2' book.id book.basename %}" class="btn btn-mini btn-primary">{% trans "Download .fb2" %}</a>
 
 
     </div>

@@ -19,7 +19,7 @@ from ponylib.models import Book
 
 
 @render_to('download/error.html')
-def fb2(request, book_id):
+def fb2(request, book_id, book_name):
 
     try:
         book = Book.objects.get(pk=book_id)

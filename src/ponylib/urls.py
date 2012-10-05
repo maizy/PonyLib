@@ -24,7 +24,7 @@ urlpatterns += patterns('ponylib.view.search',
 )
 
 urlpatterns += patterns('ponylib.view.download',
-    url(r'^download/fb2/(?P<book_id>\d{1,})/$', 'fb2', name='download-fb2'),
+    url(r'^download/fb2/(?P<book_id>\d{1,})/(?P<book_name>.+)$', 'fb2', name='download-fb2'),
 )
 
 urlpatterns += patterns('',
