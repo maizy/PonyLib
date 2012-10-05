@@ -69,9 +69,9 @@ def rebuild_search_index(query, query_args, action_message = ''):
 
             cnt += 1
 
-        sys.stdout.write('\n' + _('Done'))
+        sys.stdout.write('\n' + _('Done') + '\n')
 
     except KeyboardInterrupt:
-        sys.stdout.write('\n' + _('Aborted'))
+        sys.stdout.write('\n' + _('Aborted') + '\n')
 
 
