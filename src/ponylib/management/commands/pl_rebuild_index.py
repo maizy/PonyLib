@@ -17,17 +17,15 @@ from ponylib.management import rebuild_search_index
 
 class Command(BaseCommand):
 
-    help = _('Build search index (for not indexed books only)')
+    help = _('Rebuild search index')
 
     def handle(self, *args, **options):
 
         qn = connection.ops.quote_name
-        query = 'SELECT %(id)s FROM %(table)s WHERE %(index_a)s = %%s AND %(index_c)s = %%s'
+        query = 'SELECT %(id)s FROM %(table)s ORDER BY %(id)s'
         query = query % {
             'table' : qn(Book._meta.db_table),
             'id' : qn('id'),
-            'index_a' : qn('index_a'),
-            'index_c' : qn('index_c'),
         }
 
         args = ('','')
