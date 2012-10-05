@@ -144,6 +144,9 @@ class Book(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    index_a = models.TextField()
+    index_c = models.TextField()
+
     def get_basename(self):
         return path.basename(self.rel_path)
 
