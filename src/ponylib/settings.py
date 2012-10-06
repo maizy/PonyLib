@@ -40,6 +40,12 @@ PONYLIB_BIN_FB2LRF_USE_WINE = (platform.system() != 'Window') #Set False on Wind
 #wine
 PONYLIB_BIN_WINE = '/usr/bin/env wine'
 
+# fulltext search engine
+PONYLIB_TEXT_SEARCH_ENGINE = 'ponylib.search.engines.postgre_fts'
+
+
+
+# -------------------------------------------
 # Django settings
 
 
@@ -57,6 +63,7 @@ USE_L10N = True
 
 # -----------------------------------
 
+AUTOLOAD_SITECONF = 'ponylib.on_load'
 
 MEDIA_ROOT = path.join(VAR_ROOT, 'media')
 MEDIA_URL = '/media/'
@@ -99,6 +106,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'autoload.middleware.AutoloadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -113,6 +121,7 @@ SKIP_SOUTH_TESTS = True
 NO_DB_TESTS = False
 
 INSTALLED_APPS = (
+    'autoload',
     'ponylib',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
@@ -124,6 +133,23 @@ INSTALLED_APPS = (
 DEBUG = False
 TEMPLATE_DEBUG = False
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
 # Load additional settings from PROJECT_ROOT/settings/*.py
 _additional = [
 
@@ -165,29 +191,6 @@ _additional = [
             }
         }
     },
-
-    #Loggind
-    {
-        'key': 'LOGGING',
-        'module': 'logging',
-        'default': {
-            'version': 1,
-            'disable_existing_loggers': False,
-            'handlers': {
-                'mail_admins': {
-                    'level': 'ERROR',
-                    'class': 'django.utils.log.AdminEmailHandler'
-                }
-            },
-            'loggers': {
-                'django.request': {
-                    'handlers': ['mail_admins'],
-                    'level': 'ERROR',
-                    'propagate': True,
-                },
-            }
-        }
-    },
 ]
 
 _bkp_sys_path = sys.path
@@ -226,4 +229,3 @@ if DEBUG:
         'SHOW_TOOLBAR_CALLBACK': lambda request: True,
         'INTERCEPT_REDIRECTS': False,
     }
-

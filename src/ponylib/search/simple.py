@@ -22,6 +22,8 @@ MIN_WORD_LEN = 3
 
 class _Finder(object):
 
+    __metaclass__ = abc.ABCMeta
+
     # -------------------------------------------
     # pagination support
 
