@@ -86,7 +86,6 @@ class BookFinderApiTestCase(unittest.TestCase):
             ('some', ['some'], None),
             ('apple orange', ['apple', 'orange'], 'words should be splited'),
             ('абвг\nabcd', ['абвг', 'abcd'], 'new line should be ignored and process as space'),
-            ('zx\nabcd', ['abcd'], 'short words should be ignored'),
         ]
 
         for query, expected, mes in fixtures:
