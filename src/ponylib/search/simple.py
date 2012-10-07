@@ -111,11 +111,9 @@ class BaseSimpleBookFinder(_Finder):
         if self.checked:
             return True
 
-        query = self.query
-
         if not is_supported_db():
             raise DbNotSupported
-
+        query = self.query
         if query is None or len(query) == 0:
             e = NoQuery()
             e.finder = self
@@ -129,9 +127,7 @@ class BaseSimpleBookFinder(_Finder):
             raise e
 
         self._additional_query_check()
-
         self.checked = True
-
         return self.checked
 
     def _additional_query_check(self):
@@ -147,11 +143,9 @@ class BaseSimpleBookFinder(_Finder):
         words = re.split(_SPLIT_BY_WORDS_RE, query)
         words = [x for x in words if len(x) > 0]
 
-        for word in words:
-            if len(word) >= MIN_WORD_LEN:
-                return words
+        self._words = words
+        return words
 
-        return []
 
     # -------------------------------------------
 

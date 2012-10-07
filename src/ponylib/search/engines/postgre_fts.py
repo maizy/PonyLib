@@ -14,6 +14,8 @@ from ponylib.models import Book
 from ponylib.search.engines import BaseTextSearchEngine
 from ponylib.search.signals import book_index_updated, search_index_dropped
 from ponylib.search.simple import BaseSimpleBookFinder
+from ponylib.search import is_postgre
+from ponylib.search.errors import DbNotSupported, TooShortQuery
 
 class TextSearchEngine(BaseTextSearchEngine):
 
@@ -198,7 +200,32 @@ class TextSearchEngine(BaseTextSearchEngine):
 
 class SimpleBookFinder(BaseSimpleBookFinder):
 
-    #TODO additionaly check (SELECT numnode('foo & bar'::tsquery);)
+    def _additional_query_check(self):
+        if not is_postgre():
+            raise DbNotSupported, 'Only Postgre 8.3+'
+
+        fts_config = self.engine._get_ts_config()
+#        cursor = connection.cursor()
+#        cursor.execute('SELECT count(*) as "cnt" FROM "pg_catalog"."pg_ts_config" WHERE "cfgname" = %s',
+#            (fts_config, )
+#        )
+#        res = cursor.fetchone()
+#        if res is None:
+#            raise DbNotSupported, 'FTS configuration "%s" not supported at your database' % fts_config
+#
+#        cursor = connection.cursor()
+#        cursor.execute('SELECT count(*) as "cnt" FROM "pg_catalog"."pg_ts_config" WHERE "cfgname" = %s',
+#            (fts_config, )
+#        )
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT numnode(plainto_tsquery(%s, %s))",
+            (fts_config, self._get_fts_query())
+        )
+        res = cursor.fetchone()
+        if res is None or int(res[0]) < 1:
+            raise TooShortQuery
+
 
     def _get_fts_query(self):
         return ' '.join(self.get_query_words())
