@@ -34,7 +34,7 @@ class BaseTextSearchEngine(object):
     @abc.abstractmethod
     def get_simple_book_finder_class(self):
         """
-        @rtype: ponylib.search.simple.SimpleBookFinder
+        @rtype: ponylib.search.simple.BaseBaseSimpleBookFinder
         """
         pass
 

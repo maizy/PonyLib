@@ -11,9 +11,9 @@ from django.dispatch import receiver
 from django.db import connection, transaction
 
 from ponylib.models import Book
-from ponylib.search.engines import EngineError
 from ponylib.search.engines import BaseTextSearchEngine
 from ponylib.search.signals import book_index_updated, search_index_dropped
+from ponylib.search.simple import BaseSimpleBookFinder
 
 class TextSearchEngine(BaseTextSearchEngine):
 
@@ -47,7 +47,7 @@ class TextSearchEngine(BaseTextSearchEngine):
 
 
     def get_simple_book_finder_class(self):
-        raise Exception, 'TODO'
+        return SimpleBookFinder
 
 
     def setup_or_update_engine(self):
@@ -194,3 +194,72 @@ class TextSearchEngine(BaseTextSearchEngine):
 
     def _get_qn(self):
         return connection.ops.quote_name
+
+
+class SimpleBookFinder(BaseSimpleBookFinder):
+
+    #TODO additionaly check (SELECT numnode('foo & bar'::tsquery);)
+
+    def _get_fts_query(self):
+        return ' '.join(self.get_query_words())
+
+    def build_queryset(self, limit=None, offset=0):
+
+        """
+        @return: Query as Django ORM RawQuerySet
+        @rtype: django.db.models.query.RawQuerySet
+        """
+        self.check_query()
+        qn = connection.ops.quote_name
+
+        params={
+            'query' : self._get_fts_query(),
+            'limit' : limit,
+            'offset' : offset,
+            'fts_config' : self.engine._get_ts_config(),
+        }
+
+        select = 'SELECT *, ts_rank_cd(%(fts_col)s, "fts_q") as "rank"\n' \
+                 ' FROM %(table)s,\n' \
+                 '   plainto_tsquery(%%(fts_config)s, %%(query)s) as "fts_q"\n' \
+                 ' WHERE %(fts_col)s @@ "fts_q" ORDER BY "rank" DESC\n'
+
+        if limit is not None and limit > 0:
+            select += ' LIMIT %%(limit)s\n'
+
+        if offset is not None and offset > 0:
+            select += ' OFFSET %%(offset)s'
+
+        select = select % {
+            'fts_col': qn(self.engine._fts_column_name),
+            'table': qn(Book._meta.db_table),
+        }
+
+        qs = Book.objects.raw(select, params)
+        return qs
+
+    def __len__(self):
+
+        self.check_query()
+        qn = connection.ops.quote_name
+
+        params={
+            'query' : self._get_fts_query(),
+            'fts_config' : self.engine._get_ts_config(),
+        }
+
+        select = 'SELECT count(*) as "cnt"\n' \
+                 ' FROM %(table)s,\n' \
+                 '   plainto_tsquery(%%(fts_config)s, %%(query)s) as "fts_q"\n' \
+                 ' WHERE %(fts_col)s @@ "fts_q"'
+
+        select = select % {
+            'fts_col': qn(self.engine._fts_column_name),
+            'table': qn(Book._meta.db_table),
+        }
+        cursor = connection.cursor()
+        cursor.execute(select, params)
+        res = cursor.fetchone()
+        if res is not None:
+            return int(res[0])
+        return 0

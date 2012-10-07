@@ -6,16 +6,18 @@ __copyright__       = "Copyright 2012 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
 __version__         = "0.1"
-__doc__             = "Simple SimpleBookFinder for Fast search form"
+__doc__             = "SimpleBookFinder for Fast search form"
 
 import re
 import abc
+import logging
 
 from django.utils.text import force_unicode
 
 from ponylib.search.errors import SearchError, NoQuery, TooShortQuery, DbNotSupported
 from ponylib.search import is_supported_db
 
+from ponylib.search import engines
 
 _SPLIT_BY_WORDS_RE = re.compile(r'[\s\-\,]+', re.MULTILINE | re.UNICODE)
 MIN_WORD_LEN = 3
@@ -65,7 +67,7 @@ class _Finder(object):
 
 
 
-class SimpleBookFinder(_Finder):
+class BaseSimpleBookFinder(_Finder):
 
     """\
     Base class for simple one line query finder
@@ -76,6 +78,7 @@ class SimpleBookFinder(_Finder):
     _words = None
 
     checked = False
+    engine = None
 
 
     def __init__(self, **params):
@@ -162,5 +165,10 @@ class SimpleBookFinder(_Finder):
 
 
 def get_simple_finder_class():
-    import ponylib.search.naive
-    return ponylib.search.naive.NaiveLikeSimpleBookFinder
+    engine = engines.engine
+    if engine is None:
+        logger = logging.getLogger('ponylib.search')
+        logger.warn('search engine not found, fall back to naive search')
+        import ponylib.search.naive
+        return ponylib.search.naive.NaiveLikeSimpleBookFinder
+    return engine.get_simple_book_finder_class()

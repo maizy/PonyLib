@@ -12,12 +12,12 @@ from django.db import connection
 
 from ponylib.search import escape_for_like, is_postgre
 from ponylib.search.errors import DbNotSupported
-from ponylib.search.simple import SimpleBookFinder
+from ponylib.search.simple import BaseSimpleBookFinder
 from ponylib.models import Book, Author, Series, BookAuthor, BookSeries
 
 qn = connection.ops.quote_name
 
-class NaiveLikeSimpleBookFinder(SimpleBookFinder):
+class NaiveLikeSimpleBookFinder(BaseSimpleBookFinder):
     """
     Naive LIKE simple search
     Not very fast.
@@ -142,7 +142,7 @@ class NaiveLikeSimpleBookFinder(SimpleBookFinder):
 
 
         #7. limit, offset
-        if limit is not None:
+        if limit is not None and limit > 0:
             select_parts.append('LIMIT %(limit)s')
 
         if offset is not None and offset > 0:
@@ -199,6 +199,7 @@ class NaiveLikeSimpleBookFinder(SimpleBookFinder):
         return qs
 
     def __len__(self):
+        self.check_query()
         #TODO optimized query
         return len(list(self.build_queryset()))
 

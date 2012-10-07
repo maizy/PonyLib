@@ -16,6 +16,7 @@ from django.shortcuts import redirect
 from ponylib.search.simple import get_simple_finder_class
 from ponylib.search.errors import SearchError
 from ponylib.utils.paginator import build_pseudo_paginator
+from ponylib.search import engines
 
 
 @render_to('search/search_form.html')
@@ -69,6 +70,7 @@ def results(request):
             c['query'] = query
             finder_class = get_simple_finder_class()
             finder = finder_class(query=query)
+            finder.engine = engines.engine
             paginator_page, paginator = build_pseudo_paginator(finder.count(), per_page, request.REQUEST.get('page'))
 
             results = finder.build_queryset(paginator.per_page, paginator_page.get_offset())
