@@ -52,6 +52,7 @@ class TextSearchEngine(BaseTextSearchEngine):
 
     def setup_or_update_engine(self):
         need_commit = False
+
         if not self._has_fts_column():
             self._add_fts_column()
             self._update_fts_column()
@@ -64,6 +65,19 @@ class TextSearchEngine(BaseTextSearchEngine):
         if need_commit:
             transaction.commit_unless_managed()
 
+    def drop_engine(self):
+        need_commit = False
+
+        if self._has_fts_index():
+            self._drop_fts_index()
+            need_commit = True
+
+        if self._has_fts_column():
+            self._drop_fts_column()
+            need_commit = True
+
+        if need_commit:
+            transaction.commit_unless_managed()
 
     def _has_fts_column(self):
         cursor = self._get_cursor()
@@ -81,21 +95,23 @@ class TextSearchEngine(BaseTextSearchEngine):
 
     def _add_fts_column(self):
         self.logger and self.logger.debug('add fts column')
-        cursor = self._get_cursor()
         qn = self._get_qn()
         query = "ALTER TABLE %(table)s ADD COLUMN %(fts_col)s tsvector"
         query = query % {
             'table': qn(Book._meta.db_table),
             'fts_col': qn(self._fts_column_name),
         }
-        cursor.execute(query)
+        self._get_cursor().execute(query)
 
     def _drop_fts_column(self):
         self.logger and self.logger.debug('drop fts column')
-
-    def _get_ts_config(self):
-        #TODO by def detect by current lang
-        return self.opts.get('ts_config', 'russian')
+        qn = self._get_qn()
+        query = "ALTER TABLE %(table)s DROP COLUMN %(fts_col)s"
+        query = query % {
+            'table': qn(Book._meta.db_table),
+            'fts_col': qn(self._fts_column_name),
+        }
+        self._get_cursor().execute(query)
 
     def _update_fts_column(self, book_id=None):
         if book_id:
@@ -103,9 +119,7 @@ class TextSearchEngine(BaseTextSearchEngine):
         else:
             self.logger and self.logger.debug('update fts column for all books')
 
-        cursor = self._get_cursor()
         qn = self._get_qn()
-
         query = 'UPDATE %(table)s SET %(fts_col)s = ' \
                 '(' \
                 ' setweight( to_tsvector(%%(fts_config)s, "index_a"), %%(a)s )' \
@@ -126,37 +140,52 @@ class TextSearchEngine(BaseTextSearchEngine):
             'fts_col': qn(self._fts_column_name),
         }
 
-        cursor.execute(query, q_params)
+        self._get_cursor().execute(query, q_params)
 
 
     def _has_fts_index(self):
         cursor = self._get_cursor()
-
         cursor.execute(
-            'SELECT "relname" FROM "pg_class" WHERE '
-            '"relname" = %s'
-            'AND "oid" IN ('
+            'SELECT "relname" FROM "pg_class"'
+            ' WHERE "relname" = %s'
+            ' AND "oid" IN ('
                 'SELECT "indexrelid"'
-                'FROM "pg_index", "pg_class"'
-                'WHERE "pg_class"."relname" = %s'
-                'AND "pg_class"."oid" = "pg_index"."indrelid"'
+                ' FROM "pg_index", "pg_class"'
+                ' WHERE "pg_class"."relname" = %s'
+                ' AND "pg_class"."oid" = "pg_index"."indrelid"'
             ')',
             (self._fts_index_name, Book._meta.db_table)
         )
-
         if len(list(cursor.fetchall())) > 0:
             return True
-
         return False
 
     def _add_fts_index(self):
         self.logger and self.logger.debug('add fts index')
+        qn = self._get_qn()
+        query = 'CREATE INDEX %(index)s ON %(table)s using %(type)s(%(col)s)'
+        query = query % {
+            'index': qn(self._fts_index_name),
+            'table': qn(Book._meta.db_table),
+            'type': self._get_ts_index_type(), #safe
+            'col': qn(self._fts_column_name)
+        }
+        self._get_cursor().execute(query)
 
     def _drop_fts_index(self):
         self.logger and self.logger.debug('drop fts index')
+        query = 'DROP INDEX IF EXISTS %s' % (self._get_qn())(self._fts_index_name)
+        self._get_cursor().execute(query)
 
+    def _get_ts_config(self):
+        #TODO by def autodetect by current lang
+        return self.opts.get('ts_config', 'russian')
 
-
+    def _get_ts_index_type(self):
+        type = self.opts.get('fts_index_type', 'gin').lower()
+        if type not in ('gin', 'gist'):
+            type = 'gin'
+        return type
 
     def _get_cursor(self):
         if self._cursor is None:

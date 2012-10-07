@@ -16,11 +16,14 @@ import ponylib.search.engines as engines
 
 class Command(BaseCommand):
 
-    help = _('Init text search engine')
+    help = _('Drop text search engine settings and data')
 
     def handle(self, *args, **options):
         print(self.help)
-        engines.engine.setup_or_update_engine()
+        if engines.engine is None:
+            print _("Search engine doesn't set")
+            return False
+        engines.engine.drop_engine()
         print(_('Done'))
 
 
