@@ -31,5 +31,4 @@ share/
 # project specific
 devserver-default-host
 var/
-settings/*.py
-src/django-debug-toolbar
+settings/*.json

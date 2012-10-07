@@ -7,25 +7,27 @@ __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 __version__         = "0.1"
 __doc__             = ""
 
+# -------------------------------------------
+#
+# Normally you shouldn't edit those settings
+# directly.
+#
+# See settings/settings.json
+#
+# -------------------------------------------
+
+
 
 import sys
 import os.path as path
-import platform
-import importlib
 
-
+# -------------------------------------------
 # Ponylib settings
 
 PROJECT_ROOT = path.realpath(path.join(path.dirname(__file__), '..', '..'))
-
 WEB_ROOT = path.join(PROJECT_ROOT, 'src', 'ponylib')
-
 VAR_ROOT = path.join(PROJECT_ROOT, 'var')
-
-BIN_ROOT = path.join(PROJECT_ROOT, 'bin')
-
-WINEBIN_ROOT = path.join(PROJECT_ROOT, 'wine_bin')
-
+BIN_ROOT = path.join(PROJECT_ROOT, 'src', 'tools')
 LIB_ROOT = path.join(PROJECT_ROOT, 'src')
 
 #libs
@@ -33,27 +35,47 @@ if LIB_ROOT not in sys.path:
     sys.path.append(LIB_ROOT)
 
 
-#fb2lrf
-PONYLIB_BIN_FB2LRF = path.join(WINEBIN_ROOT, 'fb2lrf_console', 'fb2lrf_c.exe')
-PONYLIB_BIN_FB2LRF_USE_WINE = (platform.system() != 'Window') #Set False on Windows
+# -------------------------------------------
+# Text search engine settings
 
-#wine
-PONYLIB_BIN_WINE = '/usr/bin/env wine'
+PONYLIB_TEXT_SEARCH_ENGINE = None
+PONYLIB_TEXT_SEARCH_ENGINE_OPTS = {}
 
-# Fulltext search engine
 
-# PostgreSQL FTS
-PONYLIB_TEXT_SEARCH_ENGINE = 'ponylib.search.engines.postgre_fts'
-PONYLIB_TEXT_SEARCH_ENGINE_OPTS = {
-    #FTS configuration
-    'ts_config': 'russian'
-}
+# -------------------------------------------
+# wine settings
+#WINEBIN_ROOT = path.join(PROJECT_ROOT, 'wine_bin')
+##fb2lrf
+#PONYLIB_BIN_FB2LRF = path.join(WINEBIN_ROOT, 'fb2lrf_console', 'fb2lrf_c.exe')
+#PONYLIB_BIN_FB2LRF_USE_WINE = (platform.system() != 'Window') #Set False on Windows
+#
+##wine
+#PONYLIB_BIN_WINE = '/usr/bin/env wine'
 
+
+# -------------------------------------------
+# Lang & locale
+
+USE_I18N = True
+USE_L10N = True
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'Europe/Moscow'
 
 
 # -------------------------------------------
 # Django settings
 
+AUTOLOAD_SITECONF = 'ponylib.on_load'
+ROOT_URLCONF = 'ponylib.urls'
+
+INSTALLED_APPS = (
+    'autoload',
+    'ponylib',
+    'django.contrib.sessions',
+    'django.contrib.staticfiles',
+    'django_like',
+    'south',
+)
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -61,15 +83,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-
 SITE_ID = 1
-
-USE_I18N = True
-USE_L10N = True
-
-# -----------------------------------
-
-AUTOLOAD_SITECONF = 'ponylib.on_load'
 
 MEDIA_ROOT = path.join(VAR_ROOT, 'media')
 MEDIA_URL = '/media/'
@@ -77,11 +91,10 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = path.join(VAR_ROOT, 'static-deploy')
 STATIC_URL = '/static/'
 
-STATIC_KEY = '001'
+STATIC_KEY = '002'
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
-# Additional locations of static files
 STATICFILES_DIRS = (
     path.join(WEB_ROOT, 'static'),
 )
@@ -92,7 +105,6 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-# Make this unique, and don't share it with anybody.
 SECRET_KEY = 'ponyponymagicpony'
 
 TEMPLATE_LOADERS = (
@@ -118,26 +130,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
 )
 
-ROOT_URLCONF = 'ponylib.urls'
+
 
 TEMPLATE_DIRS = ()
 
-SKIP_SOUTH_TESTS = True
 
-NO_DB_TESTS = False
-
-INSTALLED_APPS = (
-    'autoload',
-    'ponylib',
-    'django.contrib.sessions',
-    'django.contrib.staticfiles',
-    'django_like',
-    'south',
-)
-
-# DEBUG
-DEBUG = False
-TEMPLATE_DEBUG = False
+# -------------------------------------------
+# Logging
 
 LOGGING = {
     'version': 1,
@@ -156,79 +155,49 @@ LOGGING = {
         },
     }
 }
-# Load additional settings from PROJECT_ROOT/settings/*.py
-_additional = [
 
-    #DEBUG
-    {
-        'key': 'DEBUG',
-        'module': 'debug',
-        'default': False,
-    },
 
-    #TIME_ZONE
-    {
-        'key': 'TIME_ZONE',
-        'module': 'time_zone',
-        'default': 'Europe/Moscow'
-    },
+# ------------------------------------------
+# Test settings
 
-    #LANGUAGE_CODE
-    {
-        'key': 'LANGUAGE_CODE',
-        'module': 'lang',
-        'default': 'en-US',
-    },
+SKIP_SOUTH_TESTS = True
 
-    #DB
-    {
-        'key': 'DATABASES',
-        'module': 'db',
-        'default': {
-            'default': {
-                # 'postgresql_psycopg2', 'mysql', 'sqlite3' supported
-                # 'postgresql_psycopg2' is recomended
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': 'ponylib',
-                'USER': 'ponylib',
-                'PASSWORD': '',
-                'HOST': '',
-                'PORT': '',
-            }
-        }
-    },
-]
+NO_DB_TESTS = False
 
-_bkp_sys_path = sys.path
-sys.path = [path.join(PROJECT_ROOT, 'settings')]
+# -------------------------------------------
+# Debug
 
-for spec in _additional:
+DEBUG = False
+TEMPLATE_DEBUG = False
+DEBUG_TOOLBAR = False
 
-    res = None
-    try:
-       module = importlib.import_module(spec['module'])
-       if callable(module.get):
-           res = module.get(globals())
-       del module
+# -------------------------------------------
+# Database
+DATABASES = {
+    'default': {
+        # 'postgresql_psycopg2', 'mysql', 'sqlite3'
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ponylib',
+        'USER': 'ponylib',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
+    }
+}
 
-    except ImportError:
-        pass
+# -------------------------------------------
+# Overwrite settings from settings/settings.json
+# TODO: do it less hacky
+PONYLIB_JSON_SETTINGS_PATH = path.join(PROJECT_ROOT, 'settings', 'settings.json')
+from ponylib.utils import json_settings
+json_settings.settings_path = PONYLIB_JSON_SETTINGS_PATH
+from ponylib.utils.json_settings.export import *
 
-    if res is None:
-        res = spec['default']
+# -------------------------------------------
+# Debug 2
+TEMPLATE_DEBUG = DEBUG
 
-    globals()[spec['key']] = res
-
-    del spec
-    del res
-
-del _additional
-
-sys.path = _bkp_sys_path
-del _bkp_sys_path
-
-if DEBUG:
-    TEMPLATE_DEBUG = True
+if DEBUG_TOOLBAR:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('debug_toolbar.middleware.DebugToolbarMiddleware', )
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'bshell', )
     DEBUG_TOOLBAR_CONFIG = {

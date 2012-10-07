@@ -54,6 +54,9 @@ def build_default_engine():
         from django.conf import settings
         engine_name = settings.PONYLIB_TEXT_SEARCH_ENGINE
     except (ImportError, AttributeError):
+        engine_name = None
+
+    if engine_name is None:
         raise EngineError, 'django setting "PONYLIB_TEXT_SEARCH_ENGINE" not found'
 
     try:

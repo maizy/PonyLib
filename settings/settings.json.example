@@ -1,0 +1,54 @@
+{
+    //Database settings
+    "db": {
+        "django_engine": "django.db.backends.postgresql_psycopg2",
+
+        "database": "ponylib",
+        "user": "ponylib",
+        "password": "pa$$word",
+
+        // Set to empty string for localhost
+        "host": "",
+        "port": ""
+    },
+
+    //Language & local settings
+    "language": {
+        //Default language code (http://www.i18nguy.com/unicode/language-identifiers.html)
+        //  "en-us" - English
+        //  "ru-ru" - Russian
+        // Fixed for console commands, but may be choosen at web interface.
+        "default_lang": "ru-ru",
+
+        //Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+        "time_zone": "Europe/Moscow"
+    },
+
+    //Search settings
+
+    //PostgreSQL Fulltext search
+    "search": {
+        "engine": "ponylib.search.engines.postgre_fts",
+        "engine_opts" : {
+
+            //Fulltext search configuration
+            //Full list: SELECT * FROM pg_catalog.pg_ts_config
+            //At standart installation:
+            // "russian"
+            // "english"
+            "ts_config": "russian"
+        }
+    },
+
+    //Make this unique, and don't share it with anybody.
+    "secret_key": "ponyponymagicpony"
+
+    //Debug
+    //Do `pip install -r requirement_debug.txt` before
+    /*
+    "debug": {
+        "django_debug": true,
+        "django_debug_toolbar": true,
+    }*/
+
+}
