@@ -21,6 +21,7 @@ class BaseTextSearchEngine(object):
     __metaclass__ = abc.ABCMeta
 
     logger = None
+    opts = {}
 
     def __init__(self):
         self.logger = logging.getLogger('ponylib.search.engines')
@@ -31,7 +32,7 @@ class BaseTextSearchEngine(object):
         pass
 
     @abc.abstractmethod
-    def build_simple_book_finder(self):
+    def get_simple_book_finder_class(self):
         """
         @rtype: ponylib.search.simple.SimpleBookFinder
         """
@@ -56,6 +57,11 @@ def build_default_engine():
         raise EngineError, 'django setting "PONYLIB_TEXT_SEARCH_ENGINE" not found'
 
     try:
+        engine_opts = settings.PONYLIB_TEXT_SEARCH_ENGINE_OPTS
+    except AttributeError:
+        engine_opts = {}
+
+    try:
         engine_module = import_module(engine_name)
     except ImportError:
         raise EngineError, 'Unable to load text search engine "%s"' % engine_name
@@ -65,6 +71,7 @@ def build_default_engine():
     except AttributeError:
         raise EngineError, 'Unable to init text search engine class "%s.TextSearchEngine"' % engine_name
 
+    engine.opts = engine_opts
     return engine
 
 # normaly inited at ponylib.on_load

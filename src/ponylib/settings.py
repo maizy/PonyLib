@@ -40,8 +40,14 @@ PONYLIB_BIN_FB2LRF_USE_WINE = (platform.system() != 'Window') #Set False on Wind
 #wine
 PONYLIB_BIN_WINE = '/usr/bin/env wine'
 
-# fulltext search engine
+# Fulltext search engine
+
+# PostgreSQL FTS
 PONYLIB_TEXT_SEARCH_ENGINE = 'ponylib.search.engines.postgre_fts'
+PONYLIB_TEXT_SEARCH_ENGINE_OPTS = {
+    #FTS configuration
+    'ts_config': 'russian'
+}
 
 
 
