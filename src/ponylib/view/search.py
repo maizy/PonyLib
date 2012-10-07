@@ -8,19 +8,15 @@ __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 __version__         = "0.1"
 __doc__             = ""
 
-import collections
-from upprint import pformat
-
-
 from annoying.decorators import render_to
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.shortcuts import redirect
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from ponylib.search.simple import SimpleBookFinder
-import ponylib.search.errors as search_errors
+from ponylib.search.simple import get_simple_finder_class
+from ponylib.search.errors import SearchError
 from ponylib.utils.paginator import build_pseudo_paginator
+from ponylib.search import engines
 
 
 @render_to('search/search_form.html')
@@ -72,13 +68,14 @@ def results(request):
                 return redirect('search')
 
             c['query'] = query
-
-            finder = SimpleBookFinder(query=query)
+            finder_class = get_simple_finder_class()
+            finder = finder_class(query=query)
+            finder.engine = engines.engine
             paginator_page, paginator = build_pseudo_paginator(finder.count(), per_page, request.REQUEST.get('page'))
 
             results = finder.build_queryset(paginator.per_page, paginator_page.get_offset())
 
-    except search_errors.SearchError, e:
+    except SearchError, e:
         #search errors
         c['has_search_errors'] = True
         c['search_errors'] = [_(e.user_message)]

@@ -144,6 +144,9 @@ class Book(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    index_a = models.TextField()
+    index_c = models.TextField()
+
     def get_basename(self):
         return path.basename(self.rel_path)
 
@@ -161,6 +164,30 @@ class Book(models.Model):
 
     def __unicode__(self):
         return "id=%d, title='%s', file='%s'" % (self.id, self.title, self.get_basename())
+
+    def update_search_index(self):
+
+        a = []
+        c = []
+
+        a.append(self.title)
+
+        for author in self.authors.all():
+            a.append(author.fullname)
+
+        for genre in self.genres.all():
+            a.append(genre.value_ru)
+            a.append(genre.value_en)
+
+        for ser in self.series.all():
+            a.append(ser.name)
+
+        c.append(self.annotation)
+
+        self.index_a = ' '.join(a)
+        self.index_c = ' '.join(c)
+
+    update_search_index.alters_data = True
 
 
 # -------------------------------------------
