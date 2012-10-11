@@ -118,7 +118,10 @@ class Command(BaseCommand):
                             series_link.book = book
                             if 'index' in in_series:
                                 series_link.number = in_series['index']
+                            series_links.append(series_link)
                         BookSeries.objects.bulk_create(series_links)
+
+                    book.update_search_index()
 
                     total_db_links_time += (datetime.datetime.now() - before_db_links).total_seconds()
                     total_db_time += (datetime.datetime.now() - before_db).total_seconds()
