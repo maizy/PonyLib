@@ -8,13 +8,18 @@ __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 __version__ = '0.1'
 __doc__ = 'Load and parse json settings as module variables for from ... import *'
 
+import os.path as path
+
 from ponylib.utils.json_settings import settings_path as _settings_path
 from ponylib.utils.json_settings import parse_json_with_comments as _parse_json_with_comments
 
 # no additional key checks here
 # json structure should be valid
-_settings = _parse_json_with_comments(_settings_path)
+if not path.exists(_settings_path):
+    raise RuntimeError, "Settings cannot be imported, " \
+                       "because %s not exist at %s" % (path.basename(_settings_path), path.dirname(_settings_path))
 
+_settings = _parse_json_with_comments(_settings_path)
 #import upprint
 #upprint.pprint(_settings)
 
@@ -51,3 +56,4 @@ del _settings_path
 del _settings
 del _parse_json_with_comments
 del _debug_section
+del path
