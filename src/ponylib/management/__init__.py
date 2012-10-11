@@ -56,7 +56,6 @@ def rebuild_search_index(query, query_args, action_message = ''):
             try:
                 book = Book.objects.get(pk=id)
                 book.update_search_index()
-                book.save()
                 sys.stdout.write('.')
             except Book.DoesNotExist: #when processing book may be deleted
                 sys.stdout.write('-')

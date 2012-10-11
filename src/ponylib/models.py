@@ -13,6 +13,8 @@ path = os.path
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
+from ponylib.search.signals import book_index_updated
+
 _prefix = 'ponylib_'
 
 # -------------------------------------------
@@ -167,7 +169,7 @@ class Book(models.Model):
     def __unicode__(self):
         return "id=%d, title='%s', file='%s'" % (self.id, self.title, self.get_basename())
 
-    def update_search_index(self):
+    def update_search_index(self, save=True):
 
         a = []
         c = []
@@ -188,6 +190,10 @@ class Book(models.Model):
 
         self.index_a = ' '.join(a)
         self.index_c = ' '.join(c)
+
+        if save:
+            self.save()
+            book_index_updated.send(None, book=self)
 
     update_search_index.alters_data = True
 
