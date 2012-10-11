@@ -147,6 +147,8 @@ class Book(models.Model):
     index_a = models.TextField()
     index_c = models.TextField()
 
+    has_index_errors = models.BooleanField(default=False)
+
     def get_basename(self):
         return path.basename(self.rel_path)
 
