@@ -73,7 +73,6 @@ INSTALLED_APPS = (
     'ponylib',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'django_like',
     'south',
 )
 

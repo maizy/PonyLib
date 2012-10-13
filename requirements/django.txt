@@ -3,6 +3,5 @@ Django==1.4.1
 South==0.7.5
 
 # Djongo battaries
-django-annoying==0.7.6
-django-like==0.0.3
+django-annoying>=0.7.6
 git+git://github.com/adieu/django-autoload.git
