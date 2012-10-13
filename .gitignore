@@ -29,6 +29,5 @@ local/
 share/
 
 # project specific
-devserver-default-host
 var/
 settings/*.json
