@@ -2,3 +2,4 @@ flup
 distribute
 wsgiref
 yolk
+fabric

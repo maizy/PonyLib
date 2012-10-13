@@ -1,0 +1,19 @@
+#!/bin/bash
+# Perform fab command with auto venv activation
+
+# License: GPL v3
+# Copyright: 2012 maizy.ru
+# Author: Nikita Kovaliov <nikita@maizy.ru>
+# Version: 0.1
+
+SCRIPT_PATH=$(cd ${0%/*} && echo $PWD/${0##*/})
+PROJECT_ROOT=`dirname "$SCRIPT_PATH"`
+
+if [ ! -f "${PROJECT_ROOT}/bin/activate" ];then
+    echo "Virtual env not exists"
+    exit 2
+fi
+
+cd "${PROJECT_ROOT}"
+. "${PROJECT_ROOT}/bin/activate"
+fab $@
