@@ -1,31 +1,24 @@
 # _*_ coding: utf-8 _*_
+from __future__ import unicode_literals
 
 __license__         = "GPL3"
-__copyright__       = "Copyright 2010-2011 maizy.ru"
+__copyright__       = "Copyright 2010-2012 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
 __version__         = "0.1"
-__doc__             = ""
-
 
 import os
-import sys
-
 
 class Iterator(object):
 
-
-
     roots = None
 
-    def __init__(self, roots = None):
+    def  __init__(self, roots=None):
         if roots:
             self.roots = roots
 
-
     def __iter__(self):
         return self.next()
-
 
     def next(self):
         """
@@ -44,9 +37,8 @@ class Iterator(object):
                 # ignore dirs start with '.'
                 # dirnames can be modified dinamically (but mutable only)
                 dirnames[:] = [dir for dir in dirnames if dir[0] != '.']
-
                 assert dirpath == root_path or dirpath.startswith(root_path+'/')
-                
+
                 if dirpath != root_path:
                     rel_dirpath = dirpath[len(root_path)+1:]
                 else:
@@ -54,10 +46,6 @@ class Iterator(object):
 
                 for file in filenames:
                     if file[0] != '.':
-#                        i -= 1
-#                        if i < 0:
-#                            raise StopIteration
-
                         yield (root_path, os.path.join(rel_dirpath, file))
 
             raise StopIteration
