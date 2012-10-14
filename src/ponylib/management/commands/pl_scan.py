@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
         lib_paths = [os.path.realpath(x) for x in args]
 
-        iter = scanner.Iterator(lib_paths)
+        iter = scanner.FilesIterator(lib_paths)
 
         lib_paths_rows = {}
         for lib_path in lib_paths:

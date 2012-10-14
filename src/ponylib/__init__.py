@@ -1,7 +1,6 @@
 # _*_ coding: utf-8 _*_
 
-
-__license__ = 'GPL3'
+__license__ = 'GPL v3'
 __copyright__ = 'Copyright 2011-2012 maizy.ru'
 __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 

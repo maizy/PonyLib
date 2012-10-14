@@ -9,7 +9,7 @@ __version__         = "0.1"
 
 import os
 
-class Iterator(object):
+class FilesIterator(object):
 
     roots = None
 
@@ -45,7 +45,14 @@ class Iterator(object):
                     rel_dirpath = ''
 
                 for file in filenames:
-                    if file[0] != '.':
+                    if self.is_allow(file):
                         yield (root_path, os.path.join(rel_dirpath, file))
 
             raise StopIteration
+
+    def is_allow(self, file):
+        return file[0] != '.'
+
+class Fb2FilesIterator(FilesIterator):
+    def is_allow(self, file):
+        return super(Fb2FilesIterator, self).is_allow(file) and file.endwith('.fb2')

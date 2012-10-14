@@ -45,9 +45,8 @@ def read_fb2_meta(filepath):
              }
     """
 
-    stream = file(filepath, 'r')
-    mi = fb2_meta.get_metadata(stream)
-    stream.close()
+    with open(filepath, 'r') as stream:
+        mi = fb2_meta.get_metadata(stream)
 
     calibre_meta = mi.__dict__
 
