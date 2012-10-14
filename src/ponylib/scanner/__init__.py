@@ -8,6 +8,7 @@ __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 __version__         = "0.1"
 
 import os
+from django.utils.encoding import force_unicode
 
 class FilesIterator(object):
 
@@ -31,6 +32,7 @@ class FilesIterator(object):
 
         for root_path in self.roots:
             root_path = os.path.realpath(root_path)
+            root_path = force_unicode(root_path)
             path_iter = os.walk(root_path, followlinks=True)
 
             for (dirpath, dirnames, filenames) in path_iter:
@@ -55,4 +57,4 @@ class FilesIterator(object):
 
 class Fb2FilesIterator(FilesIterator):
     def is_allow(self, file):
-        return super(Fb2FilesIterator, self).is_allow(file) and file.endwith('.fb2')
+        return super(Fb2FilesIterator, self).is_allow(file) and file.endswith('.fb2')

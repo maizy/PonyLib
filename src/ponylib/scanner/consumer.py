@@ -7,19 +7,25 @@ __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 
 __version__ = '0.1'
 
+import time
+import random
 from ponylib.utils.pool import Consumer
+
 
 class AddOrUpdateBookConsumer(Consumer):
 
+    logger_name = 'ponylib.scanner'
     #TODO update logic
-    allow_update=False
+    allow_update = False
 
 
     def consume(self):
 
         files_queue = self.kwargs['files_queue']
         for (lib_path, rel_path) in self.queue_iter(files_queue):
-            self.logger('lib: %s, path: %s' % (lib_path, rel_path))
+            self.logger.debug('%s/%s' % (lib_path, rel_path))
+            time.sleep(random.random() * 5)
+
 
 
 

@@ -25,24 +25,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        lib_paths = map(path.realpath, args)
+        lib_paths = map(path.abspath, args)
 
         pool = ProducerConsumersPool()
         files_queue = Queue.Queue(maxsize=100)
 
-        producer1 = Fb2FilesProducer(kwargs={'lib_paths' : lib_paths, 'file_queue': files_queue})
-        producer1.setName('producer1')
+        for i, lib_path in enumerate(lib_paths, start=1):
+            producer = Fb2FilesProducer(kwargs={'lib_paths' : [lib_path], 'files_queue': files_queue})
+            producer.setName('producer%02d' % i)
+            pool.add_producer(producer)
 
-        producer2 = Fb2FilesProducer(kwargs={'lib_paths' : lib_paths, 'file_queue': files_queue})
-        producer2.setName('producer2')
-
-        pool.add_producer(producer1)
-        pool.add_producer(producer2)
-
-        for i in xrange(10):
-            consumer = AddOrUpdateBookConsumer(kwargs={'file_queue': files_queue})
+        for i in xrange(1, 11):
+            consumer = AddOrUpdateBookConsumer(kwargs={'files_queue': files_queue})
             consumer.allow_update = False
-            consumer.setName('consumer%2d' % i)
+            consumer.setName('consumer%02d' % i)
             pool.add_consumer(consumer)
 
         pool.run()

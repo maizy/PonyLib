@@ -19,11 +19,8 @@ django.settings_module('ponylib.settings')
 
 from ponylib.fab import manage as _manage
 
-# locales
-from ponylib.fab import lc
-
-# tests
-from ponylib.fab import test
+#modules
+from ponylib.fab import lc, test, d
 
 # -------------------------------------------
 

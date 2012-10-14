@@ -15,6 +15,7 @@ from ponylib.scanner import Fb2FilesIterator
 
 class Fb2FilesProducer(Producer):
 
+    logger_name = 'ponylib.scanner'
     def_name = 'fb2_files_producer'
 
     def produce(self):
@@ -24,4 +25,8 @@ class Fb2FilesProducer(Producer):
 
         iter = Fb2FilesIterator(lib_paths)
         self.queue_push_from_iter(files_queue, iter)
+        self.logger.debug("i've done")
+
+#    def after_value_pushed(self, value):
+#        self.logger.debug('push %r' % (value,))
 
