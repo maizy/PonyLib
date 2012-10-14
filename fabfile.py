@@ -13,29 +13,32 @@ import os.path as path
 sys.path.append(path.join(path.dirname(__file__), 'src'))
 
 
-from fabric.api import local, lcd
+from fabric.api import local, lcd, warn, abort, task
 from fabric.contrib import django
 django.settings_module('ponylib.settings')
 
-from django.conf import settings
+from ponylib.fab import manage as _manage
 
-def locales_up():
-    """Update locales"""
-    with lcd(settings.WEB_ROOT):
-        local('./manage.py makemessages -l en_US')
-        local('./manage.py makemessages -l ru_RU')
+# locales
+from ponylib.fab import lc
 
-def locales_co():
-    """Compile locale messages"""
-    with lcd(settings.WEB_ROOT):
-        local('./manage.py compilemessages')
+# tests
+from ponylib.fab import test
 
-def testf():
-    """Fast tests (no db)"""
-    with lcd(settings.LIB_ROOT):
-        local('./manage.py test ponylib --settings=ponylib.settings_no_db_tests')
+# -------------------------------------------
 
-def test():
-    """All tests"""
-    with lcd(settings.LIB_ROOT):
-        local('./manage.py test ponylib')
+@task
+def scan(*roots):
+    """Add books to library"""
+    if len(roots) == 0:
+        abort('Usage:   fab scan:ROOT_PATH[,ROOT_PATH...]')
+
+    call_roots = []
+    for root in roots:
+        if path.exists(root):
+            call_roots.append(path.abspath(root))
+        else:
+            abort('Path %s not exists' % root)
+
+    _manage('pl_scan', "'%s'" % "' '".join(call_roots))
+
