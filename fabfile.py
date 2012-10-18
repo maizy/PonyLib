@@ -20,7 +20,7 @@ django.settings_module('ponylib.settings')
 from ponylib.fab import manage as _manage
 
 #modules
-from ponylib.fab import lc, test, d
+from ponylib.fab import locale, test, dev, db, search
 
 # -------------------------------------------
 
@@ -38,4 +38,3 @@ def scan(*roots):
             abort('Path %s not exists' % root)
 
     _manage('pl_scan', "'%s'" % "' '".join(call_roots))
-
