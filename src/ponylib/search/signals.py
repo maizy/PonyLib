@@ -9,7 +9,7 @@ __version__ = '0.1'
 
 from django.dispatch import Signal
 
-book_index_updated = Signal(providing_args=('book', ))
+book_index_updated = Signal(providing_args=('book', 'using' ))
 
 search_index_dropped = Signal()
 

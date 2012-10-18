@@ -41,6 +41,9 @@ if LIB_ROOT not in sys.path:
 PONYLIB_TEXT_SEARCH_ENGINE = None
 PONYLIB_TEXT_SEARCH_ENGINE_OPTS = {}
 
+# how many concurent connections pl_scan will open
+PONYLIB_SCAN_CONCURENT_CONNECTIONS_AMOUNT = 5
+PONYLIB_SCAN_THREADS = PONYLIB_SCAN_CONCURENT_CONNECTIONS_AMOUNT
 
 # -------------------------------------------
 # wine settings

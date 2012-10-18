@@ -8,7 +8,7 @@ __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 __version__ = '0.1'
 
 from django.dispatch import receiver
-from django.db import connection, transaction
+from django.db import connection, connections, transaction
 
 from ponylib.models import Book
 from ponylib.search.engines import BaseTextSearchEngine
@@ -20,9 +20,13 @@ from ponylib.search.errors import DbNotSupported, TooShortQuery
 class TextSearchEngine(BaseTextSearchEngine):
 
 
-    _cursor = None
+    _cursors = None
     _fts_column_name = 'fts'
     _fts_index_name = 'ponylib_book_fts_index'
+
+    def __init__(self):
+        super(TextSearchEngine, self).__init__()
+        self._cursors = {}
 
 
     def register_signals(self):
@@ -30,7 +34,7 @@ class TextSearchEngine(BaseTextSearchEngine):
         @receiver(book_index_updated, weak=False)
         def proxy(sender, **args):
             if 'book' in args:
-                return self.update_fts_field(args['book'])
+                return self.update_fts_field(args['book'], using=args['using'])
 
         self.logger and \
             self.logger.debug('connect to book_index_updated event')
@@ -43,9 +47,9 @@ class TextSearchEngine(BaseTextSearchEngine):
             self.logger.debug('connect to search_index_dropped event')
 
 
-    def update_fts_field(self, book):
+    def update_fts_field(self, book, using=None):
         if book.id is not None:
-            self._update_fts_column(book.id)
+            self._update_fts_column(book.id, using=using)
 
 
     def get_simple_book_finder_class(self):
@@ -115,7 +119,7 @@ class TextSearchEngine(BaseTextSearchEngine):
         }
         self._get_cursor().execute(query)
 
-    def _update_fts_column(self, book_id=None):
+    def  _update_fts_column(self, book_id=None, using=None):
         if book_id:
             self.logger and self.logger.debug('update fts field for book.id = %d' % book_id)
         else:
@@ -189,14 +193,19 @@ class TextSearchEngine(BaseTextSearchEngine):
             type = 'gin'
         return type
 
-    def _get_cursor(self):
-        if self._cursor is None:
-            self._cursor = connection.cursor()
-        return self._cursor
+    def _get_cursor(self, using=None):
+        if self._cursors.get(using) is None:
+            self._cursors[using] = self._get_connection(using=using).cursor()
+        return self._cursors[using]
 
-    def _get_qn(self):
-        return connection.ops.quote_name
+    def _get_qn(self, using=None):
+        return self._get_connection(using).ops.quote_name
 
+    def _get_connection(self, using=None):
+        if using is not None:
+            return connections[using]
+        else:
+            return connection
 
 class SimpleBookFinder(BaseSimpleBookFinder):
 

@@ -8,7 +8,8 @@ __version__         = "0.1"
 __doc__             = ""
 
 import os
-path = os.path
+import os.path as path
+import threading
 
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -22,20 +23,32 @@ _prefix = 'ponylib_'
 
 class _BaseManager(models.Manager):
 
-    def _get_or_create(self, field, value, save=True, create_args=None):
+    _get_or_create_lock = None
+
+    def __init__(self):
+        super(_BaseManager, self).__init__()
+        self._get_or_create_lock = threading.RLock()
+
+
+    def _get_or_create(self, field, value, save=True, create_args=None, using=None):
 
         if create_args is None:
             create_args = {}
 
-        args = {field: value}
-        try:
-            row = self.get(**args)
+        qs = self.get_query_set()
+        if using is not None:
+            qs = qs.using(using)
 
-        except ObjectDoesNotExist:
-            create_args.update(args)
-            row = self.create(**create_args)
-            if save:
-                row.save()
+        args = {field: value}
+        with self._get_or_create_lock:
+            try:
+                row = qs.get(**args)
+
+            except ObjectDoesNotExist:
+                create_args.update(args)
+                row = qs.create(**args)
+                if save:
+                    row.save(using=using)
 
         return row
 
@@ -43,27 +56,27 @@ class _BaseManager(models.Manager):
 
 class RootManager(_BaseManager):
 
-    def get_by_path_or_create(self, path):
-        return self._get_or_create('path', path)
+    def get_by_path_or_create(self, path, using=None):
+        return self._get_or_create('path', path, using=using)
 
 
 class AuthorManager(_BaseManager):
 
-    def get_by_fullname_or_create(self, fullname):
-        return self._get_or_create('fullname', fullname)
+    def get_by_fullname_or_create(self, fullname, using=None):
+        return self._get_or_create('fullname', fullname, using=using)
 
 class GenreManager(_BaseManager):
 
-    def get_by_code_or_create(self, code):
-        return self._get_or_create('code', code, create_args={
+    def get_by_code_or_create(self, code, using=None):
+        return self._get_or_create('code', code, using=using, create_args={
             'value_en' : 'Unknown (%s)' % code,
             'value_ru' : 'Неизвестно (%s)' % code,
         })
 
 class SeriesManager(_BaseManager):
 
-    def get_by_name_or_create(self, name):
-        return self._get_or_create('name', name)
+    def get_by_name_or_create(self, name, using=None):
+        return self._get_or_create('name', name, using=using)
 
 # -------------------------------------------
 # Objects (row-level)
@@ -118,7 +131,7 @@ class Author(models.Model):
 
 class Root(models.Model):
 
-    path = models.TextField()
+    path = models.TextField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -169,7 +182,7 @@ class Book(models.Model):
     def __unicode__(self):
         return "id=%d, title='%s', file='%s'" % (self.id, self.title, self.get_basename())
 
-    def update_search_index(self, save=True):
+    def update_search_index(self, save=True, using=None):
 
         a = []
         c = []
@@ -192,8 +205,8 @@ class Book(models.Model):
         self.index_c = ' '.join(c)
 
         if save:
-            self.save()
-            book_index_updated.send(None, book=self)
+            self.save(using=using)
+            book_index_updated.send(None, book=self, using=using)
 
     update_search_index.alters_data = True
 
