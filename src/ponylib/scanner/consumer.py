@@ -7,6 +7,7 @@ __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 
 __version__ = '0.1'
 
+import sys
 import os.path as path
 
 from ponylib.models import \
@@ -27,6 +28,7 @@ class AddOrUpdateBookConsumer(Consumer):
 
         files_queue = self.kwargs['files_queue']
         alias = self.kwargs['connection_alias']
+        stat = self.kwargs.get('stat')
 
         for (root_path, rel_path) in self.queue_iter(files_queue):
             self.logger.debug('%s/%s' % (root_path, rel_path))
@@ -100,7 +102,11 @@ class AddOrUpdateBookConsumer(Consumer):
 
             book.update_search_index()
 
-            print('.')
+            if stat is not None:
+                stat.add_book_stat()
+
+            #sys.stdout.write('.')
+            #sys.stdout.flush()
 
 
     def _read_meta_data(self, full_path):

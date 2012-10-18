@@ -18,6 +18,7 @@ import django.db
 from ponylib.utils.pool import ProducerConsumersPool
 from ponylib.scanner.consumer import AddOrUpdateBookConsumer
 from ponylib.scanner.producer import Fb2FilesProducer
+from ponylib.scanner.stat import Stat
 
 try:
     from psycopg2 import OperationalError as BadDbError
@@ -42,25 +43,33 @@ class Command(BaseCommand):
 
         lib_paths = map(path.abspath, args)
 
+        stat = Stat()
+        stat.start()
+
         pool = ProducerConsumersPool()
         files_queue = Queue.Queue(maxsize=100)
 
         for i, lib_path in enumerate(lib_paths, start=1):
             producer = Fb2FilesProducer(kwargs={
                 'lib_paths' : [lib_path],
-                'files_queue': files_queue })
+                'files_queue': files_queue,
+                'stat': stat})
             producer.setName('producer%02d' % i)
             pool.add_producer(producer)
 
         for i in xrange(1, settings.PONYLIB_SCAN_THREADS+1):
             consumer = AddOrUpdateBookConsumer(kwargs={
                 'files_queue': files_queue,
-                'connection_alias': connections.pop() })
+                'connection_alias': connections.pop(),
+                'stat': stat})
             consumer.allow_update = False
             consumer.setName('consumer%02d' % i)
             pool.add_consumer(consumer)
 
         pool.run()
+
+        stat.end()
+        print(stat.get_report())
 
 
 
