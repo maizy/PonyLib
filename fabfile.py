@@ -18,6 +18,7 @@ from fabric.contrib import django
 django.settings_module('ponylib.settings')
 
 from ponylib.fab import manage as _manage
+from django.conf import settings
 
 #modules
 from ponylib.fab import locale, test, dev, db, search
@@ -38,3 +39,10 @@ def scan(*roots):
             abort('Path %s not exists' % root)
 
     _manage('pl_scan', "'%s'" % "' '".join(call_roots))
+
+@task
+def upgrade():
+    """Upgrade project"""
+    with lcd(settings.PROJECT_ROOT):
+        local('pip install --upgrade -r requirements.txt')
+    _manage('migrate')
