@@ -7,18 +7,19 @@
         "user": "ponylib",
         "password": "pa$$word",
 
-        // Set to empty string for localhost
-        "host": "",
+        "host": "localhost",
+
+        // Set empty for default port
         "port": ""
     },
 
     //Language & local settings
-    "language": {
+    "local": {
         //Default language code (http://www.i18nguy.com/unicode/language-identifiers.html)
         //  "en-us" - English
         //  "ru-ru" - Russian
         // Fixed for console commands, but may be choosen at web interface.
-        "default_lang": "ru-ru",
+        "default_language": "ru-ru",
 
         //Choices can be found here: http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
         "time_zone": "Europe/Moscow"
@@ -46,7 +47,7 @@
     //Debug
     //Do `pip install -r requirement_debug.txt` before
     /*
-    "debug": {
+    , "debug": {
         //django debug on
         "django_debug": true,
 
@@ -56,7 +57,7 @@
 
     //Advanced scan settings
     /*
-    "scan": {
+    , "scan": {
         //how many concurent db connections pl_scan will open
         //you should have Postgre "max_connections" setting >= this value
         "concurent_connections_amount": 5

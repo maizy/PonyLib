@@ -45,5 +45,12 @@ def scan(*roots):
 def upgrade():
     """Upgrade project"""
     with lcd(settings.PROJECT_ROOT):
-        local('pip install --upgrade -r requirements.txt')
+        local('pip install -r requirements.txt')
+    _manage('syncdb')
+    _manage('migrate')
+
+@task
+def install():
+    """Upgrade project"""
+    _manage('syncdb')
     _manage('migrate')
