@@ -82,10 +82,19 @@ class AddOrUpdateBookConsumer(Consumer):
         if not book.title:
             #name without ext
             book.title = path.splitext(path.basename(rel_path))[0]
-        for addit_field in ('title', 'isbn', 'publisher', 'annotation', 'pubyear'):
+        for addit_field in ('title', 'isbn', 'publisher', 'pubyear'):
             val = meta_data.get(addit_field)
             if val is not None:
                 setattr(book, addit_field, val)
+
+        #sometimes annotation contains very long texts
+        #so limit it to 10000 chars
+        if 'annotation' in meta_data:
+            annotation = meta_data['annotation']
+            if len(annotation) > 10000:
+                annotation = annotation[0:9997] + '...'
+            book.annotation = annotation
+
         book.save(using=alias)
         if 'authors' in meta_data:
             author_links = []
