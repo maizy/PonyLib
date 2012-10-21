@@ -13,10 +13,41 @@ import threading
 
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from repoze.lru import LRUCache
 
 from ponylib.search.signals import book_index_updated
 
 _prefix = 'ponylib_'
+
+def get_id(func, cache_size=None):
+    """
+    wrapper for _BaseManager._get_or_create
+
+    with optional lru cache
+    (cache key based on first func param!)
+    """
+
+    def idzable(*args, **kwargs):
+        res = func(*args, **kwargs)
+        return res.id
+
+    if cache_size is None:
+        return idzable
+    else:
+        cache = LRUCache(size=cache_size) #global per class
+
+        def cachable(*args, **kwargs):
+            key = args[0]
+            cached = cache.get(key)
+            if cached:
+                return cached
+            else:
+                val = idzable(*args, **kwargs)
+                cache.put(key, val)
+                return val
+
+        return cachable
+
 
 # -------------------------------------------
 # Managers (table-level)
@@ -24,6 +55,7 @@ _prefix = 'ponylib_'
 class _BaseManager(models.Manager):
 
     _get_or_create_lock = None
+    lru_cache = None
 
     def __init__(self):
         super(_BaseManager, self).__init__()
@@ -52,18 +84,20 @@ class _BaseManager(models.Manager):
 
         return row
 
-
-
 class RootManager(_BaseManager):
 
     def get_by_path_or_create(self, path, using=None):
         return self._get_or_create('path', path, using=using)
+
+    get_id_by_path_or_create = get_id(get_by_path_or_create, cache_size=20)
 
 
 class AuthorManager(_BaseManager):
 
     def get_by_fullname_or_create(self, fullname, using=None):
         return self._get_or_create('fullname', fullname, using=using)
+
+    get_id_by_fullname_or_create = get_id(get_by_fullname_or_create, cache_size=200)
 
 class GenreManager(_BaseManager):
 
@@ -73,10 +107,14 @@ class GenreManager(_BaseManager):
             'value_ru' : 'Неизвестно (%s)' % code,
         })
 
+    get_id_by_code_or_create = get_id(get_by_code_or_create, cache_size=100)
+
 class SeriesManager(_BaseManager):
 
     def get_by_name_or_create(self, name, using=None):
         return self._get_or_create('name', name, using=using)
+
+    get_id_by_name_or_create = get_id(get_by_name_or_create, cache_size=100)
 
 # -------------------------------------------
 # Objects (row-level)

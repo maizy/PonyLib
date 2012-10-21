@@ -45,9 +45,7 @@ class AddOrUpdateBookConsumer(Consumer):
         if stat is not None:
             get_root_timer = stat.timer('consumer.process_path[get root]')
 
-        #TODO lru cache
-        root = Root.objects.get_by_path_or_create(root_path, using=alias)
-        root_id = root.id
+        root_id = Root.objects.get_id_by_path_or_create(root_path, using=alias)
 
         if stat is not None:
             get_root_timer()
@@ -93,8 +91,7 @@ class AddOrUpdateBookConsumer(Consumer):
             author_links = []
             for author_fullname in meta_data['authors']:
                 #TODO lru cache
-                author = Author.objects.get_by_fullname_or_create(author_fullname)
-                author_id = author.id
+                author_id = Author.objects.get_id_by_fullname_or_create(author_fullname)
 
                 author_link = BookAuthor()
                 author_link.book = book
@@ -105,8 +102,7 @@ class AddOrUpdateBookConsumer(Consumer):
             genree_links = []
             for genree_code in meta_data['genres']:
                 #TODO lru cache
-                genree = Genre.objects.get_by_code_or_create(genree_code)
-                genree_id = genree.id
+                genree_id = Genre.objects.get_id_by_code_or_create(genree_code)
 
                 genree_link = BookGenre()
                 genree_link.book = book
@@ -117,8 +113,7 @@ class AddOrUpdateBookConsumer(Consumer):
             series_links = []
             for in_series in meta_data['series']:
                 #TODO lru cache
-                series = Series.objects.get_by_name_or_create(in_series['name'])
-                series_id = series.id
+                series_id = Series.objects.get_id_by_name_or_create(in_series['name'])
 
                 series_link = BookSeries()
                 series_link.series_id = series_id

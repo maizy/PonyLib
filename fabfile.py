@@ -33,6 +33,7 @@ def scan(*roots):
 
     call_roots = []
     for root in roots:
+        root = path.expanduser(root)
         if path.exists(root):
             call_roots.append(path.abspath(root))
         else:

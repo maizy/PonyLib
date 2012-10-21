@@ -5,3 +5,6 @@ South==0.7.6
 # Djongo battaries
 django-annoying>=0.7.6
 git+git://github.com/adieu/django-autoload.git
+
+# Libs
+repoze.lru==0.6

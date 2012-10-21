@@ -1,4 +1,4 @@
--r requirements/django.txt
+-r requirements/base.txt
 -r requirements/parsers.txt
 -r requirements/deploy.txt
 -r requirements/debug.txt
