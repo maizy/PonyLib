@@ -41,6 +41,9 @@ if LIB_ROOT not in sys.path:
 PONYLIB_TEXT_SEARCH_ENGINE = None
 PONYLIB_TEXT_SEARCH_ENGINE_OPTS = {}
 
+# how many concurent connections pl_scan will open
+PONYLIB_SCAN_CONCURENT_CONNECTIONS_AMOUNT = 5
+PONYLIB_SCAN_THREADS = PONYLIB_SCAN_CONCURENT_CONNECTIONS_AMOUNT
 
 # -------------------------------------------
 # wine settings
@@ -198,7 +201,7 @@ TEMPLATE_DEBUG = DEBUG
 
 if DEBUG_TOOLBAR:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('debug_toolbar.middleware.DebugToolbarMiddleware', )
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'bshell', )
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: True,
         'INTERCEPT_REDIRECTS': False,

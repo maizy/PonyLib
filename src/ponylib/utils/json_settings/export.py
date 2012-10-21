@@ -9,6 +9,7 @@ __version__ = '0.1'
 __doc__ = 'Load and parse json settings as module variables for from ... import *'
 
 import os.path as path
+from copy import copy
 
 from ponylib.utils.json_settings import settings_path as _settings_path
 from ponylib.utils.json_settings import parse_json_with_comments as _parse_json_with_comments
@@ -34,6 +35,15 @@ DATABASES = {
     }
 }
 
+_scan = _settings.get('scan', {})
+PONYLIB_SCAN_CONCURENT_CONNECTIONS_AMOUNT = int(_scan.get('concurent_connections_amount', 5))
+PONYLIB_SCAN_THREADS = PONYLIB_SCAN_CONCURENT_CONNECTIONS_AMOUNT
+
+if PONYLIB_SCAN_CONCURENT_CONNECTIONS_AMOUNT > 1:
+    #it's safe to create additional connection, they initing lazy
+    for _i in xrange(PONYLIB_SCAN_CONCURENT_CONNECTIONS_AMOUNT-1):
+        DATABASES['additional_%d' % _i] = copy(DATABASES['default'])
+
 LANGUAGE_CODE = _settings['local']['default_language']
 TIME_ZONE = _settings['local']['time_zone']
 SECRET_KEY = _settings['secret_key']
@@ -57,3 +67,5 @@ del _settings
 del _parse_json_with_comments
 del _debug_section
 del path
+del copy
+del _scan

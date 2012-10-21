@@ -47,8 +47,19 @@
     //Do `pip install -r requirement_debug.txt` before
     /*
     "debug": {
+        //django debug on
         "django_debug": true,
+
+        //django_debug_toolbar on
         "django_debug_toolbar": true,
+    }*/
+
+    //Advanced scan settings
+    /*
+    "scan": {
+        //how many concurent db connections pl_scan will open
+        //you should have Postgre "max_connections" setting >= this value
+        "concurent_connections_amount": 5
     }*/
 
 }

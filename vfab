@@ -14,6 +14,5 @@ if [ ! -f "${PROJECT_ROOT}/bin/activate" ];then
     exit 2
 fi
 
-cd "${PROJECT_ROOT}"
 . "${PROJECT_ROOT}/bin/activate"
-fab $@
+fab -c "${PROJECT_ROOT}/fabfile.py" $@
