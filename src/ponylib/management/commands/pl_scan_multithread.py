@@ -29,14 +29,15 @@ class Command(BaseCommand):
 
 
     args = '<lib_dir lib_dir ...>'
-    help = u'Scan library dirs'
-
+    help = u'Scan library dirs (mutlithread version)'
     logger = None
-
 
     def handle(self, *args, **options):
 
         self.logger = logging.getLogger('ponylib.scanner')
+
+        #XXX not stable now. Have many gotchas with orm and lxml. up to seg faults.
+        #    see: https://github.com/maizy/PonyLib/issues/12#issuecomment-9642515
 
         #TODO shared connections pool
         connections = self.prepare_and_check_db_connections()
@@ -69,8 +70,7 @@ class Command(BaseCommand):
         pool.run()
 
         stat.end()
-        print(' Done\n')
-        print(stat.get_report())
+        stat.print_report()
 
 
 

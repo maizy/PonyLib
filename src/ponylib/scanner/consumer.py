@@ -31,23 +31,40 @@ class AddOrUpdateBookConsumer(Consumer):
         stat = self.kwargs.get('stat')
 
         for (root_path, rel_path) in self.queue_iter(files_queue):
-            self.logger.debug('%s/%s' % (root_path, rel_path))
-            full_path = path.join(root_path, rel_path)
+            self._process_path(root_path, rel_path,
+                alias=alias, stat=stat)
 
-            #TODO lru cache
-            root = Root.objects.get_by_path_or_create(root_path, using=alias)
-            root_id = root.id
+    def _process_path(self, root_path, rel_path, alias=None, stat=None):
+        self.logger.debug('%s/%s' % (root_path, rel_path))
+        full_path = path.join(root_path, rel_path)
 
-            meta_data, has_index_errors = self._read_meta_data(full_path)
+        get_root_timer = None
+        meta_data_timer = None
+        add_book_timer = None
 
-            self._add_book(root_id, alias, rel_path, meta_data, has_index_errors)
+        if stat is not None:
+            get_root_timer = stat.timer('consumer.process_path[get root]')
 
-            if stat is not None:
-                stat.add_book_stat()
+        #TODO lru cache
+        root = Root.objects.get_by_path_or_create(root_path, using=alias)
+        root_id = root.id
 
-            sys.stdout.write('.')
-            sys.stdout.flush()
+        if stat is not None:
+            get_root_timer()
+            meta_data_timer = stat.timer('consumer.process_path[parse meta data]')
 
+        meta_data, has_index_errors = self._read_meta_data(full_path)
+
+        if stat is not None:
+            meta_data_timer()
+            add_book_timer = stat.timer('consumer.process_path[add book]')
+
+        self._add_book(root_id, rel_path, meta_data,
+            has_index_errors=has_index_errors, alias=alias)
+
+        if stat is not None:
+            add_book_timer()
+            stat.add_book_stat()
 
     def _read_meta_data(self, full_path):
         has_index_errors = False
@@ -58,7 +75,7 @@ class AddOrUpdateBookConsumer(Consumer):
             has_index_errors = True
         return meta, has_index_errors
 
-    def _add_book(self, root_id, alias, rel_path, meta_data, has_index_errors=False):
+    def _add_book(self, root_id, rel_path, meta_data, has_index_errors=False, alias=None):
         book = Book()
         book.root_id = root_id
         book.rel_path = rel_path

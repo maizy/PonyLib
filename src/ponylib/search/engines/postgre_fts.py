@@ -121,9 +121,9 @@ class TextSearchEngine(BaseTextSearchEngine):
 
     def  _update_fts_column(self, book_id=None, using=None):
         if book_id:
-            self.logger and self.logger.debug('update fts field for book.id = %d' % book_id)
+            self.logger and self.logger.debug('update fts field for book.id = %d (using: %r)' % (book_id, using))
         else:
-            self.logger and self.logger.debug('update fts column for all books')
+            self.logger and self.logger.debug('update fts column for all books (using: %r)' % using)
 
         qn = self._get_qn()
         query = 'UPDATE %(table)s SET %(fts_col)s = ' \
