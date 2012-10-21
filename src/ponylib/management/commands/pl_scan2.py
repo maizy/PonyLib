@@ -69,6 +69,7 @@ class Command(BaseCommand):
         pool.run()
 
         stat.end()
+        print(' Done\n')
         print(stat.get_report())
 
 

@@ -146,7 +146,7 @@ class TextSearchEngine(BaseTextSearchEngine):
             'fts_col': qn(self._fts_column_name),
         }
 
-        self._get_cursor().execute(query, q_params)
+        self._get_cursor(using=using).execute(query, q_params)
 
 
     def _has_fts_index(self):
