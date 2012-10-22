@@ -37,7 +37,7 @@ def get_id(func, cache_size=None):
         cache = LRUCache(size=cache_size) #global per class
 
         def cachable(*args, **kwargs):
-            key = args[0]
+            key = args[1]
             cached = cache.get(key)
             if cached:
                 return cached
