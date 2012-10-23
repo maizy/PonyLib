@@ -8,7 +8,7 @@ __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 __version__ = '0.1'
 
 from django.dispatch import receiver
-from django.db import connection, connections, transaction
+from django.db import transaction
 
 from ponylib.models import Book
 from ponylib.search.engines import BaseTextSearchEngine
@@ -194,7 +194,8 @@ class TextSearchEngine(BaseTextSearchEngine):
         return type
 
     def _get_cursor(self, using=None):
-        if self._cursors.get(using) is None:
+        cursor = self._cursors.get(using)
+        if self._cursors.get(using) is None or cursor.closed:
             self._cursors[using] = self._get_connection(using=using).cursor()
         return self._cursors[using]
 
@@ -203,8 +204,10 @@ class TextSearchEngine(BaseTextSearchEngine):
 
     def _get_connection(self, using=None):
         if using is not None:
+            from django.db import connections
             return connections[using]
         else:
+            from django.db import connection
             return connection
 
 class SimpleBookFinder(BaseSimpleBookFinder):
@@ -226,7 +229,7 @@ class SimpleBookFinder(BaseSimpleBookFinder):
 #        cursor.execute('SELECT count(*) as "cnt" FROM "pg_catalog"."pg_ts_config" WHERE "cfgname" = %s',
 #            (fts_config, )
 #        )
-        cursor = connection.cursor()
+        cursor = self._get_connection().cursor()
         cursor.execute(
             "SELECT numnode(plainto_tsquery(%s, %s))",
             (fts_config, self._get_fts_query())
@@ -246,7 +249,7 @@ class SimpleBookFinder(BaseSimpleBookFinder):
         @rtype: django.db.models.query.RawQuerySet
         """
         self.check_query()
-        qn = connection.ops.quote_name
+        qn = self._get_connection().ops.quote_name
 
         params={
             'query' : self._get_fts_query(),
@@ -277,7 +280,7 @@ class SimpleBookFinder(BaseSimpleBookFinder):
     def __len__(self):
 
         self.check_query()
-        qn = connection.ops.quote_name
+        qn = self._get_qn()
 
         params={
             'query' : self._get_fts_query(),
@@ -293,9 +296,16 @@ class SimpleBookFinder(BaseSimpleBookFinder):
             'fts_col': qn(self.engine._fts_column_name),
             'table': qn(Book._meta.db_table),
         }
-        cursor = connection.cursor()
+        cursor = self._get_connection().cursor()
         cursor.execute(select, params)
         res = cursor.fetchone()
         if res is not None:
             return int(res[0])
         return 0
+
+    def _get_qn(self):
+        return self._get_connection().ops.quote_name
+
+    def _get_connection(self):
+        from django.db import connection
+        return connection
