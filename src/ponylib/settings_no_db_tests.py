@@ -10,6 +10,6 @@ __doc__             = ""
 
 from ponylib.settings import *
 
-TEST_RUNNER = 'ponylib.tests.runner.NoDbTestSuiteRunner'
+TEST_RUNNER = 'ponylib.tests.NoDbTestSuiteRunner'
 SOUTH_TESTS_MIGRATE = False
 NO_DB_TESTS = True

@@ -14,10 +14,10 @@ from ponylib.fab import manage as _manage
 @task(default=True)
 def test():
     """All tests"""
-    _manage('test', 'ponylib')
+    _manage('test', 'ponylib --verbosity=2')
 
 
 @task
 def fast():
     """Fast tests (no db)"""
-    _manage('test', 'ponylib --settings=ponylib.settings_no_db_tests')
+    _manage('test', 'ponylib --settings=ponylib.settings_no_db_tests --verbosity=2')

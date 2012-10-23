@@ -10,7 +10,6 @@ __version__ = '0.1'
 __doc__ = ''
 
 from django.utils import unittest
-from django.test import TestCase
 
 from ponylib.search.simple import BaseSimpleBookFinder, MIN_WORD_LEN
 import ponylib.search.errors as search_errors
