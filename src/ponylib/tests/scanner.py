@@ -56,14 +56,18 @@ class AddBookConsumerTestCase(django.test.TestCase):
             book_from_db = Book.objects.get(pk=book_id)
 
             #unlimited field
-            self.assertEqual(book.title, mock_meta['title'])
-            self.assertEqual(book.authors.count(), 1)
-            self.assertEqual(book.authors[0].fullname, mock_meta['author'])
+            self.assertEqual(book_from_db.title, mock_meta['title'])
+            self.assertEqual(book_from_db.authors.count(), 1)
+            self.assertEqual(book_from_db.authors[0].fullname, mock_meta['author'])
 
             #limited fiels
-            self.assertEqual(book.series.count(), 1)
-            self.assertNotEquals(book.series[0].index, mock_meta['series'][0]['index'])
-            self.assertEquals(book.series[0].index, mock_meta['series'][0]['index'][:series_index_maxlen])
+            self.assertEqual(book_from_db.series.count(), 1)
+            self.assertNotEquals(book_from_db.series[0].index, mock_meta['series'][0]['index'])
+            self.assertEquals(book_from_db.series[0].index, mock_meta['series'][0]['index'][:series_index_maxlen])
+
+            self.assertEqual(book_from_db.genres.count(), 1)
+            self.assertNotEquals(book_from_db.genres[0].code, mock_meta['genres'][0])
+            self.assertEquals(book_from_db.series[0].index, mock_meta['genres'][0][:genre_code_maxlen])
 
 
     #TODO: consumer_without_stat_test
