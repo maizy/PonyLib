@@ -15,6 +15,7 @@ from ponylib.tests import generate_rand_word, generate_rand_phrase
 class CacheTestCase(django.test.TestCase):
 
     def test_get_by_ANY_or_create(self):
+        """Issue #51"""
         manager = Series.objects
         ph1 = generate_rand_word(4)
         obj1 = manager.get_by_name_or_create(ph1)
@@ -24,6 +25,7 @@ class CacheTestCase(django.test.TestCase):
         self.assertEqual(obj1_again.id, obj1.id)
 
     def test_get_id_by_ANY_or_create(self):
+        """Issue #51"""
         manager = Author.objects
         ph1 = generate_rand_word(4)
         obj1_id = manager.get_id_by_fullname_or_create(ph1)

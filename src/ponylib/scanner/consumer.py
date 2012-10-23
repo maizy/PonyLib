@@ -57,12 +57,14 @@ class AddOrUpdateBookConsumer(Consumer):
             meta_data_timer()
             add_book_timer = stat.timer('consumer.process_path[add book]')
 
-        self._add_book(root_id, rel_path, meta_data,
+        book = self._add_book(root_id, rel_path, meta_data,
             has_index_errors=has_index_errors, alias=alias)
 
         if stat is not None:
             add_book_timer()
             stat.add_book_stat()
+
+        return book
 
     def _read_meta_data(self, full_path):
         has_index_errors = False
@@ -132,6 +134,7 @@ class AddOrUpdateBookConsumer(Consumer):
                 series_links.append(series_link)
             BookSeries.objects.using(alias).bulk_create(series_links)
         book.update_search_index()
+        return book
 
 
 

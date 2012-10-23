@@ -31,10 +31,11 @@ def db_suite():
     Fully-functional tests, with db access, fixtures etc.
     @rtype:unittest.TestSuite
     """
-    from ponylib.tests import search, models
+    from ponylib.tests import search, models, scanner
     suite = unittest.TestSuite([
         unittest.TestLoader().loadTestsFromModule(search),
         unittest.TestLoader().loadTestsFromModule(models),
+        unittest.TestLoader().loadTestsFromModule(scanner),
     ])
     return suite
 
