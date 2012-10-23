@@ -14,7 +14,10 @@ class MyPrettyPrinter(PrettyPrinter):
             if repr[0] in ('"', "'"):
                 repr = repr.decode('string_escape')
             elif repr[0:2] in ("u'", 'u"'):
-                enc = sys.stdout.encoding and sys.stdout.encoding or 'UTF-8'
+                if hasattr(sys.stdout, 'encoding'):
+                    enc = sys.stdout.encoding and sys.stdout.encoding or 'UTF-8'
+                else:
+                    enc = 'UTF-8'
                 repr = repr.decode('unicode_escape').encode(enc)
         return repr, readable, recursive
 
