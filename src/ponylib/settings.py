@@ -166,6 +166,8 @@ SKIP_SOUTH_TESTS = True
 
 NO_DB_TESTS = False
 
+TEST_RUNNER = 'ponylib.tests.SearchEngineTestSuiteRunner'
+
 # -------------------------------------------
 # Debug
 

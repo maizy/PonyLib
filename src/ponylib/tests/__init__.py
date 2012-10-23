@@ -57,7 +57,7 @@ def no_db_suite():
 
 
 # -------------------------------------------
-
+# Test runners
 
 class NoDbTestSuiteRunner(DjangoTestSuiteRunner):
     """
@@ -69,6 +69,27 @@ class NoDbTestSuiteRunner(DjangoTestSuiteRunner):
 
     def teardown_databases(self, old_config, **kwargs):
         pass
+
+
+class SearchEngineTestSuiteRunner(DjangoTestSuiteRunner):
+    """
+    Run django tests with search engine initialization
+    """
+
+    def setup_databases(self, **kwargs):
+        ret = super(SearchEngineTestSuiteRunner, self).setup_databases(**kwargs)
+        from ponylib.search import engines
+        engines.engine.setup_or_update_engine()
+        return ret
+
+    def teardown_databases(self, old_config, **kwargs):
+        try:
+            from ponylib.search import engines
+            engines.engine.drop_engine()
+        except Exception, e:
+            pass
+
+        super(SearchEngineTestSuiteRunner, self).teardown_databases(old_config, **kwargs)
 
 
 # -------------------------------------------

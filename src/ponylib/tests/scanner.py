@@ -31,7 +31,7 @@ class AddBookConsumerTestCase(django.test.TestCase):
     def tearDown(self):
         pass
 
-    def test_over_limit_strings(self):
+    def test_over_max_length_strings(self):
         """Issue #52"""
 
         series_index_maxlen = BookSeries._meta.get_field_by_name('number')[0].max_length
@@ -57,17 +57,15 @@ class AddBookConsumerTestCase(django.test.TestCase):
 
             #unlimited field
             self.assertEqual(book_from_db.title, mock_meta['title'])
-            self.assertEqual(book_from_db.authors.count(), 1)
-            self.assertEqual(book_from_db.authors[0].fullname, mock_meta['author'])
 
             #limited fiels
             self.assertEqual(book_from_db.series.count(), 1)
-            self.assertNotEquals(book_from_db.series[0].index, mock_meta['series'][0]['index'])
-            self.assertEquals(book_from_db.series[0].index, mock_meta['series'][0]['index'][:series_index_maxlen])
+            self.assertEquals(
+                book_from_db.get_series_links()[0].number,
+                mock_meta['series'][0]['index'][:series_index_maxlen-3] + '...')
 
             self.assertEqual(book_from_db.genres.count(), 1)
-            self.assertNotEquals(book_from_db.genres[0].code, mock_meta['genres'][0])
-            self.assertEquals(book_from_db.series[0].index, mock_meta['genres'][0][:genre_code_maxlen])
+            self.assertEquals(book_from_db.genres.all()[0].code, mock_meta['genres'][0][:genre_code_maxlen])
 
 
     #TODO: consumer_without_stat_test

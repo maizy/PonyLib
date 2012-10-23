@@ -101,7 +101,6 @@ class AddOrUpdateBookConsumer(Consumer):
         if 'authors' in meta_data:
             author_links = []
             for author_fullname in meta_data['authors']:
-                #TODO lru cache
                 author_id = Author.objects.get_id_by_fullname_or_create(author_fullname)
 
                 author_link = BookAuthor()
@@ -112,7 +111,8 @@ class AddOrUpdateBookConsumer(Consumer):
         if 'genres' in meta_data:
             genree_links = []
             for genree_code in meta_data['genres']:
-                #TODO lru cache
+
+                genree_code = genree_code[:40]
                 genree_id = Genre.objects.get_id_by_code_or_create(genree_code)
 
                 genree_link = BookGenre()
@@ -123,14 +123,16 @@ class AddOrUpdateBookConsumer(Consumer):
         if 'series' in meta_data:
             series_links = []
             for in_series in meta_data['series']:
-                #TODO lru cache
                 series_id = Series.objects.get_id_by_name_or_create(in_series['name'])
 
                 series_link = BookSeries()
                 series_link.series_id = series_id
                 series_link.book = book
                 if 'index' in in_series:
-                    series_link.number = in_series['index']
+                    number = in_series['index']
+                    if len(number) > 40:
+                        number = number[:37] + '...'
+                    series_link.number = number
                 series_links.append(series_link)
             BookSeries.objects.using(alias).bulk_create(series_links)
         book.update_search_index()
