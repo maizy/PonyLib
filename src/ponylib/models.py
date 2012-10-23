@@ -256,7 +256,7 @@ class BookSeries(models.Model):
     series = models.ForeignKey('Series')
     book = models.ForeignKey('Book')
 
-    number = models.CharField(max_length=20)
+    number = models.CharField(max_length=40)
 
     class Meta:
         db_table = _prefix+'book_series'
