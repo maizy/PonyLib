@@ -25,27 +25,24 @@ class PoolLocked(Exception):
 
 class ThreadWithKwargs(Thread):
 
-    kargs = None
     def_name = None
-    stop_token = None
     logger_name = None
-    logger = None
 
     def __init__(self, group=None, target=None, name=None, kwargs=None, verbose=None):
 
         if name is None:
-            name = self.def_name
+            name = self.__class__.def_name
+        super(ThreadWithKwargs, self).__init__(group=group, target=target, name=name, verbose=verbose)
 
-        logger_name = self.logger_name
+        logger_name = self.__class__.logger_name
         if logger_name is None:
             logger_name = self.__module__ + '.' + self.__class__.__name__
         self.logger = logging.getLogger(logger_name)
 
-        super(ThreadWithKwargs, self).__init__(group=group, target=target, name=name, verbose=verbose)
-
         if kwargs is None:
             kwargs = {}
         self.kwargs = kwargs
+        self.stop_token = None
 
     def is_interrupt(self):
         return self.stop_token is not None and self.stop_token.stop
@@ -54,12 +51,11 @@ class ThreadWithKwargs(Thread):
 class Consumer(ThreadWithKwargs):
 
     __metaclass__ = abc.ABCMeta
-    producers_done_event = None
-    _sleep_time = 0.2
 
     def __init__(self, group=None, target=None, name=None, kwargs=None, verbose=None):
         super(Consumer, self).__init__(group, target, name, kwargs, verbose)
         self.producers_done_event = Event()
+        self._sleep_time = 0.2
 
     def run(self):
         self.consume()
@@ -93,12 +89,11 @@ class Consumer(ThreadWithKwargs):
 class Producer(ThreadWithKwargs):
 
     __metaclass__ = abc.ABCMeta
-    _sleep_time = 1
-    done_event = None
 
     def __init__(self, group=None, target=None, name=None, kwargs=None, verbose=None):
         super(Producer, self).__init__(group, target, name, kwargs, verbose)
         self.done_event = Event()
+        self._sleep_time = 1
 
     def run(self):
         self.produce()
@@ -137,22 +132,14 @@ class Producer(ThreadWithKwargs):
 
 class ProducerConsumersPool(object):
 
-    producers_done_event = None
-    stop_token = None
-    logger = None
-
-    producers = None
-    consumers = None
-
-    _editable = True
-    _sleep_time = 0.5
-
     def __init__(self):
         self.producers_done_event = Event()
         self.stop_token = StopToken()
         self.producers = []
         self.consumers = []
         self.logger = logging.getLogger('ponylib.pool')
+        self._editable = True
+        self._sleep_time = 0.5
 
     def add_producer(self, producer):
         if not self.editable:

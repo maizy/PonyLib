@@ -68,18 +68,9 @@ class _Finder(object):
 
 
 class BaseSimpleBookFinder(_Finder):
-
-    """\
+    """
     Base class for simple one line query finder
     """
-
-    _params = {}
-    _query = None
-    _words = None
-
-    checked = False
-    engine = None
-
 
     def __init__(self, **params):
         """
@@ -89,6 +80,10 @@ class BaseSimpleBookFinder(_Finder):
 
         @keyword query: user query
         """
+        self._query = None
+        self._words = None
+        self.checked = False
+        self.engine = None
         if 'query' in params:
             self._query = force_unicode(params['query'])
             del params['query']
@@ -96,7 +91,6 @@ class BaseSimpleBookFinder(_Finder):
         self._params = params
 
     def check_query(self, raise_=True):
-
         if raise_:
             self._check_query()
         else:
@@ -107,7 +101,6 @@ class BaseSimpleBookFinder(_Finder):
 
 
     def _check_query(self):
-
         if self.checked:
             return True
 

@@ -20,12 +20,12 @@ class AddOrUpdateBookConsumer(Consumer):
 
 
     logger_name = 'ponylib.scanner'
-    #TODO update logic
-    allow_update = False
 
+    def __init__(self, group=None, target=None, name=None, kwargs=None, verbose=None):
+        super(AddOrUpdateBookConsumer, self).__init__(group, target, name, kwargs, verbose)
+        self.allow_update = False
 
     def consume(self):
-
         files_queue = self.kwargs['files_queue']
         alias = self.kwargs['connection_alias']
         stat = self.kwargs.get('stat')

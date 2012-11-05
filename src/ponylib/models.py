@@ -54,13 +54,10 @@ def get_id(func, cache_size=None):
 
 class _BaseManager(models.Manager):
 
-    _get_or_create_lock = None
-    lru_cache = None
-
     def __init__(self):
         super(_BaseManager, self).__init__()
         self._get_or_create_lock = threading.RLock()
-
+        self.lru_cache = None
 
     def _get_or_create(self, field, value, save=True, create_args=None, using=None):
 

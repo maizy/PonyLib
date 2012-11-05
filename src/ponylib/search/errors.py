@@ -7,31 +7,39 @@ __copyright__ = 'Copyright 2012 maizy.ru'
 __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 
 __version__ = '0.1'
-__doc__ = ''
 
 class SearchError(Exception):
 
-    finder = None
-    user_message = _('Unknown error')
+    def __init__(self, *args, **kwargs):
+        super(SearchError, self).__init__(*args, **kwargs)
+        self.finder = None
+        self.user_message = _('Unknown error')
 
 
 class TooShortQuery(SearchError):
 
-    min_len = None
-
-    user_message = _('All query parts are too short or ignored')
+    def __init__(self, *args, **kwargs):
+        super(TooShortQuery, self).__init__(*args, **kwargs)
+        self.min_len = None
+        self.user_message = _('All query parts are too short or ignored')
 
 
 class NoQuery(SearchError):
 
-    user_message = _('Empty query')
+    def __init__(self, *args, **kwargs):
+        super(NoQuery, self).__init__(*args, **kwargs)
+        self.user_message = _('Empty query')
 
 
 class NotSupported(SearchError):
 
-    user_message = _('Feature not supported')
+    def __init__(self, *args, **kwargs):
+        super(NotSupported, self).__init__(*args, **kwargs)
+        self.user_message = _('Feature not supported')
 
 
 class DbNotSupported(NotSupported):
 
-    user_message = _('Feature not supported for your RDBMS')
+    def __init__(self, *args, **kwargs):
+        super(DbNotSupported, self).__init__(*args, **kwargs)
+        self.user_message = _('Feature not supported for your RDBMS')

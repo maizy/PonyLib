@@ -7,7 +7,6 @@ __copyright__       = "Copyright 2011 maizy.ru"
 __author__          = "Nikita Kovaliov <nikita@maizy.ru>"
 
 __version__         = "0.1"
-__doc__             = ""
 
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, HttpResponseNotFound

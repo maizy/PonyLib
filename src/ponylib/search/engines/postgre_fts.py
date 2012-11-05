@@ -20,13 +20,11 @@ from ponylib.search.errors import DbNotSupported, TooShortQuery
 class TextSearchEngine(BaseTextSearchEngine):
 
 
-    _cursors = None
-    _fts_column_name = 'fts'
-    _fts_index_name = 'ponylib_book_fts_index'
-
     def __init__(self):
         super(TextSearchEngine, self).__init__()
         self._cursors = {}
+        self._fts_column_name = 'fts'
+        self._fts_index_name = 'ponylib_book_fts_index'
 
 
     def register_signals(self):

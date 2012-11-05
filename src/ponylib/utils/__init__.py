@@ -8,6 +8,7 @@ __author__ = 'Nikita Kovaliov <nikita@maizy.ru>'
 __version__ = '0.1'
 
 import math
+
 def group(list_, groups_amount):
     # FIXME group(range(9), 4) = [[0, 1, 2], [3, 4, 5], [6, 7, 8]] :)
     if groups_amount <= 0:

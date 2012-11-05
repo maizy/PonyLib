@@ -12,11 +12,8 @@ from django.utils.encoding import force_unicode
 
 class FilesIterator(object):
 
-    roots = None
-
     def  __init__(self, roots=None):
-        if roots:
-            self.roots = roots
+        self.roots = roots
 
     def __iter__(self):
         return self.next()

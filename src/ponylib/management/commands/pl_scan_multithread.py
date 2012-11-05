@@ -30,7 +30,6 @@ class Command(BaseCommand):
 
     args = '<lib_dir lib_dir ...>'
     help = u'Scan library dirs (mutlithread version)'
-    logger = None
 
     def handle(self, *args, **options):
 

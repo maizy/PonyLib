@@ -20,9 +20,6 @@ from ponylib.tests import generate_rand_phrase, generate_rand_word
 
 class AddBookConsumerTestCase(django.test.TestCase):
 
-    sample_fb2 = None
-    sample_root = None
-
     def setUp(self):
         self.sample_root = path.join(settings.PROJECT_ROOT, 'data', 'test-fb2')
         self.sample_fb2 = 'utf8-the-ebook.org-test.fb2'

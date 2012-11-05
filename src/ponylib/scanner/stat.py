@@ -14,26 +14,20 @@ from collections import Counter
 
 class Stat(object):
 
-    book_processed = 0
-
-    start_time = None
-    end_time = None
-    _timers = None
-    _timers_sum = None
-    _next_timer_id = 0
-    print_process_status = True
-
     def __init__(self):
         self._timers = {}
         self._timers_sum = Counter()
-
+        self.book_processed = 0
+        self.start_time = None
+        self.end_time = None
+        self._next_timer_id = 0
+        self.print_process_status = True
 
     def start(self):
         self.start_time = datetime.datetime.now()
 
     def end(self):
         self.end_time = datetime.datetime.now()
-
         if self.print_process_status:
             print(' Done\n')
 
