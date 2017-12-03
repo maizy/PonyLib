@@ -121,3 +121,10 @@ msgstr ""
 #: view/download.py:41
 msgid "Download"
 msgstr ""
+
+msgid "Enter password"
+msgstr ""
+
+msgid "Wrong password"
+msgstr ""
+

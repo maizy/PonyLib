@@ -17,11 +17,13 @@ from ponylib.search.simple import get_simple_finder_class
 from ponylib.search.errors import SearchError
 from ponylib.utils.paginator import build_pseudo_paginator
 from ponylib.search import engines
-
+from ponylib.view import check_password
 
 @render_to('search/search_form.html')
 def index(request):
-
+    check_res = check_password(request)
+    if check_res is not None:
+        return check_res
     c = {
         'page': {
             'title': _('Search'),
@@ -34,7 +36,9 @@ def index(request):
 
 @render_to('search/results.html')
 def results(request):
-
+    check_res = check_password(request)
+    if check_res is not None:
+        return check_res
     c = {
         'page': {
             'title': _('Search Results'),

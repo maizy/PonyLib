@@ -15,11 +15,14 @@ from annoying.decorators import render_to
 from django.template import RequestContext
 
 from ponylib.models import Book
+from ponylib.view import check_password
 
 
 @render_to('download/error.html')
 def fb2(request, book_id, book_name):
-
+    check_res = check_password(request)
+    if check_res is not None:
+        return check_res
     try:
         book = Book.objects.get(pk=book_id)
     except Book.DoesNotExist:

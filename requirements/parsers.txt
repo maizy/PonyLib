@@ -1,2 +1,2 @@
 # fb2 parser
-lxml==3.0.1
+lxml==3.8.0

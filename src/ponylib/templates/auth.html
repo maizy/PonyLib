@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="hero-unit">
+    <h1>{% trans 'Enter password' %}</h1>
+    {% if wrong_password %}
+        <p>{% trans 'Wrong password' %}</p>
+    {% endif %}
+    <form method="post">
+        <input type="password" name="password"/>
+        <br/>
+        <button type="submit" class="btn">{% trans 'Continue' %}</button>
+    </form>
+</div>
+{% endblock %}

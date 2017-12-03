@@ -1,4 +1,7 @@
 {
+    // use simple UNSECURE cookie password
+    //"simple_password": "pass",
+
     //Database settings
     "db": {
         "django_engine": "django.db.backends.postgresql_psycopg2",

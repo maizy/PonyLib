@@ -4,6 +4,7 @@
 # IDE
 .idea/
 .project/
+*.iml
 
 # Mac OS X junk
 .AppleDouble

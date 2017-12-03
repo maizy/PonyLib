@@ -120,3 +120,12 @@ msgstr "Файл книжки \"%s\" где-то потерялся"
 #: view/download.py:41
 msgid "Download"
 msgstr "Скачать"
+
+msgid "Enter password"
+msgstr "Введите пароль"
+
+msgid "Wrong password"
+msgstr "Неправильный пароль"
+
+msgid "Continue"
+msgstr "Продолжить"

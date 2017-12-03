@@ -8,7 +8,7 @@ __version__         = "0.1"
 __doc__             = ""
 
 
-from django.conf.urls.defaults import include, url, patterns
+from django.conf.urls import include, url, patterns
 from django.views.generic import RedirectView
 
 # from django.contrib import admin
@@ -31,6 +31,7 @@ urlpatterns += patterns('',
     url(r'^i18n/', include('django.conf.urls.i18n'), name='set-language'),
     url(r'^about/', 'ponylib.view.global.about', name='about'),
     url(r'^debug/', 'ponylib.view.global.debug', name='debug'),
+    url(r'^auth/', 'ponylib.view.global.auth', name='auth'),
 )
 
 #urlpatterns += patterns('',

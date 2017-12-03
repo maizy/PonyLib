@@ -1,3 +1,2 @@
 git+git://github.com/maizy/django-debug-toolbar.git@0.9.4-fixes#egg=django-debug-toolbar
-bpython
 mock==1.0.0

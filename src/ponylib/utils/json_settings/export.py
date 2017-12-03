@@ -51,6 +51,8 @@ SECRET_KEY = _settings['secret_key']
 PONYLIB_TEXT_SEARCH_ENGINE = _settings['search']['engine']
 PONYLIB_TEXT_SEARCH_ENGINE_OPTS = _settings['search'].get('engine_opts', {})
 
+SIMPLE_PASSWORD = _settings.get('simple_password')
+
 # debug section may be omitted
 _debug_section = _settings.get('debug')
 if _debug_section is not None:
