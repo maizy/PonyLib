@@ -53,6 +53,8 @@ PONYLIB_TEXT_SEARCH_ENGINE_OPTS = _settings['search'].get('engine_opts', {})
 
 SIMPLE_PASSWORD = _settings.get('simple_password')
 
+ALLOWED_HOSTS = _settings.get("allowed_hosts", [])
+
 # debug section may be omitted
 _debug_section = _settings.get('debug')
 if _debug_section is not None:

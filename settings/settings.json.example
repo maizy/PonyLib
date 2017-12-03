@@ -2,6 +2,8 @@
     // use simple UNSECURE cookie password
     //"simple_password": "pass",
 
+    "allowed_hosts": ["127.0.0.1", "example.com"],
+
     //Database settings
     "db": {
         "django_engine": "django.db.backends.postgresql_psycopg2",
@@ -55,7 +57,7 @@
         "django_debug": true,
 
         //django_debug_toolbar on
-        "django_debug_toolbar": true,
+        "django_debug_toolbar": true
     }*/
 
     //Advanced scan settings
