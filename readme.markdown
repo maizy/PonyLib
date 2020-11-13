@@ -1,6 +1,6 @@
 _Warning! Ancient versions of python & django are used._
 
-_Probably, you don't use this project anymore._
+_Probably, you should't use this project anymore._
 
 ----
 
