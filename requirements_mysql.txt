@@ -1,4 +1,0 @@
--r requirements/base.txt
--r requirements/parsers.txt
--r requirements/deploy.txt
--r requirements/mysql.txt
