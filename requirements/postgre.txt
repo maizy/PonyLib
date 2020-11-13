@@ -1,2 +1,2 @@
 # posgree client
-psycopg2==2.7.3.2
+psycopg2==2.8.6
