@@ -1,21 +1,17 @@
 package metadata
 
 import (
-	"io"
+	"fmt"
+	"os"
 
 	"dev.maizy.ru/ponylib/fb2_parser"
 	"dev.maizy.ru/ponylib/internal/fb2"
 )
 
-type Fb2Metadata struct {
-	Book  fb2_parser.Book
-	Cover string
-}
-
-func ParseMetadata(source io.Reader) Fb2Metadata {
-
-	// FIXME implements
-	return Fb2Metadata{
-		Book:  fb2.GetBookInfo(source),
-		Cover: fb2.GetCover(source)}
+func ParseMetadata(source *os.File) (*fb2_parser.Fb2Metadata, error) {
+	metadata, infoErr := fb2.ScanBookMetadata(source)
+	if infoErr != nil {
+		return nil, fmt.Errorf("empty metadata: %s", infoErr)
+	}
+	return metadata, nil
 }

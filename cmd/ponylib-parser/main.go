@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path"
@@ -9,16 +10,23 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		_, _ = fmt.Fprintf(os.Stderr, "Usage: %s FILE\n", path.Base(os.Args[0]))
+	flag.Parse()
+	files := flag.Args()
+	if len(files) < 1 {
+		_, _ = fmt.Fprintf(os.Stderr, "Usage: %s FILE [FILE]\n", path.Base(os.Args[0]))
 		os.Exit(2)
 	}
-	var file = os.Args[1]
-	fp, err := os.Open(file)
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Unable to open file. %s\n", err)
-		os.Exit(1)
+	for _, file := range files {
+		fp, err := os.Open(file)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "%s: unable to open file. %s\n", file, err)
+			continue
+		}
+		parseMetadata, err := metadata.ParseMetadata(fp)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "%s: unable to parse metadata: %s\n", file, err)
+			continue
+		}
+		fmt.Printf("%s: %s\n", file, parseMetadata)
 	}
-	fmt.Println(file, "metadata")
-	fmt.Println(metadata.ParseMetadata(fp))
 }
