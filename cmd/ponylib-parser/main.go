@@ -6,34 +6,33 @@ import (
 	"math"
 	"os"
 	"path"
-	"path/filepath"
 	"time"
 
-	"dev.maizy.ru/ponylib/fb2_parser/metadata"
+	"dev.maizy.ru/ponylib/fb2_scanner"
+	"dev.maizy.ru/ponylib/fb2_scanner/fs"
 )
 
-type parseFileTimers struct {
-	parseTimeNs int64
-	printTimeNs int64
-}
-
-func (t *parseFileTimers) add(other *parseFileTimers) {
-	if other != nil {
-		t.parseTimeNs += other.parseTimeNs
-		t.printTimeNs += other.printTimeNs
-	}
+type summary struct {
+	successfullyParsed int
+	totalSuccessTimers fb2_scanner.ParseTimers
+	errors             int
+	totalErrorsTimers  fb2_scanner.ParseTimers
+	printTimeNs        int64
 }
 
 func main() {
 	flag.Parse()
 	files := flag.Args()
 	if len(files) < 1 {
-		_, _ = fmt.Fprintf(os.Stderr, "Usage: %s FILE_OR_DIR [FILE_OR_DIR]\n", path.Base(os.Args[0]))
+		printErrF("Usage: %s FILE_OR_DIR [FILE_OR_DIR]\n", path.Base(os.Args[0]))
 		os.Exit(2)
 	}
 	var start = time.Now()
-	total := parseFileTimers{}
-	var processedFiles int
+	done := make(chan summary)
+	scanner := fb2_scanner.NewFb2Scanner()
+
+	go printResultsAndSummarize(scanner.Results, done)
+
 	for _, entry := range files {
 		stat, err := os.Stat(entry)
 		if err != nil {
@@ -42,67 +41,63 @@ func main() {
 		}
 		switch mode := stat.Mode(); {
 		case mode.IsDir():
-			err := filepath.Walk(entry,
-				func(filePath string, info os.FileInfo, err error) error {
-					if info.IsDir() {
-						return nil
-					}
-					if err != nil {
-						return err
-					}
-					// TODO: filter by extension
-					timers := parseFile(filePath)
-					total.add(timers)
-					processedFiles += 1
-					return nil
-				})
-			if err != nil {
-				_, _ = fmt.Fprintf(os.Stderr, "%s: unable to list dir. %s\n", entry, err)
-			}
+			scanner.Scan(&fs.DirectoryTarget{Path: entry})
 		case mode.IsRegular():
-			timers := parseFile(entry)
-			total.add(timers)
-			processedFiles += 1
+			scanner.Scan(&fs.FileTarget{Path: entry})
 		}
 	}
+	scanner.Wait()
+	sum := <-done
 
 	var totalDuration = time.Since(start)
-	var filesLabel = "files"
-	if processedFiles == 1 {
-		filesLabel = "file"
+
+	printErrF("\nStatistics:")
+
+	printErrF("\tSuccessfully parsed %d %s in %d ms, avg %0.2f books/sec.",
+		sum.successfullyParsed, bookLabel(sum.successfullyParsed), totalDuration.Milliseconds(),
+		float64(sum.successfullyParsed)/totalDuration.Seconds())
+	printErrF("\tUnable to parse %d %s.", sum.errors, bookLabel(sum.errors))
+	printErrF("\tTotal parse time for successfully parsed books %d ms, avg %d ms per book.",
+		totalMs(sum.totalSuccessTimers.ParseTimeNs), avgMs(sum.totalSuccessTimers.ParseTimeNs, sum.successfullyParsed))
+}
+
+func printResultsAndSummarize(results <-chan fb2_scanner.ScannerResult, done chan<- summary) {
+	sum := summary{}
+	for res := range results {
+		start := time.Now()
+		if res.IsSuccess() {
+			fmt.Printf("%s: %s\n", res.Source.Spec(), res.Metadata.String())
+		} else {
+			printErrF("unable to parse %s: %s", res.Source.Spec(), *res.Error)
+		}
+		sum.printTimeNs += time.Since(start).Nanoseconds()
+
+		if res.IsSuccess() {
+			sum.totalSuccessTimers.Add(&res.Timers)
+			sum.successfullyParsed += 1
+		} else {
+			sum.totalErrorsTimers.Add(&res.Timers)
+			sum.errors += 1
+		}
 	}
-	fmt.Fprintf(os.Stderr, "\n Statistics:\n\tParsed %d %s in %d ms, avg %0.2f files/sec.\n",
-		processedFiles, filesLabel, totalDuration.Milliseconds(), float64(processedFiles)/totalDuration.Seconds())
-	fmt.Fprintf(os.Stderr, "\tTotal parse time %d ms, avg %d ms per file.\n",
-		totalMs(total.parseTimeNs), avgMs(total.parseTimeNs, processedFiles))
-	//fmt.Fprintf(os.Stderr, "\tTotal print time %d ms, avg %d ms per file.\n",
-	//	totalMs(total.printTimeNs), avgMs(total.printTimeNs, processedFiles))
+	done <- sum
+}
+
+func printErrF(format string, a ...interface{}) {
+	_, _ = fmt.Fprintf(os.Stderr, format+"\n", a...)
+}
+
+func bookLabel(amount int) string {
+	if amount == 1 {
+		return "book"
+	}
+	return "books"
 }
 
 func totalMs(totalNs int64) int64 {
 	return totalNs / int64(math.Pow(10, 6))
 }
+
 func avgMs(totalNs int64, files int) int64 {
 	return int64(float64(totalNs) / float64(files) / math.Pow(10, 6))
-}
-
-func parseFile(path string) *parseFileTimers {
-	var parseStart = time.Now()
-	fp, err := os.Open(path)
-	defer fp.Close()
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%s: unable to open file. %s\n", path, err)
-		return nil
-	}
-	parseMetadata, err := metadata.ParseMetadata(fp)
-	var parseTime = time.Since(parseStart).Nanoseconds()
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%s: unable to parse metadata: %s\n", path, err)
-		return nil
-	}
-
-	var printStart = time.Now()
-	fmt.Printf("%s: %s\n", path, parseMetadata)
-	var printTime = time.Since(printStart).Nanoseconds()
-	return &parseFileTimers{parseTime, printTime}
 }
