@@ -78,16 +78,14 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	var book *fb2_parser.Book
 	var bookAuthors *[]fb2_parser.Author
 	if titleInfoNode != nil {
-		title := findText(titleInfoNode, "//book-title")
-		if title != nil {
+		if title := findText(titleInfoNode, "//book-title"); title != nil {
 			book = &fb2_parser.Book{Title: title}
 		}
 
 		authorsNodes := xmlquery.Find(titleInfoNode, "//author")
 		var authors []fb2_parser.Author
 		for _, authorNode := range authorsNodes {
-			author := parseAuthor(authorNode)
-			if author != nil {
+			if author := parseAuthor(authorNode); author != nil {
 				authors = append(authors, *author)
 			}
 		}
@@ -138,8 +136,7 @@ func parseAuthor(node *xmlquery.Node) *fb2_parser.Author {
 }
 
 func findText(node *xmlquery.Node, query string) *string {
-	match := xmlquery.FindOne(node, query)
-	if match != nil {
+	if match := xmlquery.FindOne(node, query); match != nil {
 		return u.StrPtr(match.InnerText())
 	}
 	return nil
