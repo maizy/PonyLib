@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"dev.maizy.ru/ponylib/fb2_scanner"
-	"dev.maizy.ru/ponylib/fb2_scanner/fs"
+	"dev.maizy.ru/ponylib/fb2_scanner/targets"
 )
 
 type summary struct {
@@ -41,12 +41,12 @@ func main() {
 		}
 		switch mode := stat.Mode(); {
 		case mode.IsDir():
-			scanner.Scan(&fs.DirectoryTarget{Path: entry})
+			scanner.Scan(&targets.DirectoryTarget{Path: entry})
 		case mode.IsRegular():
-			scanner.Scan(&fs.FileTarget{Path: entry})
+			scanner.Scan(&targets.FileTarget{Path: entry})
 		}
 	}
-	scanner.Wait()
+	scanner.WaitUntilFinish()
 	sum := <-done
 
 	var totalDuration = time.Since(start)
@@ -65,10 +65,11 @@ func printResultsAndSummarize(results <-chan fb2_scanner.ScannerResult, done cha
 	sum := summary{}
 	for res := range results {
 		start := time.Now()
+		rid := res.Source.RId()
 		if res.IsSuccess() {
-			fmt.Printf("%s: %s\n", res.Source.Spec(), res.Metadata.String())
+			fmt.Printf("%s: %s\n", rid.String(), res.Metadata.String())
 		} else {
-			printErrF("unable to parse %s: %s", res.Source.Spec(), *res.Error)
+			printErrF("unable to parse %s: %s", rid.String(), *res.Error)
 		}
 		sum.printTimeNs += time.Since(start).Nanoseconds()
 

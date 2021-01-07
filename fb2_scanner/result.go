@@ -1,9 +1,12 @@
 package fb2_scanner
 
-import "dev.maizy.ru/ponylib/fb2_parser"
+import (
+	"dev.maizy.ru/ponylib/fb2_parser"
+	"dev.maizy.ru/ponylib/fb2_scanner/resource"
+)
 
 type ScannerSource interface {
-	Spec() string
+	RId() resource.RId
 }
 
 type ParseTimers struct {
