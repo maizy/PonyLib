@@ -2,7 +2,9 @@
 
 Fb2 library with web interface.
 
+Beeing rewrited in golang. TBA
+
 ---
 
-_[Ancient python + django based version](https://github.com/maizy/PonyLib/tree/v1)_
+_[Obsolete python + django based version](https://github.com/maizy/PonyLib/tree/v1)_
 
