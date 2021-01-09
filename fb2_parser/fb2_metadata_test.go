@@ -25,5 +25,5 @@ func TestFb2Metadata_String(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, "Fb2(«Best Book» by Ivan, Navi)", metadata.String())
+	assert.Equal(t, "«Best Book» by Ivan, Navi", metadata.String())
 }

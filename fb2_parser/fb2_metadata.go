@@ -3,14 +3,29 @@ package fb2_parser
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type Book struct {
-	Title *string
+	Title         *string
+	Lang          *string
+	FormattedDate *string
+	Date          *time.Time
 }
 
 func (r *Book) String() string {
 	return *r.Title
+}
+
+type PubInfo struct {
+	Publisher *string
+	PubYear   *int
+	ISBN      *string
+}
+
+type Sequence struct {
+	Name   string
+	Number int
 }
 
 type Author struct {
@@ -65,14 +80,17 @@ func (c *Cover) SizeFormatted() string {
 }
 
 type Fb2Metadata struct {
-	Book    *Book
-	Authors *[]Author
-	Cover   *Cover
+	Book       *Book
+	PubInfo    *PubInfo
+	Authors    *[]Author
+	Genries    *[]GenreIndexEntity
+	Sequences  *[]Sequence
+	Annotation *string
+	Cover      *Cover // TODO: https://github.com/maizy/PonyLib/issues/61
 }
 
 func (f *Fb2Metadata) String() string {
 	var sb strings.Builder
-	sb.WriteString("Fb2(")
 	if f.Book != nil {
 		sb.WriteString("«")
 		sb.WriteString(f.Book.String())
@@ -89,10 +107,5 @@ func (f *Fb2Metadata) String() string {
 			sb.WriteString(author.String())
 		}
 	}
-	if f.Cover != nil {
-		sb.WriteString(", cover: ")
-		sb.WriteString(f.Cover.SizeFormatted())
-	}
-	sb.WriteString(")")
 	return sb.String()
 }
