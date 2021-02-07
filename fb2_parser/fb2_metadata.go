@@ -2,6 +2,7 @@ package fb2_parser
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -21,6 +22,27 @@ type PubInfo struct {
 	Publisher *string
 	PubYear   *int
 	ISBN      *string
+}
+
+func (p *PubInfo) String() string {
+	if p.Publisher != nil || p.PubYear != nil || p.ISBN != nil {
+		var sb strings.Builder
+		sb.WriteString("Published")
+		if p.Publisher != nil {
+			sb.WriteString(" by ")
+			sb.WriteString(*p.Publisher)
+		}
+		if p.PubYear != nil {
+			sb.WriteString(" at ")
+			sb.WriteString(strconv.Itoa(*p.PubYear))
+		}
+		if p.ISBN != nil {
+			sb.WriteString(", ISBN: ")
+			sb.WriteString(*p.ISBN)
+		}
+		return sb.String()
+	}
+	return ""
 }
 
 type Sequence struct {
@@ -106,6 +128,10 @@ func (f *Fb2Metadata) String() string {
 			}
 			sb.WriteString(author.String())
 		}
+	}
+	if f.PubInfo != nil {
+		sb.WriteString("\n\t")
+		sb.WriteString(f.PubInfo.String())
 	}
 	return sb.String()
 }

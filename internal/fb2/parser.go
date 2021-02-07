@@ -3,6 +3,7 @@ package fb2
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/antchfx/xmlquery"
@@ -13,12 +14,18 @@ import (
 )
 
 func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
-	xmlParser, err := xmlquery.CreateStreamParser(source, "/FictionBook/description/title-info|/FictionBook/binary")
+	xmlParser, err := xmlquery.CreateStreamParser(source,
+		"/FictionBook/description/title-info|"+
+			"/FictionBook/description/publish-info|"+
+			"/FictionBook/binary")
 	if err != nil {
 		return nil, fmt.Errorf("XML parse error: %w", err)
 	}
 	// http://www.fictionbook.org/index.php/%D0%AD%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82_title-info
 	var titleInfoNode *xmlquery.Node
+
+	// http://www.fictionbook.org/index.php/%D0%AD%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82_publish-info
+	var publishInfoNode *xmlquery.Node
 
 	// http://www.fictionbook.org/index.php/%D0%AD%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82_coverpage
 	var coverNode *xmlquery.Node
@@ -54,6 +61,8 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 					coverBinaryId = u.StrPtr(id[1:])
 				}
 			}
+		case "publish-info":
+			publishInfoNode = node
 		}
 	}
 
@@ -94,10 +103,21 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		}
 	}
 
+	var pubInfo *fb2_parser.PubInfo
+	if publishInfoNode != nil {
+		publisher := findText(publishInfoNode, "//publisher")
+		year := findInt(publishInfoNode, "//year")
+		isbn := findText(publishInfoNode, "//isbn")
+		if publisher != nil || year != nil || isbn != nil {
+			pubInfo = &fb2_parser.PubInfo{publisher, year, isbn}
+		}
+	}
+
 	cover := parseCover(coverNode)
 
 	return &fb2_parser.Fb2Metadata{
 		Book:    book,
+		PubInfo: pubInfo,
 		Cover:   cover,
 		Authors: bookAuthors}, nil
 }
@@ -138,6 +158,15 @@ func parseAuthor(node *xmlquery.Node) *fb2_parser.Author {
 func findText(node *xmlquery.Node, query string) *string {
 	if match := xmlquery.FindOne(node, query); match != nil {
 		return u.StrPtr(match.InnerText())
+	}
+	return nil
+}
+
+func findInt(node *xmlquery.Node, query string) *int {
+	if match := xmlquery.FindOne(node, query); match != nil {
+		if value, err := strconv.Atoi(match.InnerText()); err == nil {
+			return &value
+		}
 	}
 	return nil
 }

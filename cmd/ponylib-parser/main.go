@@ -67,7 +67,7 @@ func printResultsAndSummarize(results <-chan fb2_scanner.ScannerResult, done cha
 		start := time.Now()
 		rid := res.Source.RId()
 		if res.IsSuccess() {
-			fmt.Printf("%s: %s\n", rid.String(), res.Metadata.String())
+			fmt.Printf("%s\n%s\n\n", rid.String(), res.Metadata.String())
 		} else {
 			printErrF("unable to parse %s: %s", rid.String(), *res.Error)
 		}
