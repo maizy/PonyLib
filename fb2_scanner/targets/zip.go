@@ -6,7 +6,6 @@ import (
 
 	"dev.maizy.ru/ponylib/fb2_parser"
 	"dev.maizy.ru/ponylib/fb2_scanner"
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type ZipArchiveTarget struct {
@@ -29,14 +28,14 @@ func (z *ZipArchiveTarget) Scan(ctx fb2_scanner.ScannerContext) <-chan fb2_scann
 		defer close(resultChan)
 		resultChan <- fb2_scanner.ScannerResult{
 			Source:   &fb2_scanner.ZipArchiveFileSource{z.Path, "fake-file1.fb2"},
-			Metadata: &fb2_parser.Fb2Metadata{Book: &fb2_parser.Book{Title: u.StrPtr("title1")}},
+			Metadata: &fb2_parser.Fb2Metadata{Book: &fb2_parser.Book{Title: "title1"}},
 			Error:    nil,
 			Timers:   fb2_scanner.ParseTimers{ExtractTimeNs: 150_000_000, ParseTimeNs: 20_000_000},
 		}
 
 		resultChan <- fb2_scanner.ScannerResult{
 			Source:   &fb2_scanner.ZipArchiveFileSource{z.Path, "subdir/fake-file2.fb2"},
-			Metadata: &fb2_parser.Fb2Metadata{Book: &fb2_parser.Book{Title: u.StrPtr("title2")}},
+			Metadata: &fb2_parser.Fb2Metadata{Book: &fb2_parser.Book{Title: "title2"}},
 			Error:    nil,
 			Timers:   fb2_scanner.ParseTimers{ExtractTimeNs: 10_000_000, ParseTimeNs: 300_000_000},
 		}

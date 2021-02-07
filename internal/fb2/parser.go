@@ -5,6 +5,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/antchfx/xmlquery"
 
@@ -87,8 +88,24 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	var book *fb2_parser.Book
 	var bookAuthors *[]fb2_parser.Author
 	if titleInfoNode != nil {
-		if title := findText(titleInfoNode, "//book-title"); title != nil {
-			book = &fb2_parser.Book{Title: title}
+		var title string
+		if foundTitle := findText(titleInfoNode, "//book-title"); foundTitle != nil {
+			title = *foundTitle
+		}
+		// fallback to publish-info/book-name if title is empty or not found
+		if title == "" && publishInfoNode != nil {
+			if bookName := findText(publishInfoNode, "//book-name"); bookName != nil {
+				title = *bookName
+			}
+		}
+
+		formatted, parsed := parseDate(titleInfoNode)
+
+		book = &fb2_parser.Book{
+			Title:         title,
+			Lang:          findText(titleInfoNode, "//lang"),
+			FormattedDate: formatted,
+			Date:          parsed,
 		}
 
 		authorsNodes := xmlquery.Find(titleInfoNode, "//author")
@@ -153,6 +170,19 @@ func parseAuthor(node *xmlquery.Node) *fb2_parser.Author {
 		return &fb2_parser.Author{firstName, lastName, middleName, nickname}
 	}
 	return nil
+}
+
+func parseDate(parentNode *xmlquery.Node) (formatted *string, parsed *time.Time) {
+	if parentNode == nil {
+		return
+	}
+	formatted = findText(parentNode, "//date")
+	if value := findText(parentNode, "//date/@value"); value != nil {
+		if parsedDate, err := time.Parse("2006-01-02", *value); err == nil {
+			parsed = &parsedDate
+		}
+	}
+	return
 }
 
 func findText(node *xmlquery.Node, query string) *string {

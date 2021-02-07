@@ -1,6 +1,7 @@
 package fb2_parser
 
 import (
+	"dev.maizy.ru/ponylib/internal/u"
 	"fmt"
 	"strconv"
 	"strings"
@@ -8,14 +9,37 @@ import (
 )
 
 type Book struct {
-	Title         *string
+	Title         string
 	Lang          *string
 	FormattedDate *string
 	Date          *time.Time
 }
 
-func (r *Book) String() string {
-	return *r.Title
+func (b *Book) String() string {
+	return b.Title
+}
+
+func (b *Book) AdditionalInfoString() *string {
+	if b.Date != nil || b.FormattedDate != nil || b.Lang != nil {
+		var sb strings.Builder
+		if b.Lang != nil {
+			sb.WriteString("Lang: ")
+			sb.WriteString(*b.Lang)
+		}
+		if b.Date != nil || b.FormattedDate != nil {
+			if sb.Len() > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString("Written at: ")
+			if b.Date != nil {
+				sb.WriteString(b.Date.Format("2006-01-02"))
+			} else {
+				sb.WriteString(*b.FormattedDate)
+			}
+		}
+		return u.StrPtr(sb.String())
+	}
+	return nil
 }
 
 type PubInfo struct {
@@ -127,6 +151,12 @@ func (f *Fb2Metadata) String() string {
 				sb.WriteString(", ")
 			}
 			sb.WriteString(author.String())
+		}
+	}
+	if f.Book != nil {
+		if additionalInfo := f.Book.AdditionalInfoString(); additionalInfo != nil {
+			sb.WriteString("\n\t")
+			sb.WriteString(*additionalInfo)
 		}
 	}
 	if f.PubInfo != nil {

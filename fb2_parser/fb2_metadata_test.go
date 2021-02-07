@@ -18,7 +18,7 @@ func TestAuthor_String(t *testing.T) {
 
 func TestFb2Metadata_String(t *testing.T) {
 	metadata := Fb2Metadata{
-		Book: &Book{Title: u.StrPtr("Best Book")},
+		Book: &Book{Title: "Best Book"},
 		Authors: &[]Author{
 			{Nickname: u.StrPtr("Ivan")},
 			{Nickname: u.StrPtr("Navi")},
