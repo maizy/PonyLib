@@ -88,6 +88,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	var book *fb2_parser.Book
 	var bookAuthors *[]fb2_parser.Author
 	var genres *[]fb2_parser.GenreIndexEntity
+	var sequences *[]fb2_parser.Sequence
 
 	if titleInfoNode != nil {
 		var title string
@@ -131,6 +132,18 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		if len(foundGenres) > 0 {
 			genres = &foundGenres
 		}
+
+		sequenceNodes := xmlquery.Find(titleInfoNode, "//sequence")
+		var foundSequences []fb2_parser.Sequence
+		for _, sequenceNode := range sequenceNodes {
+			if name := findText(sequenceNode, "//@name"); name != nil {
+				number := findInt(sequenceNode, "//@number")
+				foundSequences = append(foundSequences, fb2_parser.Sequence{*name, number})
+			}
+		}
+		if len(foundSequences) > 0 {
+			sequences = &foundSequences
+		}
 	}
 
 	var pubInfo *fb2_parser.PubInfo
@@ -146,11 +159,12 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	cover := parseCover(coverNode)
 
 	return &fb2_parser.Fb2Metadata{
-		Book:    book,
-		PubInfo: pubInfo,
-		Cover:   cover,
-		Authors: bookAuthors,
-		Genries: genres}, nil
+		Book:      book,
+		PubInfo:   pubInfo,
+		Cover:     cover,
+		Authors:   bookAuthors,
+		Genries:   genres,
+		Sequences: sequences}, nil
 }
 
 func parseCover(coverNode *xmlquery.Node) *fb2_parser.Cover {

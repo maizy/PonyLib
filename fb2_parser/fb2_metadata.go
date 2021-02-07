@@ -71,7 +71,18 @@ func (p *PubInfo) String() string {
 
 type Sequence struct {
 	Name   string
-	Number int
+	Number *int
+}
+
+func (s *Sequence) String() string {
+	var sb strings.Builder
+	sb.WriteString(s.Name)
+	if s.Number != nil {
+		sb.WriteString(" [")
+		sb.WriteString(strconv.Itoa(*s.Number))
+		sb.WriteString("]")
+	}
+	return sb.String()
 }
 
 type Author struct {
@@ -165,10 +176,21 @@ func (f *Fb2Metadata) String() string {
 	}
 	if f.Genries != nil {
 		sb.WriteString("\n\tGenres:\n")
-		for _, genre := range *f.Genries {
+		for index, genre := range *f.Genries {
+			if index > 0 {
+				sb.WriteString("\n")
+			}
 			sb.WriteString("\t  * ")
 			sb.WriteString(genre.String())
-			sb.WriteString("\n")
+		}
+	}
+	if f.Sequences != nil {
+		sb.WriteString("\n\tSequences: ")
+		for index, sequence := range *f.Sequences {
+			if index > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(sequence.String())
 		}
 	}
 	return sb.String()
