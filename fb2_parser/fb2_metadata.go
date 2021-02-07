@@ -3,6 +3,7 @@ package fb2_parser
 import (
 	"dev.maizy.ru/ponylib/internal/u"
 	"fmt"
+	"github.com/mitchellh/go-wordwrap"
 	"strconv"
 	"strings"
 	"time"
@@ -192,6 +193,12 @@ func (f *Fb2Metadata) String() string {
 			}
 			sb.WriteString(sequence.String())
 		}
+	}
+	if f.Annotation != nil {
+		sb.WriteString("\n\tAnnotation:\n")
+		wrapped := wordwrap.WrapString(*f.Annotation, 110)
+		sb.WriteString("\t  ")
+		sb.WriteString(strings.ReplaceAll(wrapped, "\n", "\n\t  "))
 	}
 	return sb.String()
 }

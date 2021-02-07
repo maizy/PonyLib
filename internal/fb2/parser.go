@@ -3,6 +3,7 @@ package fb2
 import (
 	"fmt"
 	"io"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -89,6 +90,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	var bookAuthors *[]fb2_parser.Author
 	var genres *[]fb2_parser.GenreIndexEntity
 	var sequences *[]fb2_parser.Sequence
+	var annotation *string
 
 	if titleInfoNode != nil {
 		var title string
@@ -144,6 +146,10 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		if len(foundSequences) > 0 {
 			sequences = &foundSequences
 		}
+
+		if annotationNode := xmlquery.FindOne(titleInfoNode, "//annotation"); annotationNode != nil {
+			annotation = u.StrPtr(fb2MarkupToText(annotationNode))
+		}
 	}
 
 	var pubInfo *fb2_parser.PubInfo
@@ -159,12 +165,13 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	cover := parseCover(coverNode)
 
 	return &fb2_parser.Fb2Metadata{
-		Book:      book,
-		PubInfo:   pubInfo,
-		Cover:     cover,
-		Authors:   bookAuthors,
-		Genries:   genres,
-		Sequences: sequences}, nil
+		Book:       book,
+		PubInfo:    pubInfo,
+		Cover:      cover,
+		Authors:    bookAuthors,
+		Genries:    genres,
+		Sequences:  sequences,
+		Annotation: annotation}, nil
 }
 
 func parseCover(coverNode *xmlquery.Node) *fb2_parser.Cover {
@@ -211,6 +218,94 @@ func parseDate(parentNode *xmlquery.Node) (formatted *string, parsed *time.Time)
 		}
 	}
 	return
+}
+
+func fb2ToTextInner(node *xmlquery.Node, sb *strings.Builder, depth int) []string {
+	var result []string
+	var iterateChildren = false
+	postfix := ""
+	ifTagMatched := func(regex string) bool {
+		matched, _ := regexp.MatchString(regex, node.Data)
+		return matched
+	}
+	switch node.Type {
+	case xmlquery.ElementNode:
+		switch node.Data {
+		// text blocks
+		case "p", "ul", "blockquote", "poem", "stanza", "epigraph":
+			iterateChildren = true
+			postfix = "\n"
+		// blocks to ignore, but iterate over children
+		case "style", "code":
+			iterateChildren = true
+		// list elements
+		case "li":
+			iterateChildren = true
+			sb.WriteString("* ")
+			postfix = "\n"
+		case "title", "subtitle":
+			sb.WriteString("\n")
+			sb.WriteString(node.InnerText())
+			sb.WriteString("\n")
+		// special list-like elements (for poem)
+		case "v", "text-author", "date":
+			sb.WriteString(node.InnerText())
+			sb.WriteString("\n")
+		case "br", "empty-line":
+			sb.WriteString("\n")
+		case "strikethrough":
+			sb.WriteString("~~")
+			iterateChildren = true
+			postfix = "~~"
+		case "hr":
+			sb.WriteString("\n----------\n")
+		case "a":
+			sb.WriteString(node.InnerText())
+			if href := node.SelectAttr("href"); href != "" {
+				sb.WriteString(" (")
+				sb.WriteString(href)
+				sb.WriteString(")")
+			}
+		// ignored tags
+		case "img", "image":
+			break
+		default:
+			switch {
+			// headers
+			case ifTagMatched(`h\d+`):
+				sb.WriteString("\n")
+				sb.WriteString(node.InnerText())
+				sb.WriteString("\n")
+			// just append inner text
+			// expect at least: b, strong, emphasis, em, sub, sup
+			// all unknown elements produced concatenation of all included text nodes because
+			// .InnerText is recursive itself
+			default:
+				sb.WriteString(node.InnerText())
+			}
+
+		}
+	case xmlquery.TextNode:
+		sb.WriteString(strings.TrimSpace(node.InnerText()))
+	case xmlquery.CharDataNode:
+		sb.WriteString(strings.TrimSpace(node.InnerText()))
+	}
+
+	if iterateChildren && depth < 100 {
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			fb2ToTextInner(child, sb, depth+1)
+		}
+	}
+	sb.WriteString(postfix)
+	return result
+}
+
+func fb2MarkupToText(root *xmlquery.Node) string {
+	var sb strings.Builder
+	for child := root.FirstChild; child != nil; child = child.NextSibling {
+		fb2ToTextInner(child, &sb, 0)
+	}
+	return sb.String()
 }
 
 func findText(node *xmlquery.Node, query string) *string {
