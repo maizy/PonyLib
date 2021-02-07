@@ -163,5 +163,13 @@ func (f *Fb2Metadata) String() string {
 		sb.WriteString("\n\t")
 		sb.WriteString(f.PubInfo.String())
 	}
+	if f.Genries != nil {
+		sb.WriteString("\n\tGenres:\n")
+		for _, genre := range *f.Genries {
+			sb.WriteString("\t  * ")
+			sb.WriteString(genre.String())
+			sb.WriteString("\n")
+		}
+	}
 	return sb.String()
 }

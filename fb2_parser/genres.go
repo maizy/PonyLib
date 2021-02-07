@@ -1,8 +1,14 @@
 package fb2_parser
 
+import "strings"
+
 type MultiLang struct {
 	Ru string
 	En string
+}
+
+func (m *MultiLang) String() string {
+	return m.Ru + " / " + m.En
 }
 
 type Genre struct {
@@ -229,6 +235,22 @@ var GenreCategories = categoriesArray{
 type GenreIndexEntity struct {
 	Genre    Genre
 	Category GenreCategory
+}
+
+func (g *GenreIndexEntity) String() string {
+	var sb strings.Builder
+	sb.WriteString("[")
+	sb.WriteString(g.Genre.Code)
+	sb.WriteString("] ")
+	sb.WriteString(g.Category.En)
+	sb.WriteString(" :: ")
+	sb.WriteString(g.Genre.En)
+	sb.WriteString(" (")
+	sb.WriteString(g.Category.Ru)
+	sb.WriteString(" :: ")
+	sb.WriteString(g.Genre.Ru)
+	sb.WriteString(")")
+	return sb.String()
 }
 
 func createGeneryIndex(categories categoriesArray) map[string]GenreIndexEntity {

@@ -87,6 +87,8 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 
 	var book *fb2_parser.Book
 	var bookAuthors *[]fb2_parser.Author
+	var genres *[]fb2_parser.GenreIndexEntity
+
 	if titleInfoNode != nil {
 		var title string
 		if foundTitle := findText(titleInfoNode, "//book-title"); foundTitle != nil {
@@ -118,6 +120,17 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		if len(authors) > 0 {
 			bookAuthors = &authors
 		}
+
+		genresNodes := xmlquery.Find(titleInfoNode, "//genre")
+		var foundGenres []fb2_parser.GenreIndexEntity
+		for _, genreNode := range genresNodes {
+			if genre, found := fb2_parser.GenryIndexByCode[genreNode.InnerText()]; found {
+				foundGenres = append(foundGenres, genre)
+			}
+		}
+		if len(foundGenres) > 0 {
+			genres = &foundGenres
+		}
 	}
 
 	var pubInfo *fb2_parser.PubInfo
@@ -136,7 +149,8 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		Book:    book,
 		PubInfo: pubInfo,
 		Cover:   cover,
-		Authors: bookAuthors}, nil
+		Authors: bookAuthors,
+		Genries: genres}, nil
 }
 
 func parseCover(coverNode *xmlquery.Node) *fb2_parser.Cover {
