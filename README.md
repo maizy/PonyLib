@@ -2,13 +2,13 @@
 
 Fb2 library with web interface.
 
-**Beeing rewrited in golang. Work in progress**
+**Being rewritten in golang. Work in progress**
 
 ## Tools
 
 ### `ponylib-parser`
 
-Parse fb2 files & display metadata. Can be used separetly.
+Parse fb2 files & display metadata. Can be used separately.
 
 Support recursive directory scan, follow symlinks.
 
