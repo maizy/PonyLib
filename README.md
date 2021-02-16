@@ -2,7 +2,7 @@
 
 Fb2 library with web interface.
 
-**Work in progress**
+**Beeing rewrited in golang. Work in progress**
 
 ## Tools
 
@@ -20,5 +20,5 @@ ponylib-parser FILE_OR_DIR [FILE_OR_DIR]
 
 ---
 
-_[Ancient python + django based version](https://github.com/maizy/PonyLib/tree/v1)_
+_[Obsolete python + django based version](https://github.com/maizy/PonyLib/tree/v1)_
 
