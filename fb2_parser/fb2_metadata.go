@@ -149,22 +149,26 @@ type Fb2Metadata struct {
 
 func (f *Fb2Metadata) String() string {
 	var sb strings.Builder
+	var titleSb strings.Builder
+	var maxWidth uint = 100
+
 	if f.Book != nil {
-		sb.WriteString("«")
-		sb.WriteString(f.Book.String())
-		sb.WriteString("»")
+		titleSb.WriteString("«")
+		titleSb.WriteString(f.Book.String())
+		titleSb.WriteString("»")
 	} else {
-		sb.WriteString("?")
+		titleSb.WriteString("?")
 	}
 	if f.Authors != nil {
-		sb.WriteString(" by ")
+		titleSb.WriteString(" by ")
 		for index, author := range *f.Authors {
 			if index > 0 {
-				sb.WriteString(", ")
+				titleSb.WriteString(", ")
 			}
-			sb.WriteString(author.String())
+			titleSb.WriteString(author.String())
 		}
 	}
+	sb.WriteString(wordwrap.WrapString(titleSb.String(), maxWidth))
 	if f.Book != nil {
 		if additionalInfo := f.Book.AdditionalInfoString(); additionalInfo != nil {
 			sb.WriteString("\n\t")
@@ -196,7 +200,7 @@ func (f *Fb2Metadata) String() string {
 	}
 	if f.Annotation != nil {
 		sb.WriteString("\n\tAnnotation:\n")
-		wrapped := wordwrap.WrapString(*f.Annotation, 110)
+		wrapped := wordwrap.WrapString(*f.Annotation, maxWidth-10)
 		sb.WriteString("\t  ")
 		sb.WriteString(strings.ReplaceAll(wrapped, "\n", "\n\t  "))
 	}

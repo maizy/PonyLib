@@ -1,11 +1,15 @@
 package targets
 
 import (
-	"errors"
+	"dev.maizy.ru/ponylib/internal/u"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"sync"
 
-	"dev.maizy.ru/ponylib/fb2_parser"
 	"dev.maizy.ru/ponylib/fb2_scanner"
+	"dev.maizy.ru/ponylib/internal/sympath"
 )
 
 type DirectoryTarget struct {
@@ -22,31 +26,34 @@ func (f *DirectoryTarget) Type() fb2_scanner.TargetType {
 }
 
 func (f *DirectoryTarget) Scan(ctx fb2_scanner.ScannerContext) <-chan fb2_scanner.ScannerResult {
-	// FIXME: implements
 	resultChan := make(chan fb2_scanner.ScannerResult)
+	wg := sync.WaitGroup{}
+
+	walkFunc := func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			resultChan <- fb2_scanner.ScannerResult{
+				Source: &fb2_scanner.FileSource{path},
+				Error:  u.ErrPtr(fmt.Errorf("unable to scan file or symlink %s: %w", path, err)),
+			}
+			return filepath.SkipDir
+		}
+		if info.Mode().IsRegular() && strings.HasSuffix(info.Name(), ".fb2") {
+			scanRegularFile(ctx, path, resultChan, &wg)
+		}
+		return nil
+	}
+
 	go func() {
-		defer close(resultChan)
-		resultChan <- fb2_scanner.ScannerResult{
-			Source:   &fb2_scanner.FileSource{f.Path + "/fake-file1.fb2"},
-			Metadata: &fb2_parser.Fb2Metadata{Book: &fb2_parser.Book{Title: "title1"}},
-			Error:    nil,
-			Timers:   fb2_scanner.ParseTimers{ExtractTimeNs: 150_000_000, ParseTimeNs: 20_000_000},
+		err := sympath.Walk(f.Path, walkFunc)
+		if err != nil {
+			resultChan <- fb2_scanner.ScannerResult{
+				Source: &fb2_scanner.FileSource{f.Path},
+				Error:  u.ErrPtr(fmt.Errorf("unable to scan %s: %w", f.Path, err)),
+			}
 		}
-
-		resultChan <- fb2_scanner.ScannerResult{
-			Source:   &fb2_scanner.FileSource{f.Path + "/subdir/fake-file2.fb2"},
-			Metadata: &fb2_parser.Fb2Metadata{Book: &fb2_parser.Book{Title: "title2"}},
-			Error:    nil,
-			Timers:   fb2_scanner.ParseTimers{ExtractTimeNs: 10_000_000, ParseTimeNs: 300_000_000},
-		}
-
-		err := errors.New("test error")
-		resultChan <- fb2_scanner.ScannerResult{
-			Source:   &fb2_scanner.FileSource{f.Path + "/fake-file3.fb2"},
-			Metadata: nil,
-			Error:    &err,
-			Timers:   fb2_scanner.ParseTimers{ExtractTimeNs: 15_000_000, ParseTimeNs: 0},
-		}
+		wg.Wait()
+		close(resultChan)
 	}()
+
 	return resultChan
 }

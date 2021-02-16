@@ -27,7 +27,7 @@ func main() {
 		printErrF("Usage: %s FILE_OR_DIR [FILE_OR_DIR]\n", path.Base(os.Args[0]))
 		os.Exit(2)
 	}
-	var start = time.Now()
+	start := time.Now()
 	done := make(chan summary)
 	scanner := fb2_scanner.NewFb2Scanner()
 
@@ -36,7 +36,7 @@ func main() {
 	for _, entry := range files {
 		stat, err := os.Stat(entry)
 		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "%s: unable to open. %s\n", entry, err)
+			_, _ = fmt.Fprintf(os.Stderr, "unable to open %s: %s\n", entry, err)
 			continue
 		}
 		switch mode := stat.Mode(); {
@@ -49,16 +49,22 @@ func main() {
 	scanner.WaitUntilFinish()
 	sum := <-done
 
-	var totalDuration = time.Since(start)
+	totalDuration := time.Since(start)
+	anyParsed := sum.successfullyParsed > 0
 
 	printErrF("\nStatistics:")
-
-	printErrF("\tSuccessfully parsed %d %s in %d ms, avg %0.2f books/sec.",
-		sum.successfullyParsed, bookLabel(sum.successfullyParsed), totalDuration.Milliseconds(),
-		float64(sum.successfullyParsed)/totalDuration.Seconds())
-	printErrF("\tUnable to parse %d %s.", sum.errors, bookLabel(sum.errors))
-	printErrF("\tTotal parse time for successfully parsed books %d ms, avg %d ms per book.",
-		totalMs(sum.totalSuccessTimers.ParseTimeNs), avgMs(sum.totalSuccessTimers.ParseTimeNs, sum.successfullyParsed))
+	if anyParsed {
+		printErrF("\tSuccessfully parsed %d %s in %d ms, avg %0.2f books/sec.",
+			sum.successfullyParsed, formatNum(sum.successfullyParsed, "book", "books"), totalDuration.Milliseconds(),
+			float64(sum.successfullyParsed)/totalDuration.Seconds())
+	} else {
+		printErrF("\tBooks not found, scan time %d ms", totalDuration.Milliseconds())
+	}
+	printErrF("\tUnable to parse %d %s.", sum.errors, formatNum(sum.errors, "item", "items"))
+	if anyParsed {
+		printErrF("\tTotal parse time for successfully parsed books %d ms, avg %d ms per book.",
+			totalMs(sum.totalSuccessTimers.ParseTimeNs), avgMs(sum.totalSuccessTimers.ParseTimeNs, sum.successfullyParsed))
+	}
 }
 
 func printResultsAndSummarize(results <-chan fb2_scanner.ScannerResult, done chan<- summary) {
@@ -68,18 +74,16 @@ func printResultsAndSummarize(results <-chan fb2_scanner.ScannerResult, done cha
 		rid := res.Source.RId()
 		if res.IsSuccess() {
 			fmt.Printf("%s\n%s\n\n", rid.String(), res.Metadata.String())
-		} else {
-			printErrF("unable to parse %s: %s", rid.String(), *res.Error)
-		}
-		sum.printTimeNs += time.Since(start).Nanoseconds()
 
-		if res.IsSuccess() {
 			sum.totalSuccessTimers.Add(&res.Timers)
 			sum.successfullyParsed += 1
 		} else {
+			printErrF("%s\n\tunable to parse:\n\t%s\n\n", rid.String(), *res.Error)
+
 			sum.totalErrorsTimers.Add(&res.Timers)
 			sum.errors += 1
 		}
+		sum.printTimeNs += time.Since(start).Nanoseconds()
 	}
 	done <- sum
 }
@@ -88,11 +92,11 @@ func printErrF(format string, a ...interface{}) {
 	_, _ = fmt.Fprintf(os.Stderr, format+"\n", a...)
 }
 
-func bookLabel(amount int) string {
+func formatNum(amount int, one string, many string) string {
 	if amount == 1 {
-		return "book"
+		return one
 	}
-	return "books"
+	return many
 }
 
 func totalMs(totalNs int64) int64 {
