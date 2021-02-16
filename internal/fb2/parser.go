@@ -55,7 +55,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		case "title-info":
 			titleInfoNode = node
 
-			// look for converimage binary id
+			// look for cover image binary id
 			coverpageImage := xmlquery.FindOne(titleInfoNode, "//coverpage/image")
 			if coverpageImage != nil {
 				id := coverpageImage.SelectAttr("href")
@@ -127,7 +127,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		genresNodes := xmlquery.Find(titleInfoNode, "//genre")
 		var foundGenres []fb2_parser.GenreIndexEntity
 		for _, genreNode := range genresNodes {
-			if genre, found := fb2_parser.GenryIndexByCode[genreNode.InnerText()]; found {
+			if genre, found := fb2_parser.GenreIndexByCode[genreNode.InnerText()]; found {
 				foundGenres = append(foundGenres, genre)
 			}
 		}
@@ -169,7 +169,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		PubInfo:    pubInfo,
 		Cover:      cover,
 		Authors:    bookAuthors,
-		Genries:    genres,
+		Genres:     genres,
 		Sequences:  sequences,
 		Annotation: annotation}, nil
 }

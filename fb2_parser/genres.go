@@ -69,7 +69,7 @@ var GenreCategories = categoriesArray{
 			{Code: "prose_history", MultiLang: MultiLang{En: "Historical prose", Ru: "Историческая проза"}},
 			{Code: "prose_contemporary", MultiLang: MultiLang{En: "Contemporary prose", Ru: "Современная проза"}},
 			{Code: "prose_counter", MultiLang: MultiLang{En: "Counterculture", Ru: "Контркультура"}},
-			{Code: "prose_rus_classic", MultiLang: MultiLang{En: "Russial classics prose", Ru: "Русская классическая проза"}},
+			{Code: "prose_rus_classic", MultiLang: MultiLang{En: "Russian classics prose", Ru: "Русская классическая проза"}},
 			{Code: "prose_su_classics", MultiLang: MultiLang{En: "Soviet classics prose", Ru: "Советская классическая проза"}},
 		},
 	},
@@ -106,7 +106,7 @@ var GenreCategories = categoriesArray{
 		Genres: []Genre{
 			{Code: "child_tale", MultiLang: MultiLang{En: "Fairy Tales", Ru: "Сказка"}},
 			{Code: "child_verse", MultiLang: MultiLang{En: "Verses", Ru: "Детские стихи"}},
-			{Code: "child_prose", MultiLang: MultiLang{En: "Prose", Ru: "Детскиая проза"}},
+			{Code: "child_prose", MultiLang: MultiLang{En: "Prose", Ru: "Детская проза"}},
 			{Code: "child_sf", MultiLang: MultiLang{En: "Science Fiction", Ru: "Детская фантастика"}},
 			{Code: "child_det", MultiLang: MultiLang{En: "Detectives & Thrillers", Ru: "Детские остросюжетные"}},
 			{Code: "child_adv", MultiLang: MultiLang{En: "Adventures", Ru: "Детские приключения"}},
@@ -201,7 +201,7 @@ var GenreCategories = categoriesArray{
 			{Code: "religion_rel", MultiLang: MultiLang{En: "Religion", Ru: "Религия"}},
 			{Code: "religion_esoterics", MultiLang: MultiLang{En: "Esoterics", Ru: "Эзотерика"}},
 			{Code: "religion_self", MultiLang: MultiLang{En: "Self-improvement", Ru: "Самосовершенствование"}},
-			{Code: "religion", MultiLang: MultiLang{En: "Other", Ru: "Прочая религионая литература"}, IsEtc: true},
+			{Code: "religion", MultiLang: MultiLang{En: "Other", Ru: "Прочая религиозная литература"}, IsEtc: true},
 		},
 	},
 
@@ -227,7 +227,7 @@ var GenreCategories = categoriesArray{
 			{Code: "home_diy", MultiLang: MultiLang{En: "Do it yourself", Ru: "Сделай сам"}},
 			{Code: "home_sport", MultiLang: MultiLang{En: "Sports", Ru: "Спорт"}},
 			{Code: "home_sex", MultiLang: MultiLang{En: "Erotica & sex", Ru: "Эротика, Секс"}},
-			{Code: "home", MultiLang: MultiLang{En: "Other", Ru: "Прочиее домоводство"}, IsEtc: true},
+			{Code: "home", MultiLang: MultiLang{En: "Other", Ru: "Прочее домоводство"}, IsEtc: true},
 		},
 	},
 }
@@ -253,14 +253,14 @@ func (g *GenreIndexEntity) String() string {
 	return sb.String()
 }
 
-func createGeneryIndex(categories categoriesArray) map[string]GenreIndexEntity {
+func createGenreIndex(categories categoriesArray) map[string]GenreIndexEntity {
 	index := make(map[string]GenreIndexEntity)
 	for _, category := range &categories {
-		for _, genry := range category.Genres {
-			index[genry.Code] = GenreIndexEntity{genry, category}
+		for _, genre := range category.Genres {
+			index[genre.Code] = GenreIndexEntity{genre, category}
 		}
 	}
 	return index
 }
 
-var GenryIndexByCode = createGeneryIndex(GenreCategories)
+var GenreIndexByCode = createGenreIndex(GenreCategories)

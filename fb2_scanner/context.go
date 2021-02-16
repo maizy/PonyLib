@@ -10,7 +10,7 @@ type ScannerContext struct {
 	openFileSemaphore chan struct{}
 }
 
-func (c *ScannerContext) AquireFileSemaphore() {
+func (c *ScannerContext) AcquireFileSemaphore() {
 	c.openFileSemaphore <- struct{}{}
 }
 

@@ -35,7 +35,7 @@ func scanRegularFile(
 		wg.Done()
 		return
 	}
-	ctx.AquireFileSemaphore()
+	ctx.AcquireFileSemaphore()
 	go func() {
 		fp, err := os.Open(path)
 		defer func() {

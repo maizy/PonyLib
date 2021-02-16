@@ -1,7 +1,6 @@
 package targets
 
 import (
-	"dev.maizy.ru/ponylib/internal/u"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,6 +9,7 @@ import (
 
 	"dev.maizy.ru/ponylib/fb2_scanner"
 	"dev.maizy.ru/ponylib/internal/sympath"
+	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type DirectoryTarget struct {

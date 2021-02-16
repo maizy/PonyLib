@@ -10,7 +10,7 @@ type Q struct {
 	Value string
 }
 
-// Resource Idetifier
+// Resource Identifier
 // Limited URI implementation
 type RId struct {
 	Scheme string

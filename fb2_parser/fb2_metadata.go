@@ -1,12 +1,14 @@
 package fb2_parser
 
 import (
-	"dev.maizy.ru/ponylib/internal/u"
 	"fmt"
-	"github.com/mitchellh/go-wordwrap"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/go-wordwrap"
+
+	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type Book struct {
@@ -141,7 +143,7 @@ type Fb2Metadata struct {
 	Book       *Book
 	PubInfo    *PubInfo
 	Authors    *[]Author
-	Genries    *[]GenreIndexEntity
+	Genres     *[]GenreIndexEntity
 	Sequences  *[]Sequence
 	Annotation *string
 	Cover      *Cover // TODO: https://github.com/maizy/PonyLib/issues/61
@@ -179,9 +181,9 @@ func (f *Fb2Metadata) String() string {
 		sb.WriteString("\n\t")
 		sb.WriteString(f.PubInfo.String())
 	}
-	if f.Genries != nil {
+	if f.Genres != nil {
 		sb.WriteString("\n\tGenres:\n")
-		for index, genre := range *f.Genries {
+		for index, genre := range *f.Genres {
 			if index > 0 {
 				sb.WriteString("\n")
 			}
