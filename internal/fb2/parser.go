@@ -1,6 +1,7 @@
 package fb2
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -105,12 +106,15 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		}
 
 		formatted, parsed := parseDate(titleInfoNode)
+		lang := findText(titleInfoNode, "//lang")
 
-		book = &fb2_parser.Book{
-			Title:         title,
-			Lang:          findText(titleInfoNode, "//lang"),
-			FormattedDate: formatted,
-			Date:          parsed,
+		if title != "" || formatted != nil || parsed != nil || lang != nil {
+			book = &fb2_parser.Book{
+				Title:         title,
+				Lang:          lang,
+				FormattedDate: formatted,
+				Date:          parsed,
+			}
 		}
 
 		authorsNodes := xmlquery.Find(titleInfoNode, "//author")
@@ -163,6 +167,11 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	}
 
 	cover := parseCover(coverNode)
+
+	if book == nil && pubInfo == nil && cover == nil && bookAuthors == nil && genres == nil &&
+		sequences == nil && annotation == nil {
+		return nil, errors.New("metadata not found")
+	}
 
 	return &fb2_parser.Fb2Metadata{
 		Book:       book,
@@ -305,7 +314,7 @@ func fb2MarkupToText(root *xmlquery.Node) string {
 	for child := root.FirstChild; child != nil; child = child.NextSibling {
 		fb2ToTextInner(child, &sb, 0)
 	}
-	return sb.String()
+	return strings.TrimSpace(sb.String())
 }
 
 func findText(node *xmlquery.Node, query string) *string {

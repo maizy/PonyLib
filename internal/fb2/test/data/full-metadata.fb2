@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">
+ <description>
+  <title-info>
+   <genre>sf</genre>
+   <genre>short_story</genre>
+   <genre>sf_cyberpunk</genre>
+   <author>
+    <first-name>Martha</first-name>
+    <last-name>Wells</last-name>
+    <home-page>http://www.marthawells.com</home-page>
+   </author>
+   <author>
+    <first-name>Some</first-name>
+    <middle-name>Co</middle-name>
+    <last-name>Author</last-name>
+   </author>
+   <book-title>Compulsory</book-title>
+   <annotation>
+       <p>Martha Wells is an American writer of speculative fiction.</p>
+       <p>She has published a number of fantasy novels, young adult novels, media tie-ins, short stories, and nonfiction essays on fantasy and science fiction subjects. Her novels have been translated into twelve languages. Wells has won a Nebula Award, two Locus Awards, and two Hugo Awards.<hr/>
+    <a href="https://en.wikipedia.org/wiki/Martha_Wells">Wikipedia</a></p>
+   </annotation>
+   <date value="2018-12-16">2018</date>
+   <lang>en</lang>
+   <sequence name="The Murderbot Diaries" number="0"/>
+   <sequence name="Best Of The Best" number="100500"/>
+  </title-info>
+  <document-info>
+   <author>
+    <nickname>Some user</nickname>
+   </author>
+   <program-used>Random gen</program-used>
+   <date value="2019-01-21">21.1.2019</date>
+   <version>1.0</version>
+  </document-info>
+  <publish-info>
+   <book-name>Compulsory</book-name>
+   <publisher>Wired Magazine</publisher>
+   <year>2018</year>
+   <isbn>978-1-250-22986-1</isbn>
+  </publish-info>
+ </description>
+ <body>
+  <section>
+   <title>
+    <p>Martha Wells</p>
+    <p>Compulsory</p>
+   </title>
+   <p>Text here</p>
+  </section>
+ </body>
+</FictionBook>
