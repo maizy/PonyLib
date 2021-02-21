@@ -1,10 +1,8 @@
-package targets
+package fb2_scanner
 
 import (
 	"fmt"
 	"sync"
-
-	"dev.maizy.ru/ponylib/fb2_scanner"
 )
 
 type FileTarget struct {
@@ -15,13 +13,14 @@ func (f *FileTarget) Spec() string {
 	return fmt.Sprintf("file:%s", f.Path)
 }
 
-func (f *FileTarget) Type() fb2_scanner.TargetType {
-	return fb2_scanner.FsFile
+func (f *FileTarget) Type() TargetType {
+	return FsFile
 }
 
-func (f *FileTarget) Scan(ctx fb2_scanner.ScannerContext) <-chan fb2_scanner.ScannerResult {
-	resultChan := make(chan fb2_scanner.ScannerResult)
+func (f *FileTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
+	resultChan := make(chan ScannerResult, 1)
 	wg := sync.WaitGroup{}
+	wg.Add(1)
 	scanRegularFile(ctx, f.Path, resultChan, &wg)
 	go func() {
 		wg.Wait()

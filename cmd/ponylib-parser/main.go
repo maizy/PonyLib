@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"dev.maizy.ru/ponylib/fb2_scanner"
-	"dev.maizy.ru/ponylib/fb2_scanner/targets"
 )
 
 type summary struct {
@@ -41,9 +40,9 @@ func main() {
 		}
 		switch mode := stat.Mode(); {
 		case mode.IsDir():
-			scanner.Scan(&targets.DirectoryTarget{Path: entry})
+			scanner.Scan(&fb2_scanner.DirectoryTarget{Path: entry})
 		case mode.IsRegular():
-			scanner.Scan(&targets.FileTarget{Path: entry})
+			scanner.Scan(&fb2_scanner.FileTarget{Path: entry})
 		}
 	}
 	scanner.WaitUntilFinish()
