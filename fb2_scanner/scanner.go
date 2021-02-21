@@ -32,13 +32,13 @@ type ScanTarget interface {
 }
 
 func (s *Fb2Scanner) Scan(target ScanTarget) {
-	resultsChannel := target.Scan(s.ctx)
+	targetResultsChannel := target.Scan(s.ctx)
 	s.scanTargetsWG.Add(1)
 	go func() {
-		defer s.scanTargetsWG.Done()
-		for res := range resultsChannel {
+		for res := range targetResultsChannel {
 			s.resultChannel <- res
 		}
+		s.scanTargetsWG.Done()
 	}()
 }
 
