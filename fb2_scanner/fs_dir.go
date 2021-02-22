@@ -35,7 +35,7 @@ func (f *DirectoryTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
 			}
 			return filepath.SkipDir
 		}
-		if info.Mode().IsRegular() && strings.HasSuffix(info.Name(), ".fb2") {
+		if info.Mode().IsRegular() && strings.HasSuffix(info.Name(), ".fb2") && !strings.HasPrefix(info.Name(), ".") {
 			wg.Add(1)
 			scanRegularFile(ctx, path, resultChan, &wg)
 		}

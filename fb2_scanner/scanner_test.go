@@ -63,6 +63,15 @@ func TestFb2Scanner(t *testing.T) {
 				nil, &DirectoryTarget{"test/data/fs-dir/broken-dir-symlink"},
 			},
 		},
+
+		{"zip archive with one book", testData{[]string{"Test book 1"}, &ZipArchiveTarget{"test/data/zip/book1.zip"}}},
+		{
+			"zip archive with directory tree",
+			testData{
+				[]string{"Test book 1", "Test book 2", "Test book 3"},
+				&ZipArchiveTarget{"test/data/zip/tree.zip"},
+			},
+		},
 	}
 
 	for _, tt := range tests {

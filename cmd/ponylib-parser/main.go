@@ -42,7 +42,13 @@ func main() {
 		case mode.IsDir():
 			scanner.Scan(&fb2_scanner.DirectoryTarget{Path: entry})
 		case mode.IsRegular():
-			scanner.Scan(&fb2_scanner.FileTarget{Path: entry})
+			mayBeArchive := fb2_scanner.DetectSupportedArchive(entry)
+			switch {
+			case mayBeArchive != nil && *mayBeArchive == fb2_scanner.Zip:
+				scanner.Scan(&fb2_scanner.ZipArchiveTarget{entry})
+			default:
+				scanner.Scan(&fb2_scanner.FileTarget{entry})
+			}
 		}
 	}
 	scanner.WaitUntilFinish()
