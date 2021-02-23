@@ -4,6 +4,20 @@ Fb2 library with web interface.
 
 **Being rewritten in golang. Work in progress**
 
+## Requirements
+
+* PostgreSQL 12+
+
+## Installation Instructions
+
+### Init database & user
+
+```
+su - postgres
+createuser -P ponylib
+createdb -O ponylib ponylib
+```
+
 ## Tools
 
 ### `ponylib-parser`
