@@ -1,24 +1,47 @@
 # PonyLib v2
 
-Fb2 library with web interface.
+Fb2 library with CLI & web UI.
 
 **Being rewritten in golang. Work in progress**
 
 ## Requirements
 
 * PostgreSQL 12+
+* Go 1.16+
 
-## Installation Instructions
+## Setup with docker-compose
 
-### Init database & user
+_TODO_
+
+
+## Manual installation
+
+### Init DB
 
 ```
 su - postgres
+
 createuser -P ponylib
+# define password
+
 createdb -O ponylib ponylib
 ```
 
-## Tools
+### Build
+
+```
+./build.sh
+```
+
+
+### Usage
+
+```
+DATABASE_URL="postgres://localhost:5432/ponylib?user=ponylib&password=password" bin/ponylib --help
+```
+
+
+## Additional Tools
 
 ### `ponylib-parser`
 
