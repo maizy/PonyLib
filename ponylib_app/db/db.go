@@ -16,7 +16,6 @@ func Connect() (*pgxpool.Pool, error) {
 	return conn, nil
 }
 
-func CloseConnection(db *pgxpool.Pool) error {
+func CloseConnection(db *pgxpool.Pool) {
 	db.Close()
-	return nil
 }

@@ -19,6 +19,8 @@ type summary struct {
 	printTimeNs        int64
 }
 
+var Version string = "unknown"
+
 func main() {
 	flag.Parse()
 	files := flag.Args()
