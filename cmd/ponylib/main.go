@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"dev.maizy.ru/ponylib/cmd/ponylib/cmd"
 )
 
+var Version string = "unknown"
+
 func main() {
-	fmt.Println("ponylib app")
+	_ = cmd.Execute(Version)
 }
