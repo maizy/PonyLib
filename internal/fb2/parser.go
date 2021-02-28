@@ -166,9 +166,9 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		}
 	}
 
-	cover := parseCover(coverNode)
+	// cover := parseCover(coverNode)
 
-	if book == nil && pubInfo == nil && cover == nil && bookAuthors == nil && genres == nil &&
+	if book == nil && pubInfo == nil && bookAuthors == nil && genres == nil &&
 		sequences == nil && annotation == nil {
 		return nil, errors.New("metadata not found")
 	}
@@ -176,7 +176,6 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	return &fb2_parser.Fb2Metadata{
 		Book:       book,
 		PubInfo:    pubInfo,
-		Cover:      cover,
 		Authors:    bookAuthors,
 		Genres:     genres,
 		Sequences:  sequences,

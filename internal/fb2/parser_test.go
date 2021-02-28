@@ -26,7 +26,6 @@ func longText(text string) *string {
 	noTabs := regexp.MustCompile("(?m)^\t+").ReplaceAllString(text, "")
 	noNL := regexp.MustCompile("(?m)\n").ReplaceAllString(noTabs, " ")
 	withExpectedNL := strings.ReplaceAll(noNL, "\\n ", "\n")
-	println(withExpectedNL)
 	return &withExpectedNL
 }
 
