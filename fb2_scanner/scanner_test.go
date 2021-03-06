@@ -34,42 +34,55 @@ func TestFb2Scanner(t *testing.T) {
 		name string
 		data testData
 	}{
-		{"plain fb2 file", testData{[]string{"Test book 1"}, &FileTarget{"test/data/fs-file/book1.fb2"}}},
-		{"symlink to fb2 file", testData{[]string{"Test book 1"}, &FileTarget{"test/data/fs-file/book-symlink.fb2"}}},
-		{"non exist fb2 file", testData{nil, &FileTarget{"test/data/fs-file/non-exist-book.fb2"}}},
-
+		{
+			"plain fb2 file",
+			testData{[]string{"Test book 1"}, &FileTarget{Path: "test/data/fs-file/book1.fb2"}},
+		},
+		{
+			"symlink to fb2 file",
+			testData{[]string{"Test book 1"}, &FileTarget{Path: "test/data/fs-file/book-symlink.fb2"}},
+		},
+		{
+			"non exist fb2 file",
+			testData{nil, &FileTarget{Path: "test/data/fs-file/non-exist-book.fb2"}}},
 		{
 			"directory with fb2 files, symlinks to fb2 files, bad symlink",
 			testData{
 				[]string{"Test book 1", "Test book 2", "Test book 4", "Test book 5"},
-				&DirectoryTarget{"test/data/fs-dir/dir"},
+				&DirectoryTarget{Path: "test/data/fs-dir/dir"},
 			},
 		},
 		{
 			"directory tree with fb2 files",
 			testData{
-				[]string{"Test book 1", "Test book 2", "Test book 3"}, &DirectoryTarget{"test/data/fs-dir/dir-tree"},
+				[]string{"Test book 1", "Test book 2", "Test book 3"},
+				&DirectoryTarget{Path: "test/data/fs-dir/dir-tree"},
 			},
 		},
 		{
 			"directory symlink",
 			testData{
-				[]string{"Test book 1", "Test book 2", "Test book 3"}, &DirectoryTarget{"test/data/fs-dir/dir-symlink"},
+				[]string{"Test book 1", "Test book 2", "Test book 3"},
+				&DirectoryTarget{Path: "test/data/fs-dir/dir-symlink"},
 			},
 		},
 		{
 			"broken dir symlink",
 			testData{
-				nil, &DirectoryTarget{"test/data/fs-dir/broken-dir-symlink"},
+				nil,
+				&DirectoryTarget{Path: "test/data/fs-dir/broken-dir-symlink"},
 			},
 		},
 
-		{"zip archive with one book", testData{[]string{"Test book 1"}, &ZipArchiveTarget{"test/data/zip/book1.zip"}}},
+		{
+			"zip archive with one book",
+			testData{[]string{"Test book 1"}, &ZipArchiveTarget{Path: "test/data/zip/book1.zip"}},
+		},
 		{
 			"zip archive with directory tree",
 			testData{
 				[]string{"Test book 1", "Test book 2", "Test book 3"},
-				&ZipArchiveTarget{"test/data/zip/tree.zip"},
+				&ZipArchiveTarget{Path: "test/data/zip/tree.zip"},
 			},
 		},
 	}

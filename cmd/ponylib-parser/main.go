@@ -31,27 +31,18 @@ func main() {
 	start := time.Now()
 	done := make(chan summary)
 	scanner := fb2_scanner.NewFb2Scanner()
+	unavailableEntries := 0
 
 	go printResultsAndSummarize(scanner.Results, done)
 
 	for _, entry := range files {
-		stat, err := os.Stat(entry)
+		target, err := fb2_scanner.NewTargetFromEntryPath(entry, false)
 		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "unable to open %s: %s\n", entry, err)
+			_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
+			unavailableEntries++
 			continue
 		}
-		switch mode := stat.Mode(); {
-		case mode.IsDir():
-			scanner.Scan(&fb2_scanner.DirectoryTarget{Path: entry})
-		case mode.IsRegular():
-			mayBeArchive := fb2_scanner.DetectSupportedArchive(entry)
-			switch {
-			case mayBeArchive != nil && *mayBeArchive == fb2_scanner.Zip:
-				scanner.Scan(&fb2_scanner.ZipArchiveTarget{entry})
-			default:
-				scanner.Scan(&fb2_scanner.FileTarget{entry})
-			}
-		}
+		scanner.Scan(target)
 	}
 	scanner.WaitUntilFinish()
 	sum := <-done
@@ -67,7 +58,8 @@ func main() {
 	} else {
 		printErrF("\tBooks not found, scan time %d ms", totalDuration.Milliseconds())
 	}
-	printErrF("\tUnable to parse %d %s.", sum.errors, formatNum(sum.errors, "item", "items"))
+	printErrF("\tUnable to open %d %s.", unavailableEntries, formatNum(unavailableEntries, "entry", "entries"))
+	printErrF("\tUnable to parse %d %s.", sum.errors, formatNum(sum.errors, "book", "books"))
 	if anyParsed {
 		printErrF("\tTotal parse time for successfully parsed books %d ms, avg %d ms per book.",
 			totalMs(sum.totalSuccessTimers.ParseTimeNs), avgMs(sum.totalSuccessTimers.ParseTimeNs, sum.successfullyParsed))

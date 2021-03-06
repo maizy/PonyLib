@@ -22,10 +22,11 @@ func (t *ParseTimers) Add(other *ParseTimers) {
 }
 
 type ScannerResult struct {
-	Source   ScannerSource
-	Metadata *fb2_parser.Fb2Metadata
-	Error    *error
-	Timers   ParseTimers
+	Source     ScannerSource
+	FromTarget ScanTarget
+	Metadata   *fb2_parser.Fb2Metadata
+	Error      *error
+	Timers     ParseTimers
 }
 
 func (r *ScannerResult) IsSuccess() bool {

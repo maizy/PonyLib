@@ -16,21 +16,6 @@ func NewFb2Scanner() Fb2Scanner {
 	return Fb2Scanner{channel, channel, sync.WaitGroup{}, NewScannerContext()}
 }
 
-type TargetType string
-
-const (
-	FsDir      TargetType = "Directory"
-	FsFile                = "File"
-	ZipArchive            = "Zip Archive"
-	//GzFile = "Gzip File"
-)
-
-type ScanTarget interface {
-	Type() TargetType
-	Spec() string
-	Scan(ctx ScannerContext) <-chan ScannerResult
-}
-
 func (s *Fb2Scanner) Scan(target ScanTarget) {
 	targetResultsChannel := target.Scan(s.ctx)
 	s.scanTargetsWG.Add(1)
