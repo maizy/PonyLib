@@ -96,12 +96,12 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	if titleInfoNode != nil {
 		var title string
 		if foundTitle := findText(titleInfoNode, "//book-title"); foundTitle != nil {
-			title = *foundTitle
+			title = normalizeXmlText(*foundTitle)
 		}
 		// fallback to publish-info/book-name if title is empty or not found
 		if title == "" && publishInfoNode != nil {
 			if bookName := findText(publishInfoNode, "//book-name"); bookName != nil {
-				title = *bookName
+				title = normalizeXmlText(*bookName)
 			}
 		}
 
@@ -142,7 +142,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		sequenceNodes := xmlquery.Find(titleInfoNode, "//sequence")
 		var foundSequences []fb2_parser.Sequence
 		for _, sequenceNode := range sequenceNodes {
-			if name := findText(sequenceNode, "//@name"); name != nil {
+			if name := normalizeXmlTextPtr(findText(sequenceNode, "//@name")); name != nil {
 				number := findInt(sequenceNode, "//@number")
 				foundSequences = append(foundSequences, fb2_parser.Sequence{*name, number})
 			}
@@ -158,9 +158,9 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 
 	var pubInfo *fb2_parser.PubInfo
 	if publishInfoNode != nil {
-		publisher := findText(publishInfoNode, "//publisher")
+		publisher := normalizeXmlTextPtr(findText(publishInfoNode, "//publisher"))
 		year := findInt(publishInfoNode, "//year")
-		isbn := findText(publishInfoNode, "//isbn")
+		isbn := normalizeXmlTextPtr(findText(publishInfoNode, "//isbn"))
 		if publisher != nil || year != nil || isbn != nil {
 			pubInfo = &fb2_parser.PubInfo{publisher, year, isbn}
 		}
@@ -205,10 +205,10 @@ func parseAuthor(node *xmlquery.Node) *fb2_parser.Author {
 	if node == nil {
 		return nil
 	}
-	lastName := findText(node, "last-name")
-	firstName := findText(node, "first-name")
-	middleName := findText(node, "middle-name")
-	nickname := findText(node, "nickname")
+	lastName := normalizeXmlTextPtr(findText(node, "last-name"))
+	firstName := normalizeXmlTextPtr(findText(node, "first-name"))
+	middleName := normalizeXmlTextPtr(findText(node, "middle-name"))
+	nickname := normalizeXmlTextPtr(findText(node, "nickname"))
 	if lastName != nil || firstName != nil || middleName != nil || nickname != nil {
 		return &fb2_parser.Author{firstName, lastName, middleName, nickname}
 	}
@@ -253,11 +253,11 @@ func fb2ToTextInner(node *xmlquery.Node, sb *strings.Builder, depth int) []strin
 			postfix = "\n"
 		case "title", "subtitle":
 			sb.WriteString("\n")
-			sb.WriteString(node.InnerText())
+			sb.WriteString(collapseWhitespaces(node.InnerText()))
 			sb.WriteString("\n")
 		// special list-like elements (for poem)
 		case "v", "text-author", "date":
-			sb.WriteString(node.InnerText())
+			sb.WriteString(collapseWhitespaces(node.InnerText()))
 			sb.WriteString("\n")
 		case "br", "empty-line":
 			sb.WriteString("\n")
@@ -282,21 +282,23 @@ func fb2ToTextInner(node *xmlquery.Node, sb *strings.Builder, depth int) []strin
 			// headers
 			case ifTagMatched(`h\d+`):
 				sb.WriteString("\n")
-				sb.WriteString(node.InnerText())
+				sb.WriteString(collapseWhitespaces(node.InnerText()))
 				sb.WriteString("\n")
 			// just append inner text
 			// expect at least: b, strong, emphasis, em, sub, sup
 			// all unknown elements produced concatenation of all included text nodes because
 			// .InnerText is recursive itself
 			default:
-				sb.WriteString(node.InnerText())
+				sb.WriteString(collapseWhitespaces(node.InnerText()))
 			}
 
 		}
 	case xmlquery.TextNode:
-		sb.WriteString(strings.TrimSpace(node.InnerText()))
+		fallthrough
 	case xmlquery.CharDataNode:
-		sb.WriteString(strings.TrimSpace(node.InnerText()))
+		if text := node.InnerText(); !isOnlyWhitespaces(text) {
+			sb.WriteString(collapseWhitespaces(text))
+		}
 	}
 
 	if iterateChildren && depth < 100 {
@@ -313,7 +315,7 @@ func fb2MarkupToText(root *xmlquery.Node) string {
 	for child := root.FirstChild; child != nil; child = child.NextSibling {
 		fb2ToTextInner(child, &sb, 0)
 	}
-	return strings.TrimSpace(sb.String())
+	return strings.TrimSpace(normalizeXmlText(sb.String()))
 }
 
 func findText(node *xmlquery.Node, query string) *string {
@@ -330,4 +332,56 @@ func findInt(node *xmlquery.Node, query string) *int {
 		}
 	}
 	return nil
+}
+
+func normalizeXmlText(text string) string {
+	builder := strings.Builder{}
+	builder.Grow(len(text))
+	for _, r := range text {
+		// xml spec: https://www.w3.org/TR/xml/#charsets
+		if r == 0xD || r == 0xA0 { // CR, NBSP
+			builder.WriteRune(' ')
+		} else if r == 0x85 { // NEL
+			builder.WriteRune('\n')
+		} else if r == '\t' {
+			builder.WriteString("    ")
+		} else {
+			builder.WriteRune(r)
+		}
+	}
+	withNormalizedWhitespaces := builder.String()
+	// TODO: hack to normalize XML with mixed tags & whitespaces. how to do it right?
+	return strings.ReplaceAll(withNormalizedWhitespaces, "\n ", "\n")
+}
+
+func normalizeXmlTextPtr(text *string) *string {
+	if text != nil {
+		return u.StrPtr(normalizeXmlText(*text))
+	}
+	return nil
+}
+
+const xmlWhitespaces = " \n\t\u000D\u00A0\u0085"
+
+func trimXmlWhitespaces(text string) string {
+	return strings.Trim(text, xmlWhitespaces)
+}
+
+func collapseWhitespaces(text string) string {
+	if len(text) > 1 {
+		trimmed := trimXmlWhitespaces(text)
+		// collapse suffix or prefix with more than 1 space to 1 space
+		if isOnlyWhitespaces(text[0:2]) {
+			trimmed = " " + trimmed
+		}
+		if isOnlyWhitespaces(text[len(text)-2:]) {
+			trimmed = trimmed + " "
+		}
+		return trimmed
+	}
+	return text
+}
+
+func isOnlyWhitespaces(text string) bool {
+	return trimXmlWhitespaces(text) == ""
 }

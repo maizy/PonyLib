@@ -30,7 +30,7 @@ func TestFb2Metadata_String(t *testing.T) {
 	assert.Equal(t, "«Best Book» by Ivan, Navi", metadata.String())
 }
 
-func Test(t *testing.T) {
+func TestFb2Metadata_JsonRoundTrip(t *testing.T) {
 	tests := []struct {
 		name     string
 		metadata Fb2Metadata
