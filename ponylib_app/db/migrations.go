@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"log"
+	"os"
 	"path"
 	"sort"
 	"strings"
@@ -70,6 +71,14 @@ func getAppliedMigrationsIds(db *pgxpool.Pool) (map[string]bool, error) {
 	return applied, nil
 }
 
+func prepareMigration(content string) string {
+	var ftsLanguage = os.Getenv("FTS_LANGUAGE")
+	if ftsLanguage == "" {
+		ftsLanguage = "english"
+	}
+	return strings.ReplaceAll(content, "{{FTS_LANGUAGE}}", ftsLanguage)
+}
+
 // Very simple migration processing
 func Migrate(db *pgxpool.Pool) error {
 	log.Println("start DB migration")
@@ -106,10 +115,10 @@ func Migrate(db *pgxpool.Pool) error {
 	for _, migration := range migrations {
 		if !applied[migration.Id] {
 			log.Printf("apply migration: %s", migration.Id)
-			if _, err := db.Query(context.Background(), migration.Content); err != nil {
+			if _, err := db.Exec(context.Background(), prepareMigration(migration.Content)); err != nil {
 				return fmt.Errorf("unable to apply migration %s: %w", migration.Id, err)
 			}
-			_, err := db.Query(context.Background(),
+			_, err := db.Exec(context.Background(),
 				fmt.Sprintf(`insert into "%s" (id, applied_at) values ($1, now())`, migrationTable),
 				migration.Id)
 			if err != nil {
