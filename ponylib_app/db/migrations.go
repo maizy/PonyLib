@@ -72,12 +72,12 @@ func getAppliedMigrationsIds(db *pgxpool.Pool) (map[string]bool, error) {
 
 // Very simple migration processing
 func Migrate(db *pgxpool.Pool) error {
+	log.Println("start DB migration")
 	migrations, err := getMigrations()
 	if err != nil {
 		return fmt.Errorf("unable to get migrations: %w", err)
 	}
 	dbVersion := len(migrations)
-	log.Printf("Expected %d migrations", dbVersion)
 
 	_, err = db.Query(
 		context.Background(),
@@ -97,12 +97,15 @@ func Migrate(db *pgxpool.Pool) error {
 	if err != nil {
 		return fmt.Errorf("unable to get applied migrations: %w", err)
 	}
-	log.Printf("Found %d applied migrations", len(applied))
+	if len(applied) != dbVersion {
+		log.Printf("expected %d migrations", dbVersion)
+		log.Printf("found %d applied migrations", len(applied))
+	}
 
 	var processed int
 	for _, migration := range migrations {
 		if !applied[migration.Id] {
-			log.Printf("Apply migration: %s", migration.Id)
+			log.Printf("apply migration: %s", migration.Id)
 			if _, err := db.Query(context.Background(), migration.Content); err != nil {
 				return fmt.Errorf("unable to apply migration %s: %w", migration.Id, err)
 			}
@@ -119,6 +122,8 @@ func Migrate(db *pgxpool.Pool) error {
 	}
 	if processed > 0 {
 		log.Printf("%d migrations have been applied", processed)
+	} else {
+		log.Println("DB migration done, nothing to do")
 	}
 
 	return nil

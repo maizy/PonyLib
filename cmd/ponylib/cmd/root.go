@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -36,10 +35,8 @@ func connectToDbOrExit() *pgxpool.Pool {
 }
 
 func migrateOrExit(conn *pgxpool.Pool) {
-	log.Println("Migrate DB")
 	if err := db.Migrate(conn); err != nil {
 		printErrF("unable to migrate DB: %s", err)
 		os.Exit(2)
 	}
-	log.Println("Migration done")
 }

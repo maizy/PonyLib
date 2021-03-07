@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -10,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"dev.maizy.ru/ponylib/fb2_scanner"
+	"dev.maizy.ru/ponylib/internal/u"
 	"dev.maizy.ru/ponylib/ponylib_app/db"
 )
 
@@ -25,30 +28,50 @@ type summary struct {
 	dbInsertTimeNs     int64
 }
 
+const reportBatchSize = 100
+
 func addBookAndSummarize(conn *pgxpool.Pool, results <-chan fb2_scanner.ScannerResult, done chan<- summary) {
 	sum := summary{}
+	processed := 0
+	lastBatchStart := time.Now()
 	for res := range results {
-		sourceRId := res.Source.RId()
-
+		processed++
+		if processed != 0 && processed%reportBatchSize == 0 {
+			sinceLastBatch := time.Since(lastBatchStart)
+			lastBatchStart = time.Now()
+			log.Printf("%d books processed, %0.2f book/sec ..",
+				processed, float64(reportBatchSize)/sinceLastBatch.Seconds())
+		}
 		if res.IsSuccess() {
 			if res.FromTarget == nil {
-				panic("Result without FromTarget not expected")
+				panic("result without FromTarget not expected")
 			}
 			mayBeTargetUUID := res.FromTarget.GetUUID()
 			if mayBeTargetUUID == nil {
-				panic("Target without UUID not expected")
+				panic("target without UUID not expected")
 			}
 			targetUUID := *mayBeTargetUUID
-			targetRId := res.FromTarget.RId()
 			bookUUID := uuid.Must(uuid.NewV4()).String()
-			fmt.Printf(
-				"%s [%s] => %s [%s] title: %s\n",
-				targetUUID, &targetRId, bookUUID, &sourceRId, res.Metadata.Book.Title)
+			bookRId := res.Source.RId()
+
+			startDBQuery := time.Now()
+			if _, err := conn.Exec(
+				context.Background(),
+				"insert into book (id, target_id, rid, metadata) values ($1, $2, $3, $4)",
+				// metadata converted to json because pgx has embedded jsonb support
+				bookUUID, targetUUID, bookRId.String(), res.Metadata); err != nil {
+				printErrF("unable to insert book to DB, skip book: %s", err)
+				sum.totalErrorsTimers.Add(&res.Timers)
+				sum.errors += 1
+				sum.dbInsertTimeNs += time.Since(startDBQuery).Nanoseconds()
+				continue
+			}
 
 			sum.totalSuccessTimers.Add(&res.Timers)
 			sum.successfullyParsed += 1
+			sum.dbInsertTimeNs += time.Since(startDBQuery).Nanoseconds()
 		} else {
-			printErrF("%s\n\tunable to parse:\n\t%s\n\n", &sourceRId, *res.Error)
+			log.Printf("unable to parse: %s", *res.Error)
 
 			sum.totalErrorsTimers.Add(&res.Timers)
 			sum.errors += 1
@@ -86,20 +109,46 @@ var scanCmd = &cobra.Command{
 		for _, entry := range args {
 			target, err := fb2_scanner.NewTargetFromEntryPath(entry, true)
 			if err != nil {
-				printErrF("%s\n\tunable to open:\n\t%s\n", entry, err)
+				log.Printf("unable to open target: %s", err)
 				unavailableEntries++
 				continue
 			}
+			targetRId := target.RId()
+			if _, err := conn.Exec(
+				context.Background(),
+				"insert into target (id, scanned_at, rid) values ($1, $2, $3)",
+				target.GetUUID(), start, targetRId.String()); err != nil {
+				log.Printf("unable to insert target to DB, skip target: %s", err)
+				continue
+			}
+			log.Printf("scan target %s", targetRId.String())
 			scanner.Scan(target)
 		}
 		scanner.WaitUntilFinish()
 		sum := <-done
 
 		totalDuration := time.Since(start)
-		// FIXME
-		fmt.Printf("sum: %v\n", sum)
-		fmt.Printf("unavailable: %d\n", unavailableEntries)
-		fmt.Printf("total duration: %d\n", totalDuration)
+		anyParsed := sum.successfullyParsed > 0
+		log.Println("done")
+
+		fmt.Println("\nStatistics:")
+		if anyParsed {
+			fmt.Printf("\tSuccessfully parsed %d %s in %0.2fs, avg %0.2f books/sec.\n",
+				sum.successfullyParsed, u.FormatNum(sum.successfullyParsed, "book", "books"),
+				totalDuration.Seconds(), float64(sum.successfullyParsed)/totalDuration.Seconds())
+		} else {
+			fmt.Printf("\tBooks not found, scan time %0.2fs.\n", totalDuration.Seconds())
+		}
+		fmt.Printf("\tUnable to open %d %s.\n", unavailableEntries, u.FormatNum(unavailableEntries, "entry", "entries"))
+		fmt.Printf("\tUnable to process %d %s.\n", sum.errors, u.FormatNum(sum.errors, "book", "books"))
+		if anyParsed {
+			fmt.Printf("\tTotal parse time for successfully parsed books %0.2fs, avg %d ms per book.\n",
+				u.TotalSec(sum.totalSuccessTimers.ParseTimeNs),
+				u.AvgMs(sum.totalSuccessTimers.ParseTimeNs, sum.successfullyParsed))
+			fmt.Printf("\tTotal DB operations time for successfully parsed books %0.2fs, avg %d ms per book.\n",
+				u.TotalSec(sum.dbInsertTimeNs),
+				u.AvgMs(sum.dbInsertTimeNs, sum.successfullyParsed))
+		}
 
 		os.Exit(0)
 	},

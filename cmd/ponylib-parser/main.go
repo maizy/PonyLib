@@ -3,12 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math"
 	"os"
 	"path"
 	"time"
 
 	"dev.maizy.ru/ponylib/fb2_scanner"
+	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type summary struct {
@@ -53,16 +53,17 @@ func main() {
 	printErrF("\nStatistics:")
 	if anyParsed {
 		printErrF("\tSuccessfully parsed %d %s in %d ms, avg %0.2f books/sec.",
-			sum.successfullyParsed, formatNum(sum.successfullyParsed, "book", "books"), totalDuration.Milliseconds(),
+			sum.successfullyParsed, u.FormatNum(sum.successfullyParsed, "book", "books"), totalDuration.Milliseconds(),
 			float64(sum.successfullyParsed)/totalDuration.Seconds())
 	} else {
 		printErrF("\tBooks not found, scan time %d ms", totalDuration.Milliseconds())
 	}
-	printErrF("\tUnable to open %d %s.", unavailableEntries, formatNum(unavailableEntries, "entry", "entries"))
-	printErrF("\tUnable to parse %d %s.", sum.errors, formatNum(sum.errors, "book", "books"))
+	printErrF("\tUnable to open %d %s.", unavailableEntries, u.FormatNum(unavailableEntries, "entry", "entries"))
+	printErrF("\tUnable to parse %d %s.", sum.errors, u.FormatNum(sum.errors, "book", "books"))
 	if anyParsed {
 		printErrF("\tTotal parse time for successfully parsed books %d ms, avg %d ms per book.",
-			totalMs(sum.totalSuccessTimers.ParseTimeNs), avgMs(sum.totalSuccessTimers.ParseTimeNs, sum.successfullyParsed))
+			u.TotalMs(sum.totalSuccessTimers.ParseTimeNs),
+			u.AvgMs(sum.totalSuccessTimers.ParseTimeNs, sum.successfullyParsed))
 	}
 }
 
@@ -89,19 +90,4 @@ func printResultsAndSummarize(results <-chan fb2_scanner.ScannerResult, done cha
 
 func printErrF(format string, a ...interface{}) {
 	_, _ = fmt.Fprintf(os.Stderr, format+"\n", a...)
-}
-
-func formatNum(amount int, one string, many string) string {
-	if amount == 1 {
-		return one
-	}
-	return many
-}
-
-func totalMs(totalNs int64) int64 {
-	return totalNs / int64(math.Pow(10, 6))
-}
-
-func avgMs(totalNs int64, files int) int64 {
-	return int64(float64(totalNs) / float64(files) / math.Pow(10, 6))
 }
