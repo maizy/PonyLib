@@ -1,6 +1,9 @@
 package fb2_parser
 
-import "strings"
+import (
+	"encoding/json"
+	"strings"
+)
 
 type MultiLang struct {
 	Ru string
@@ -251,6 +254,19 @@ func (g *GenreIndexEntity) String() string {
 	sb.WriteString(g.Genre.Ru)
 	sb.WriteString(")")
 	return sb.String()
+}
+
+func (g GenreIndexEntity) MarshalJSON() ([]byte, error) {
+	return json.Marshal(g.Genre.Code)
+}
+
+func (g *GenreIndexEntity) UnmarshalJSON(bytes []byte) error {
+	var code string
+	if err := json.Unmarshal(bytes, &code); err != nil {
+		return err
+	}
+	*g = GenreIndexByCode[code]
+	return nil
 }
 
 func createGenreIndex(categories categoriesArray) map[string]GenreIndexEntity {

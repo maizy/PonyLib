@@ -7,47 +7,55 @@ import (
 	"strings"
 	"sync"
 
+	"dev.maizy.ru/ponylib/fb2_scanner/resource"
 	"dev.maizy.ru/ponylib/internal/sympath"
 	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type DirectoryTarget struct {
 	Path string
+	UUID *string
 }
 
-func (f *DirectoryTarget) Spec() string {
-	return fmt.Sprintf("dir:%s", f.Path)
+func (d *DirectoryTarget) RId() resource.RId {
+	return resource.RId{"dir", d.Path, []resource.Q{{"ext", "fb2"}, {"symlink", "1"}}}
 }
 
-func (f *DirectoryTarget) Type() TargetType {
+func (d *DirectoryTarget) Type() TargetType {
 	return FsDir
 }
 
-func (f *DirectoryTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
+func (d *DirectoryTarget) GetUUID() *string {
+	return d.UUID
+}
+
+func (d *DirectoryTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
 	resultChan := make(chan ScannerResult, 8)
 	wg := sync.WaitGroup{}
 
 	walkFunc := func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			resultChan <- ScannerResult{
-				Source: &FileSource{path},
-				Error:  u.ErrPtr(fmt.Errorf("unable to scan file or symlink %s: %w", path, err)),
+				Source:     &FileSource{path},
+				Error:      u.ErrPtr(fmt.Errorf("unable to scan file or symlink %s: %w", path, err)),
+				FromTarget: d,
 			}
 			return filepath.SkipDir
 		}
 		if info.Mode().IsRegular() && strings.HasSuffix(info.Name(), ".fb2") && !strings.HasPrefix(info.Name(), ".") {
 			wg.Add(1)
-			scanRegularFile(ctx, path, resultChan, &wg)
+			scanRegularFile(ctx, path, resultChan, &wg, d)
 		}
 		return nil
 	}
 
 	go func() {
-		err := sympath.Walk(f.Path, walkFunc)
+		err := sympath.Walk(d.Path, walkFunc)
 		if err != nil {
 			resultChan <- ScannerResult{
-				Source: &FileSource{f.Path},
-				Error:  u.ErrPtr(fmt.Errorf("unable to scan %s: %w", f.Path, err)),
+				Source:     &FileSource{d.Path},
+				Error:      u.ErrPtr(fmt.Errorf("unable to scan %s: %w", d.Path, err)),
+				FromTarget: d,
 			}
 		}
 		wg.Wait()

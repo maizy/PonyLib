@@ -12,10 +12,10 @@ import (
 )
 
 type Book struct {
-	Title         string
-	Lang          *string
-	FormattedDate *string
-	Date          *time.Time
+	Title         string     `json:"title"`
+	Lang          *string    `json:"lang,omitempty"`
+	FormattedDate *string    `json:"formatted_date,omitempty"`
+	Date          *time.Time `json:"date,omitempty"`
 }
 
 func (b *Book) String() string {
@@ -46,9 +46,9 @@ func (b *Book) AdditionalInfoString() *string {
 }
 
 type PubInfo struct {
-	Publisher *string
-	PubYear   *int
-	ISBN      *string
+	Publisher *string `json:"publisher,omitempty"`
+	PubYear   *int    `json:"pub_year,omitempty"`
+	ISBN      *string `json:",omitempty"`
 }
 
 func (p *PubInfo) String() string {
@@ -73,8 +73,8 @@ func (p *PubInfo) String() string {
 }
 
 type Sequence struct {
-	Name   string
-	Number *int
+	Name   string `json:"name"`
+	Number *int   `json:"n,omitempty"`
 }
 
 func (s *Sequence) String() string {
@@ -89,10 +89,10 @@ func (s *Sequence) String() string {
 }
 
 type Author struct {
-	FirstName  *string
-	LastName   *string
-	MiddleName *string
-	Nickname   *string
+	FirstName  *string `json:"first,omitempty"`
+	LastName   *string `json:"last,omitempty"`
+	MiddleName *string `json:"middle,omitempty"`
+	Nickname   *string `json:"nick,omitempty"`
 }
 
 func (a *Author) String() string {
@@ -116,6 +116,7 @@ func (a *Author) String() string {
 	}
 }
 
+// TODO: https://github.com/maizy/PonyLib/issues/61
 type Cover struct {
 	Base64Content string
 	ContentType   string
@@ -140,13 +141,12 @@ func (c *Cover) SizeFormatted() string {
 }
 
 type Fb2Metadata struct {
-	Book       *Book
-	PubInfo    *PubInfo
-	Authors    *[]Author
-	Genres     *[]GenreIndexEntity
-	Sequences  *[]Sequence
-	Annotation *string
-	Cover      *Cover // TODO: https://github.com/maizy/PonyLib/issues/61
+	Book       *Book               `json:"book"`
+	PubInfo    *PubInfo            `json:"pub_info,omitempty"`
+	Authors    *[]Author           `json:"authors,omitempty"`
+	Genres     *[]GenreIndexEntity `json:"genres,omitempty"`
+	Sequences  *[]Sequence         `json:"sequences,omitempty"`
+	Annotation *string             `json:"annotation,omitempty"`
 }
 
 func (f *Fb2Metadata) String() string {

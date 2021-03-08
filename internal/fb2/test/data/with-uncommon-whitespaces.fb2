@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:l="http://www.w3.org/1999/xlink">
+ <description>
+  <title-info>
+   <genre>sf</genre>
+   <book-title>TAB=|&#x9;|</book-title>
+   <author>
+    <first-name>CR=|&#xD;|</first-name>
+    <middle-name>NEL=|&#x85;|</middle-name>
+    <last-name>NBSP=|&#xA0;|</last-name>
+   </author>
+   <lang>en</lang>
+
+  </title-info>
+  <document-info>
+   <author>
+    <nickname>Some user</nickname>
+   </author>
+   <date value="2019-09-21">21.9.2019</date>
+   <version>1.0</version>
+   <id>b8b134f8-fbd7-432f-adf6-bedbdb2c61bc</id>
+  </document-info>
+ </description>
+ <body>
+  <section>
+   <title>
+    <p>Martha Wells</p>
+    <p>Compulsory</p>
+   </title>
+   <p>Text here</p>
+  </section>
+ </body>
+</FictionBook>

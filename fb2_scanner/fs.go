@@ -11,24 +11,26 @@ import (
 )
 
 func scanRegularFile(
-	ctx ScannerContext, path string, resultChan chan<- ScannerResult, done *sync.WaitGroup) {
+	ctx ScannerContext, path string, resultChan chan<- ScannerResult, done *sync.WaitGroup, target ScanTarget) {
 
 	source := &FileSource{path}
 	stat, err := os.Stat(path)
 	if err != nil {
 		resultChan <- ScannerResult{
-			Source:   source,
-			Metadata: nil,
-			Error:    u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
+			Source:     source,
+			Metadata:   nil,
+			Error:      u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
+			FromTarget: target,
 		}
 		done.Done()
 		return
 	}
 	if !stat.Mode().IsRegular() {
 		resultChan <- ScannerResult{
-			Source:   source,
-			Metadata: nil,
-			Error:    u.ErrPtr(fmt.Errorf("%s isn't a regular file", path)),
+			Source:     source,
+			Metadata:   nil,
+			Error:      u.ErrPtr(fmt.Errorf("%s isn't a regular file", path)),
+			FromTarget: target,
 		}
 		done.Done()
 		return
@@ -44,9 +46,10 @@ func scanRegularFile(
 
 		if err != nil {
 			resultChan <- ScannerResult{
-				Source:   source,
-				Metadata: nil,
-				Error:    u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
+				Source:     source,
+				Metadata:   nil,
+				Error:      u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
+				FromTarget: target,
 			}
 			return
 		}
@@ -57,19 +60,21 @@ func scanRegularFile(
 
 		if err != nil {
 			resultChan <- ScannerResult{
-				Source:   source,
-				Metadata: nil,
-				Error:    u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
-				Timers:   timers,
+				Source:     source,
+				Metadata:   nil,
+				Error:      u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
+				Timers:     timers,
+				FromTarget: target,
 			}
 			return
 		}
 
 		resultChan <- ScannerResult{
-			Source:   source,
-			Metadata: parseMetadata,
-			Error:    nil,
-			Timers:   timers,
+			Source:     source,
+			Metadata:   parseMetadata,
+			Error:      nil,
+			Timers:     timers,
+			FromTarget: target,
 		}
 	}()
 }
