@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -33,6 +34,8 @@ var webUiCmd = &cobra.Command{
 		}
 
 		printErrF("TODO: launch web app at: http://%s:%d", bindHost, bindPort)
-		os.Exit(1)
+		for {
+			time.Sleep(1 * time.Minute)
+		}
 	},
 }

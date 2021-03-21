@@ -16,6 +16,5 @@ Thumbs.db
 Desktop.ini
 
 bin/*
-
-docs/docker-compose/ponylib.env
-docs/docker-compose/data/db
+.github/*
+build-docker.sh
