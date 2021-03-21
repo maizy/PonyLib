@@ -1,0 +1,38 @@
+# ponylib docker-compose example
+# copy ponylib.env.example to ponylib.env and edit it before first run
+
+version: "3.5"
+services:
+  ponylib:
+    image: ponylib:b0e4301
+    container_name: ponylib
+    command: ["web-ui"]
+    ports:
+      - "55387:55387"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./ponylib.env
+
+    # uncomment and add paths to your libraries in `- local_path:mount_path` format
+    # mount path doesn't metter, use some simple unique name
+    #volumes:
+    #  - /path/to/your-lib:/data/lib
+    #  - /path/to/your-lib-2:/data/lib2
+    #  - /path/to/archive.zip:/data/lib3.zip
+  db:
+    image: postgres:12.6
+    container_name: ponylib_db
+    env_file:
+      - ./ponylib.env
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "ponylib"]
+      start_period: 30s
+      interval: 10s
+      timeout: 2s
+networks:
+  default:
+    name: ponylib_network

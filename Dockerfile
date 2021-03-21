@@ -11,5 +11,6 @@ LABEL org.opencontainers.image.url="https://github.com/maizy/PonyLib"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 RUN mkdir /app
 WORKDIR /app
+ENV PATH=/app:$PATH
 COPY --from=build /app/bin/ponylib /app/ponylib
-ENTRYPOINT ["/app/ponylib"]
+ENTRYPOINT ["ponylib"]

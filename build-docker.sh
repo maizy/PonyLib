@@ -9,6 +9,9 @@ cd "${PROJECT_DIR}"
 DATE=$(date -u "+%Y-%m-%dT%H:%M:%S%Z")
 VER=$(git describe --tags --always)
 REV=$(git rev-parse HEAD)
+if [[ "$VER" == "" || "${VER}" != v* ]]; then
+  VER="pre-release-${VER}"
+fi
 
 if [ -z "${TARGET_ENV}" ]; then
   TARGET_ENV="local"
