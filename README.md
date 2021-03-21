@@ -4,19 +4,52 @@ Fb2 library with CLI & web UI.
 
 **Being rewritten in golang. Work in progress**
 
-## Requirements
+## Setup with docker-compose (recommended)
+
+You need [docker](https://docs.docker.com/engine/install/) & [docker-compose](https://docs.docker.com/compose/install/).
+
+Create some directory for ponylib. By default, all data will be stored in `data/` subdirectory.
+
+Create `ponylib.env` file from [`docs/docker-compose/ponylib.env.example`](docs/docker-compose/ponylib.env.example)
+and edit it. It's important to choose right options here **before the first app run**.
+
+Save [`docs/docker-compose/docker-compose.yml`](docs/docker-compose/docker-compose.yml) as `docker-compose.yml` to
+the same directory. Add paths to your libraries in `volumes` section.
+
+Run
+
+```
+docker-compose up -d
+```
+
+It needs some time in the first run to init Database & run DB migrations. 
+
+Check status: `docker-compose ps`, `docker-compose logs`.
+
+Scan books from libraries. For example:
+
+```
+docker-compose exec ponylib ponylib scan /data/lib1
+docker-compose exec ponylib ponylib scan /data/lib3.zip
+# ...
+```
+
+Also see other ponylib commands:
+
+```
+docker-compose exec ponylib ponylib --help
+```
+
+## Setup without docker (advanced)
+
+### Requirements
 
 * PostgreSQL 12+
 * Go 1.16+
 
-## Setup with docker-compose
-
-_TODO_
-
-
-## Manual installation
-
 ### Init DB
+
+Setup PostgreSQL 12+, then
 
 ```
 su - postgres
@@ -37,7 +70,7 @@ createdb -O ponylib ponylib
 ### Usage
 
 ```
-DATABASE_URL="postgres://localhost:5432/ponylib?user=ponylib&password=password" bin/ponylib --help
+DATABASE_URL="postgres://localhost:5432/ponylib?user=ponylib&password=password" FTS_LANGUAGE=english bin/ponylib --help
 ```
 
 

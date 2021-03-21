@@ -4,7 +4,7 @@
 version: "3.5"
 services:
   ponylib:
-    image: ponylib:b0e4301
+    image: ghcr.io/maizy/ponylib:pre-release-c3f9dcf
     container_name: ponylib
     command: ["web-ui"]
     ports:
@@ -27,6 +27,7 @@ services:
     env_file:
       - ./ponylib.env
     volumes:
+      # change ./data/db to any other path if you want to store data in different location
       - ./data/db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "ponylib"]
