@@ -5,12 +5,13 @@ import (
 	"embed"
 	"fmt"
 	"log"
-	"os"
 	"path"
 	"sort"
 	"strings"
 
 	"github.com/jackc/pgx/v4/pgxpool"
+
+	"dev.maizy.ru/ponylib/ponylib_app"
 )
 
 //go:embed db_migrations/*.sql
@@ -72,11 +73,7 @@ func getAppliedMigrationsIds(db *pgxpool.Pool) (map[string]bool, error) {
 }
 
 func prepareMigration(content string) string {
-	var ftsLanguage = os.Getenv("FTS_LANGUAGE")
-	if ftsLanguage == "" {
-		ftsLanguage = "english"
-	}
-	return strings.ReplaceAll(content, "{{FTS_LANGUAGE}}", ftsLanguage)
+	return strings.ReplaceAll(content, "{{FTS_LANGUAGE}}", ponylib_app.GetFTSLanguage())
 }
 
 // Very simple migration processing
