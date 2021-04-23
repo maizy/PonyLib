@@ -6,12 +6,16 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"dev.maizy.ru/ponylib/ponylib_app"
 )
 
 func AppendWebUiRouters(engine *gin.Engine) {
 	engine.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"test": "Hi! <b>test</b>",
+			"subtitle": "Search",
+			"lang":     "en",
+			"version":  ponylib_app.GetVersion(),
 		})
 	})
 }

@@ -20,7 +20,11 @@ func SetupMiddlewares(engine *gin.Engine) {
 //go:embed templates/*
 var templates embed.FS
 
-func SetupTemplates(engine *gin.Engine) {
-	template := template.Must(template.New("").ParseFS(templates, "templates/*.tmpl"))
-	engine.SetHTMLTemplate(template)
+func SetupTemplates(engine *gin.Engine, devMode bool) {
+	if devMode {
+		engine.LoadHTMLGlob("ponylib_app/web/templates/*.tmpl")
+	} else {
+		embedTemplate := template.Must(template.New("").ParseFS(templates, "templates/*.tmpl"))
+		engine.SetHTMLTemplate(embedTemplate)
+	}
 }

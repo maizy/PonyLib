@@ -1,16 +1,139 @@
-<!DOCTYPE>
-<html lang="ru">
+<!doctype html>
+<html lang="{{.lang}}" class="h-100">
 <head>
-    <title>Ponylib</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link href="/static/css/main.css" rel="stylesheet" type="text/css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/main.css" rel="stylesheet">
+  <title>Ponylib{{if .subtitle}} · {{.subtitle}}{{end}}</title>
 </head>
+<body class="d-flex flex-column h-100">
+<header class="border-bottom bg-dark mb-2">
+  <div class="container d-flex flex-wrap align-items-center">
+    <a href="/"
+       class="d-flex col-12 col-md-3 align-items-center justify-content-center justify-content-md-start pt-1 py-md-2 text-dark text-decoration-none">
+      <span class="fs-2">🎠&nbsp;</span>
+      <span class="fs-4 text-white">Ponylib</span>
+    </a>
+    <form class="col-12 col-md-9 align-items-center pt-0 pb-2 py-md-2">
+      <div class="container-fluid d-flex gap-0 p-0">
+        <div class="col-9 pe-2">
+          <input type="search" class="form-control">
+        </div>
+        <div class="col-3">
+          <button type="button" class="btn btn-outline-light col-12 col-md-auto">Search</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</header>
 
-<body>
+<main class="container flex-shrink-0">
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+  <p>hi!</p>
+</main>
 
-<h1>Ponylib</h1>
-
-{{ .test }}
+<footer class="footer mt-auto py-3 bg-light">
+  <div class="container">
+    <small class="text-muted">{{ .version }}</small>
+  </div>
+</footer>
 
 </body>
 </html>

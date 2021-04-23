@@ -16,12 +16,14 @@ var (
 	bindPort  int
 	bindHost  string
 	debugMode bool
+	devMode   bool
 )
 
 func init() {
 	webUiCmd.PersistentFlags().IntVar(&bindPort, "port", 55387, "bind port")
 	webUiCmd.PersistentFlags().StringVar(&bindHost, "host", "127.0.0.1", "bind host")
 	webUiCmd.PersistentFlags().BoolVar(&debugMode, "debug", false, "enable debug mode")
+	webUiCmd.PersistentFlags().BoolVar(&devMode, "dev-mode", false, "enable dev mode (templates hot reload)")
 
 	rootCmd.AddCommand(webUiCmd)
 }
@@ -42,7 +44,7 @@ var webUiCmd = &cobra.Command{
 
 		engine := gin.Default()
 		web.SetupMiddlewares(engine)
-		web.SetupTemplates(engine)
+		web.SetupTemplates(engine, devMode)
 		web.AppendRouters(engine)
 
 		addr := fmt.Sprintf("%s:%d", bindHost, bindPort)
