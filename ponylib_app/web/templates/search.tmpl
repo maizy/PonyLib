@@ -13,6 +13,69 @@
     <div class="col-12 text-center fs-2">
       🤔
     </div>
+  {{ else }}
+    <div class="container align-items-end py-2">
+      <div class="badge bg-secondary float-end">Total: {{ .totalFound }}</div>
+    </div>
+      {{ with .results }}
+        <div class="container">
+        {{ range .Matches }}
+          <div class="row mt-5">
+            <div class="col-1 align-items-start text-end small text-secondary">{{ .Position }}</div>
+
+            <div class="col-11 align-items-start">
+              <a href="/books/{{.UUID}}/download" class="h5 text-decoration-none">
+                  {{ .Metadata.Book.Title }}
+                  <span class="badge bg-light float-end text-decoration-none text-dark fw-light"><i class="bi bi-download"></i> fb2</span>
+              </a>
+
+              {{ with .Metadata.Authors }}
+                <div class="py-1">
+
+                  {{ range $i, $a := . }}{{if ne $i 0}}, {{end}}{{$a.String}}{{end}}
+                </div>
+              {{ end }}
+
+              {{ with .Metadata.Sequences }}
+                  <div class="small text-secondary pt-1">
+                    <i class="bi bi-briefcase"></i> {{ range $i, $a := . }}{{if ne $i 0}}, {{end}}{{$a.String}}{{end}}
+                  </div>
+              {{ end }}
+
+              {{ with .Metadata.Genres }}
+                  <div class="small text-secondary pt-1">
+                    <i class="bi bi-tags"></i> {{ range $i, $a := . }}{{if ne $i 0}}, {{end}}{{$a.En}}{{end}}
+                  </div>
+              {{ end }}
+
+
+              {{ if or .Metadata.Book.WrittenAt .Metadata.PubInfo }}
+                <ul class="list-unstyled pt-1 small text-secondary list-group list-group-horizontal">
+
+                {{ with .Metadata.Book }}
+                    {{ if ne .WrittenAt ""}}<li class="pe-3">Written at: {{ .WrittenAt }}</li>{{end}}
+                {{end}}
+
+                {{ with .Metadata.PubInfo }}
+
+                  {{ if or .PubYear .Publisher}}
+                  <li class="pe-3">Published: {{ with .Publisher}}{{ . }}{{end}}{{if and .PubYear .Publisher}}, {{end}}{{ with .PubYear}}{{ . }}{{end}}</li>
+                  {{ end }}
+
+                  {{ with .ISBN}}<li class="pe-3">ISBN: {{ . }}</li>{{ end }}
+                {{ end }}
+                </ul>
+              {{end}}
+
+              {{with .Metadata.Annotation}}
+                <div class="text-break pt-2">{{ . }}</div>
+              {{end}}
+
+            </div>
+          </div>
+        {{ end }}
+        </div>
+      {{ end }}
   {{ end }}
 </main>
 

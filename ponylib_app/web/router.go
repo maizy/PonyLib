@@ -6,56 +6,15 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-
-	"dev.maizy.ru/ponylib/ponylib_app"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
-
-func AppendWebUiRouters(engine *gin.Engine) {
-	engine.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"lang":          "en",
-			"version":       ponylib_app.GetVersion(),
-			"show_examples": true,
-		})
-	})
-
-	engine.GET("/auth", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "auth.tmpl", gin.H{
-			"lang":    "en",
-			"version": ponylib_app.GetVersion(),
-		})
-	})
-
-	engine.POST("/unlock", func(c *gin.Context) {
-		c.Redirect(http.StatusFound, "/")
-	})
-
-	engine.GET("/books", func(c *gin.Context) {
-		query := c.Query("query")
-		titleQuery := query
-		if len(titleQuery) >= 32 {
-			titleQuery = query[:30] + "…"
-		}
-		c.HTML(http.StatusOK, "search.tmpl", gin.H{
-			"lang":     "en",
-			"subtitle": "Books · " + query,
-			"query":    query,
-			"version":  ponylib_app.GetVersion(),
-		})
-	})
-}
-
-func AppendApiRouters(engine *gin.Engine) {
-	apiGroup := engine.Group("/api/v1")
-	apiGroup.GET("/version", BuildVersionHandler())
-}
 
 const staticPrefix = "/static/"
 
 //go:embed static/*
 var staticFS embed.FS
 
-func AppendRouters(engine *gin.Engine) {
+func AppendRouters(engine *gin.Engine, conn *pgxpool.Pool) {
 
 	engine.GET(staticPrefix+"*filepath", func(c *gin.Context) {
 		path := c.Request.URL.Path
@@ -66,6 +25,21 @@ func AppendRouters(engine *gin.Engine) {
 		}
 	})
 
-	AppendApiRouters(engine)
-	AppendWebUiRouters(engine)
+	engine.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", WithCommonVars(c, gin.H{
+			"show_examples": true,
+		}))
+	})
+
+	engine.GET("/auth", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "auth.tmpl", WithCommonVars(c, gin.H{}))
+	})
+
+	engine.POST("/unlock", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/")
+	})
+
+	engine.GET("/version", BuildVersionHandler())
+
+	engine.GET("/books", BuildBooksHandler(conn))
 }

@@ -245,14 +245,26 @@ func (g *GenreIndexEntity) String() string {
 	sb.WriteString("[")
 	sb.WriteString(g.Genre.Code)
 	sb.WriteString("] ")
+	sb.WriteString(g.En())
+	sb.WriteString(" (")
+	sb.WriteString(g.Ru())
+	sb.WriteString(")")
+	return sb.String()
+}
+
+func (g *GenreIndexEntity) En() string {
+	var sb strings.Builder
 	sb.WriteString(g.Category.En)
 	sb.WriteString(" :: ")
 	sb.WriteString(g.Genre.En)
-	sb.WriteString(" (")
+	return sb.String()
+}
+
+func (g *GenreIndexEntity) Ru() string {
+	var sb strings.Builder
 	sb.WriteString(g.Category.Ru)
 	sb.WriteString(" :: ")
 	sb.WriteString(g.Genre.Ru)
-	sb.WriteString(")")
 	return sb.String()
 }
 
