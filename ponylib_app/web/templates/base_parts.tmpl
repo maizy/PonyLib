@@ -1,0 +1,64 @@
+{{ define "head" }}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/main.css" rel="stylesheet">
+  <title>Ponylib{{if .subtitle}} · {{.subtitle}}{{end}}</title>
+</head>
+{{ end }}
+
+{{ define "app_name" }}
+<span class="fs-2">🎠&nbsp;</span>
+<span class="fs-4 ">Ponylib</span>
+{{ end }}
+
+{{ define "app_header" }}
+<a href="/"
+   class="d-flex col-12 col-md-3 align-items-center justify-content-center justify-content-md-start pt-1 py-md-2 text-white text-decoration-none">
+  {{ template "app_name" . }}
+</a>
+{{ end }}
+
+{{ define "header" }}
+<header class="border-bottom bg-dark mb-2">
+  <div class="container d-flex flex-wrap align-items-center">
+    {{ template "app_header" . }}
+  </div>
+</header>
+{{ end }}
+
+{{ define "footer" }}
+<footer class="footer mt-auto py-3 bg-light">
+  <div class="container text-end">
+    <small class="text-muted">{{ .version }}</small>
+  </div>
+</footer>
+{{ end }}
+
+{{ define "book_search_form" }}
+<div class="p-2 p-md-5 bg-light">
+  <form action="/books" method="get">
+    <h4>Book search</h4>
+    <div class="container flex-wrap d-flex gap-0 p-0 mb-3">
+      <div class="col-9 pe-2">
+        <input type="search" name="query" class="form-control" value="{{ .query }}">
+      </div>
+      <div class="col-3">
+        <button type="submit" class="btn btn-outline-dark col-12 col-md-auto">Search</button>
+      </div>
+    </div>
+    {{ if .show_examples }}
+    <h5>Query examples</h5>
+    <div class="form-text">
+      <ul class="list-unstyled">
+        <li><code>tolstoy war peace</code> – simple search</li>
+        <li><code>tolstoy "war and peace"</code> – exact phrase</li>
+        <li><code>war peace -tolstoy</code> – exclude "tolstoy" from results</li>
+        <li><code>"great expectations" (acker or dickens)</code> – "Great expectations" by Acker or Dickens</li>
+      </ul>
+    </div>
+    {{ end }}
+  </form>
+</div>
+{{ end }}

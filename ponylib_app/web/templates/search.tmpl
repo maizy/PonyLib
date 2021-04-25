@@ -4,11 +4,16 @@
 {{ template "head" . }}
 
 <body class="d-flex flex-column h-100">
-
 {{ template "header" . }}
 
 <main class="container flex-shrink-0">
   {{ template "book_search_form" . }}
+
+  {{ if eq .query "" }}
+    <div class="col-12 text-center fs-2">
+      🤔
+    </div>
+  {{ end }}
 </main>
 
 {{ template "footer" . }}

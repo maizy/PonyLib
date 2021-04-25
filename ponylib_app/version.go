@@ -6,8 +6,11 @@ import "strings"
 var version string = "unknown"
 
 func NormalizeVersion(version string) string {
-	if version == "" || !strings.HasPrefix(version, "v") {
-		return "pre-release-" + version
+	if version == "unknown" || version == "" {
+		return "unknown-version"
+	}
+	if !strings.HasPrefix(version, "v") {
+		return version + ".pre-release"
 	}
 	return version
 }
