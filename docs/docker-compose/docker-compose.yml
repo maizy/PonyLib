@@ -4,7 +4,7 @@
 version: "3.5"
 services:
   ponylib:
-    image: ghcr.io/maizy/ponylib:pre-release-c3f9dcf
+    image: ghcr.io/maizy/ponylib:pre-release-241f1a0
     container_name: ponylib
     command: ["web-ui"]
     ports:
