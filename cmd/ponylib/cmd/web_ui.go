@@ -45,7 +45,7 @@ var webUiCmd = &cobra.Command{
 		engine := gin.Default()
 		web.SetupMiddlewares(engine)
 		web.SetupTemplates(engine, devMode)
-		web.AppendRouters(engine, conn)
+		web.AppendRouters(engine, conn, devMode)
 
 		addr := fmt.Sprintf("%s:%d", bindHost, bindPort)
 		fmt.Printf("launching web app at: http://%s\n", addr)

@@ -3,6 +3,7 @@ package web
 import (
 	"embed"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -10,14 +11,18 @@ import (
 )
 
 const staticPrefix = "/static/"
+const staticCacheMaxAge = 30 * 24 * 60 * 60
 
 //go:embed static/*
 var staticFS embed.FS
 
-func AppendRouters(engine *gin.Engine, conn *pgxpool.Pool) {
+func AppendRouters(engine *gin.Engine, conn *pgxpool.Pool, devMode bool) {
 
 	engine.GET(staticPrefix+"*filepath", func(c *gin.Context) {
 		path := c.Request.URL.Path
+		if !devMode {
+			c.Header("Cache-Control", "public, max-age="+strconv.Itoa(staticCacheMaxAge))
+		}
 		if strings.HasPrefix(path, staticPrefix) {
 			c.FileFromFS(path, http.FS(staticFS))
 		} else {
