@@ -6,7 +6,7 @@
 <body class="d-flex flex-column h-100">
 {{ template "header" . }}
 
-<main class="container flex-shrink-0">
+<main class="container flex-shrink-0 mb-5">
   {{ template "book_search_form" . }}
 
   {{ if eq .query "" }}
@@ -14,7 +14,7 @@
       🤔
     </div>
   {{ else }}
-    <div class="container align-items-end py-2">
+    <div class="container align-items-end my-2">
       <div class="badge bg-secondary float-end">Total: {{ .totalFound }}</div>
     </div>
       {{ with .results }}
@@ -30,45 +30,45 @@
               </a>
 
               {{ with .Metadata.Authors }}
-                <div class="py-1">
+                <div class="my-1">
 
                   {{ range $i, $a := . }}{{if ne $i 0}}, {{end}}{{$a.String}}{{end}}
                 </div>
               {{ end }}
 
               {{ with .Metadata.Sequences }}
-                  <div class="small text-secondary pt-1">
+                  <div class="small text-secondary mt-1">
                     <i class="bi bi-briefcase"></i> {{ range $i, $a := . }}{{if ne $i 0}}, {{end}}{{$a.String}}{{end}}
                   </div>
               {{ end }}
 
               {{ with .Metadata.Genres }}
-                  <div class="small text-secondary pt-1">
+                  <div class="small text-secondary mt-1">
                     <i class="bi bi-tags"></i> {{ range $i, $a := . }}{{if ne $i 0}}, {{end}}{{$a.En}}{{end}}
                   </div>
               {{ end }}
 
 
               {{ if or .Metadata.Book.WrittenAt .Metadata.PubInfo }}
-                <ul class="list-unstyled pt-1 small text-secondary list-group list-group-horizontal">
+                <ul class="list-unstyled mt-1 small text-secondary list-group list-group-horizontal">
 
                 {{ with .Metadata.Book }}
-                    {{ if ne .WrittenAt ""}}<li class="pe-3">Written at: {{ .WrittenAt }}</li>{{end}}
+                    {{ if ne .WrittenAt ""}}<li class="me-3">Written at: {{ .WrittenAt }}</li>{{end}}
                 {{end}}
 
                 {{ with .Metadata.PubInfo }}
 
                   {{ if or .PubYear .Publisher}}
-                  <li class="pe-3">Published: {{ with .Publisher}}{{ . }}{{end}}{{if and .PubYear .Publisher}}, {{end}}{{ with .PubYear}}{{ . }}{{end}}</li>
+                  <li class="me-3">Published: {{ with .Publisher}}{{ . }}{{end}}{{if and .PubYear .Publisher}}, {{end}}{{ with .PubYear}}{{ . }}{{end}}</li>
                   {{ end }}
 
-                  {{ with .ISBN}}<li class="pe-3">ISBN: {{ . }}</li>{{ end }}
+                  {{ with .ISBN}}<li class="me-3">ISBN: {{ . }}</li>{{ end }}
                 {{ end }}
                 </ul>
               {{end}}
 
               {{with .Metadata.Annotation}}
-                <div class="text-break pt-2">{{ . }}</div>
+                <div class="text-break mt-2">{{ . }}</div>
               {{end}}
 
             </div>
@@ -76,6 +76,43 @@
         {{ end }}
         </div>
       {{ end }}
+
+      {{ if .pagination.NavigationPages }}
+        <nav class="mt-5">
+          <ul class="pagination offset-1 col-11">
+            {{ if eq .pagination.PreviousPage 0 }}
+              <li class="page-item disabled d-none d-md-block">
+                <span class="page-link">Previous</span>
+              </li>
+            {{ else }}
+              <li class="page-item d-none d-md-block">
+                <a class="page-link" href="/books?query={{.query}}&page={{.pagination.PreviousPage}}">Previous</a>
+              </li>
+            {{ end }}
+
+            {{ $currentPage := .currentPage}}
+            {{ $query := .query}}
+            {{ range .pagination.NavigationPages }}
+              {{ if eq . $currentPage }}
+                  <li class="page-item active"><span class="page-link">{{.}}</span></li>
+              {{ else }}
+                  <li class="page-item"><a class="page-link" href="/books?query={{$query}}&page={{.}}">{{.}}</a></li>
+              {{ end }}
+            {{ end }}
+
+            {{ if eq .pagination.NextPage 0 }}
+              <li class="page-item disabled d-none d-md-block">
+                <span class="page-link">Next</span>
+              </li>
+            {{ else }}
+              <li class="page-item d-none d-md-block">
+                <a class="page-link" href="/books?query={{.query}}&page={{.pagination.NextPage}}">Next</a>
+              </li>
+            {{ end }}
+          </ul>
+        </nav>
+      {{ end }}
+
   {{ end }}
 </main>
 
