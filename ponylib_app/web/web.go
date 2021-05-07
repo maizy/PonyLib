@@ -3,6 +3,9 @@ package web
 import (
 	"embed"
 	"html/template"
+	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -27,4 +30,32 @@ func SetupTemplates(engine *gin.Engine, devMode bool) {
 		embedTemplate := template.Must(template.New("").ParseFS(templates, "templates/*.tmpl"))
 		engine.SetHTMLTemplate(embedTemplate)
 	}
+}
+
+func StaticsHandler(devMode bool) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		path := c.Request.URL.Path
+		if !devMode {
+			c.Header("Cache-Control", "public, max-age="+strconv.Itoa(staticCacheMaxAge))
+		}
+		if strings.HasPrefix(path, staticPrefix) {
+			c.FileFromFS(path, http.FS(staticFS))
+		} else {
+			c.AbortWithStatus(http.StatusNotFound)
+		}
+	}
+}
+
+func IndexHandler() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", WithCommonVars(c, gin.H{
+			"show_examples": true,
+		}))
+	}
+}
+
+func returnError(c *gin.Context, error string, errorCode int) {
+	c.HTML(errorCode, "error.tmpl", WithCommonVars(c, gin.H{
+		"error": error,
+	}))
 }

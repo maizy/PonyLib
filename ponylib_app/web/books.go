@@ -7,9 +7,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/vfaronov/httpheader"
 
+	"dev.maizy.ru/ponylib/fb2_scanner"
 	"dev.maizy.ru/ponylib/internal/pagination"
 	"dev.maizy.ru/ponylib/internal/u"
+	"dev.maizy.ru/ponylib/ponylib_app/db"
 	"dev.maizy.ru/ponylib/ponylib_app/search"
 )
 
@@ -69,5 +72,31 @@ func BuildBooksHandler(conn *pgxpool.Pool) func(c *gin.Context) {
 			"currentPage": currentPage,
 			"pagination":  searchPagination,
 		}))
+	}
+}
+
+func BuildDownloadBookHandler(conn *pgxpool.Pool) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		uuid := c.Param("uuid")
+		book, err := db.GetBook(conn, uuid)
+		if err != nil {
+			returnError(c, "Book not found", http.StatusNotFound)
+			return
+		}
+
+		reader, size, closeF, err := fb2_scanner.OpenResource(book.RId)
+		if closeF != nil {
+			defer closeF()
+		}
+		if err != nil {
+			returnError(c, "Book is missing", http.StatusNotFound)
+			return
+		}
+
+		header := http.Header{}
+		httpheader.SetContentDisposition(header, "attachment", book.RId.ResourceBaseName(), nil)
+		c.Header("Content-Disposition", header.Get("Content-Disposition"))
+
+		c.DataFromReader(http.StatusOK, size, "text/xml; charset=utf-8", *reader, nil)
 	}
 }

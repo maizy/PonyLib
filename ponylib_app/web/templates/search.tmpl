@@ -24,7 +24,7 @@
             <div class="col-1 align-items-start text-end small text-secondary">{{ .Position }}</div>
 
             <div class="col-11 align-items-start">
-              <a href="/books/{{.UUID}}/download" class="h5 text-decoration-none">
+              <a href="/books/{{.UUID}}/download/{{ .RId.ResourceBaseName }}" class="h5 text-decoration-none">
                   {{ .Metadata.Book.Title }}
                   <span class="badge bg-light float-end text-decoration-none text-dark fw-light"><i class="bi bi-download"></i> fb2</span>
               </a>

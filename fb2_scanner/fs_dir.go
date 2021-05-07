@@ -22,7 +22,7 @@ func (d *DirectoryTarget) RId() resource.RId {
 }
 
 func (d *DirectoryTarget) Type() TargetType {
-	return FsDir
+	return FsDirTargetType
 }
 
 func (d *DirectoryTarget) GetUUID() *string {

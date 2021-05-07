@@ -23,7 +23,7 @@ func (z *ZipArchiveTarget) RId() resource.RId {
 }
 
 func (z *ZipArchiveTarget) Type() TargetType {
-	return ZipArchive
+	return ZipArchiveTargetType
 }
 
 func (z *ZipArchiveTarget) GetUUID() *string {

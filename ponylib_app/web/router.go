@@ -3,8 +3,6 @@ package web
 import (
 	"embed"
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -18,28 +16,13 @@ var staticFS embed.FS
 
 func AppendRouters(engine *gin.Engine, conn *pgxpool.Pool, devMode bool) {
 
-	engine.GET(staticPrefix+"*filepath", func(c *gin.Context) {
-		path := c.Request.URL.Path
-		if !devMode {
-			c.Header("Cache-Control", "public, max-age="+strconv.Itoa(staticCacheMaxAge))
-		}
-		if strings.HasPrefix(path, staticPrefix) {
-			c.FileFromFS(path, http.FS(staticFS))
-		} else {
-			c.AbortWithStatus(http.StatusNotFound)
-		}
-	})
+	engine.GET(staticPrefix+"*filepath", StaticsHandler(devMode))
 
-	engine.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", WithCommonVars(c, gin.H{
-			"show_examples": true,
-		}))
-	})
+	engine.GET("/", IndexHandler())
 
 	engine.GET("/auth", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "auth.tmpl", WithCommonVars(c, gin.H{}))
 	})
-
 	engine.POST("/unlock", func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/")
 	})
@@ -47,4 +30,5 @@ func AppendRouters(engine *gin.Engine, conn *pgxpool.Pool, devMode bool) {
 	engine.GET("/version", BuildVersionHandler())
 
 	engine.GET("/books", BuildBooksHandler(conn))
+	engine.GET("/books/:uuid/download/:file_name", BuildDownloadBookHandler(conn))
 }
