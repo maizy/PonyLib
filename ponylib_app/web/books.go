@@ -97,6 +97,6 @@ func BuildDownloadBookHandler(conn *pgxpool.Pool) func(c *gin.Context) {
 		httpheader.SetContentDisposition(header, "attachment", book.RId.ResourceBaseName(), nil)
 		c.Header("Content-Disposition", header.Get("Content-Disposition"))
 
-		c.DataFromReader(http.StatusOK, size, "text/xml; charset=utf-8", *reader, nil)
+		c.DataFromReader(http.StatusOK, size, "application/x-fictionbook; charset=utf-8", *reader, nil)
 	}
 }
