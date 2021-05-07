@@ -67,9 +67,15 @@
                 </ul>
               {{end}}
 
-              {{with .Metadata.Annotation}}
-                <div class="text-break mt-2">{{ . }}</div>
-              {{end}}
+              {{ with .Metadata.Annotation }}
+                {{ $lines := split "\n" . }}
+                <div class="text-break mt-2">
+                {{ range $i, $line := $lines }}
+                  {{if ne $i 0}}<br/>{{end}}
+                  {{ $line }}
+                {{ end }}
+                </div>
+              {{ end }}
 
             </div>
           </div>

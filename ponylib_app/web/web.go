@@ -24,6 +24,14 @@ func SetupMiddlewares(engine *gin.Engine) {
 var templates embed.FS
 
 func SetupTemplates(engine *gin.Engine, devMode bool) {
+	engine.SetFuncMap(template.FuncMap{
+		"split": func(sep string, string *string) []string {
+			if string == nil {
+				return nil
+			}
+			return strings.Split(*string, sep)
+		},
+	})
 	if devMode {
 		engine.LoadHTMLGlob("ponylib_app/web/templates/*.tmpl")
 	} else {
