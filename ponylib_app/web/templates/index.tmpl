@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="{{.lang}}" class="h-100">
+
+{{ template "head" . }}
+
+<body class="d-flex flex-column h-100">
+
+{{ template "header" . }}
+
+<main class="container flex-shrink-0">
+  {{ template "book_search_form" . }}
+</main>
+
+{{ template "footer" . }}
+</body>
+</html>

@@ -15,9 +15,9 @@ var rootCmd = &cobra.Command{
 	Use: "ponylib",
 }
 
-func Execute(appVersion string) error {
+func Execute() error {
 	rootCmd.SetVersionTemplate(`{{printf "%s version: %s\n" .Name .Version}}`)
-	rootCmd.Version = ponylib_app.NormalizeVersion(appVersion)
+	rootCmd.Version = ponylib_app.GetVersion()
 	return rootCmd.Execute()
 }
 

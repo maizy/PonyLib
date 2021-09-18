@@ -5,7 +5,7 @@ import "github.com/gabriel-vasile/mimetype"
 type SupportedArchive string
 
 const (
-	Zip SupportedArchive = "zip"
+	ZipArchive SupportedArchive = "zip"
 )
 
 func archivePtr(archive SupportedArchive) *SupportedArchive {
@@ -16,7 +16,7 @@ func DetectSupportedArchive(path string) *SupportedArchive {
 	if mime, err := mimetype.DetectFile(path); err == nil {
 		switch mime.String() {
 		case "application/zip":
-			return archivePtr(Zip)
+			return archivePtr(ZipArchive)
 		default:
 			return nil
 		}

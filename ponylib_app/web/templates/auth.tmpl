@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="{{.lang}}" class="h-100">
+
+{{ template "head" . }}
+
+<body class="text-center d-flex align-items-center p-5 h-100 bg-light">
+
+<main class="col-12 col-xl-4 offset-xl-4 col-xxl-2 offset-xxl-5 p-3 align-content-center">
+  <div class="h1 mb-4">
+  {{ template "app_name" }}
+  </div>
+  <form action="/auth" method="post" class="justify-content-center">
+    <label for="unlockPassword" class="form-label">Enter password</label>
+    <input type="password" name="password" class="form-control mb-2{{ if .wrongPassword }} is-invalid{{end}}" id="unlockPassword">
+    {{ if .wrongPassword }}
+    <div class="invalid-feedback mb-2">
+      Wrong password.
+    </div>
+    {{ end }}
+    <button class="mt-4 w-100 btn btn-lg btn-primary" type="submit">Continue</button>
+  </form>
+</main>
+
+</body>
+</html>

@@ -16,7 +16,7 @@ func (f *FileTarget) RId() resource.RId {
 }
 
 func (f *FileTarget) Type() TargetType {
-	return FsFile
+	return FsFileTargetType
 }
 
 func (f *FileTarget) GetUUID() *string {

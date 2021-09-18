@@ -3,6 +3,7 @@ package resource
 import (
 	"errors"
 	"net/url"
+	"path"
 )
 
 type Q struct {
@@ -18,8 +19,32 @@ type RId struct {
 	Query  []Q
 }
 
+const SubPathKey = "p"
+
 func (u *RId) String() string {
 	return EncodeRId(u.Scheme, u.Path, u.Query)
+}
+
+func (u *RId) SubPath() string {
+	if u.Query != nil {
+		for _, pair := range u.Query {
+			if pair.Key == SubPathKey {
+				return pair.Value
+			}
+		}
+	}
+	return ""
+}
+
+func (u *RId) ResourceBaseName() string {
+	objectPath := u.Path
+	if subPath := u.SubPath(); subPath != "" {
+		objectPath = subPath
+	}
+	if objectPath != "" {
+		return path.Base(objectPath)
+	}
+	return ""
 }
 
 func EncodeRId(scheme, path string, query []Q) string {

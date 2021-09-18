@@ -22,6 +22,18 @@ func (b *Book) String() string {
 	return b.Title
 }
 
+func (b *Book) WrittenAt() string {
+	if b.Date != nil {
+		if b.Date.Month() == time.January && b.Date.Day() == 1 {
+			return b.Date.Format("2006")
+		}
+		return b.Date.Format("2006-01-02")
+	} else if b.FormattedDate != nil {
+		return *b.FormattedDate
+	}
+	return ""
+}
+
 func (b *Book) AdditionalInfoString() *string {
 	if b.Date != nil || b.FormattedDate != nil || b.Lang != nil {
 		var sb strings.Builder
@@ -34,11 +46,7 @@ func (b *Book) AdditionalInfoString() *string {
 				sb.WriteString(", ")
 			}
 			sb.WriteString("Written at: ")
-			if b.Date != nil {
-				sb.WriteString(b.Date.Format("2006-01-02"))
-			} else {
-				sb.WriteString(*b.FormattedDate)
-			}
+			sb.WriteString(b.WrittenAt())
 		}
 		return u.StrPtr(sb.String())
 	}
@@ -207,4 +215,19 @@ func (f *Fb2Metadata) String() string {
 		sb.WriteString(strings.ReplaceAll(wrapped, "\n", "\n\t  "))
 	}
 	return sb.String()
+}
+
+func (f *Fb2Metadata) AuthorsString() string {
+	if f.Authors != nil {
+		var sb strings.Builder
+		for index, author := range *f.Authors {
+			if index > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(author.String())
+		}
+		return sb.String()
+	} else {
+		return ""
+	}
 }

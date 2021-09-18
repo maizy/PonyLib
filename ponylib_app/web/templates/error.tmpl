@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="{{.lang}}" class="h-100">
+
+{{ template "head" . }}
+
+<body class="d-flex flex-column h-100">
+{{ template "header" . }}
+
+<main class="container flex-shrink-0 mb-5">
+  <h3 class="alert alert-danger">{{ .error }}</h3>
+</main>
+
+{{ template "footer" . }}
+</body>
+</html>

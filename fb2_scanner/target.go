@@ -13,9 +13,9 @@ import (
 type TargetType string
 
 const (
-	FsDir      TargetType = "Directory"
-	FsFile                = "File"
-	ZipArchive            = "Zip Archive"
+	FsDirTargetType      TargetType = "Directory"
+	FsFileTargetType                = "File"
+	ZipArchiveTargetType            = "Zip Archive"
 	//GzFile = "Gzip File"
 )
 
@@ -43,7 +43,7 @@ func NewTargetFromEntryPath(entry string, withUUID bool) (ScanTarget, error) {
 	case mode.IsRegular():
 		mayBeArchive := DetectSupportedArchive(entry)
 		switch {
-		case mayBeArchive != nil && *mayBeArchive == Zip:
+		case mayBeArchive != nil && *mayBeArchive == ZipArchive:
 			target = &ZipArchiveTarget{entry, targetUUID}
 		default:
 			target = &FileTarget{entry, targetUUID}
