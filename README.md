@@ -1,8 +1,6 @@
 # PonyLib v2
 
-Fb2 library with CLI & web UI.
-
-**Being rewritten in golang. Work in progress**
+Fb2 library with CLI & Web UI.
 
 ## Setup with docker-compose (recommended)
 
@@ -22,7 +20,7 @@ Run
 docker-compose up -d
 ```
 
-It needs some time in the first run to init Database & run DB migrations. 
+It needs some time in the first run to init Database & run DB migrations.
 
 Check status: `docker-compose ps`, `docker-compose logs`.
 
