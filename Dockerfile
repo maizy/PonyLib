@@ -1,4 +1,4 @@
-FROM golang:1.16.3-buster as build
+FROM golang:1.17.1-bullseye as build
 RUN mkdir /app
 COPY . /app
 RUN cd /app; ./build.sh
