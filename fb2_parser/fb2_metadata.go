@@ -216,3 +216,18 @@ func (f *Fb2Metadata) String() string {
 	}
 	return sb.String()
 }
+
+func (f *Fb2Metadata) AuthorsString() string {
+	if f.Authors != nil {
+		var sb strings.Builder
+		for index, author := range *f.Authors {
+			if index > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(author.String())
+		}
+		return sb.String()
+	} else {
+		return ""
+	}
+}

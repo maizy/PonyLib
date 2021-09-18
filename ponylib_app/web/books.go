@@ -10,6 +10,7 @@ import (
 	"github.com/vfaronov/httpheader"
 
 	"dev.maizy.ru/ponylib/fb2_scanner"
+	"dev.maizy.ru/ponylib/internal/fb2"
 	"dev.maizy.ru/ponylib/internal/pagination"
 	"dev.maizy.ru/ponylib/internal/u"
 	"dev.maizy.ru/ponylib/ponylib_app/db"
@@ -93,8 +94,9 @@ func BuildDownloadBookHandler(conn *pgxpool.Pool) func(c *gin.Context) {
 			return
 		}
 
+		filename := fb2.BuildFileName(book.RId, book.Metadata)
 		header := http.Header{}
-		httpheader.SetContentDisposition(header, "attachment", book.RId.ResourceBaseName(), nil)
+		httpheader.SetContentDisposition(header, "attachment", filename, nil)
 		c.Header("Content-Disposition", header.Get("Content-Disposition"))
 
 		c.DataFromReader(http.StatusOK, size, "application/x-fictionbook; charset=utf-8", *reader, nil)

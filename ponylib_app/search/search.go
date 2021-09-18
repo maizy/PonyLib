@@ -10,6 +10,7 @@ import (
 
 	"dev.maizy.ru/ponylib/fb2_parser"
 	"dev.maizy.ru/ponylib/fb2_scanner/resource"
+	"dev.maizy.ru/ponylib/internal/fb2"
 	"dev.maizy.ru/ponylib/ponylib_app"
 )
 
@@ -18,6 +19,7 @@ type BookMatch struct {
 	RId      resource.RId
 	Metadata fb2_parser.Fb2Metadata
 	Position int
+	Filename string
 }
 
 type BookSearchResult struct {
@@ -80,7 +82,11 @@ func SearchBooks(conn *pgxpool.Pool, query *BookSearchQuery, offset int, limit i
 		if err != nil {
 			return nil, fmt.Errorf("unable to deserialize RId result item for position %d: %w", position, err)
 		}
-		matches = append(matches, BookMatch{UUID: uuid, RId: *rid, Metadata: metadata, Position: position})
+		filename := fb2.BuildFileName(*rid, metadata)
+		matches = append(
+			matches,
+			BookMatch{UUID: uuid, RId: *rid, Metadata: metadata, Position: position, Filename: filename},
+		)
 	}
 	if rows.Err() != nil {
 		return nil, fmt.Errorf("unable to iterate over applied migrations: %w", rows.Err())
