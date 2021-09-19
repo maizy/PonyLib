@@ -17,7 +17,6 @@ func BasicUnsafeAuth(authUrl, staticPrefix string) gin.HandlerFunc {
 		}
 	} else {
 		return func(c *gin.Context) {
-			println(c.Request.URL.Path)
 			if c.Request.URL.Path == authUrl {
 				if c.Request.Method == "POST" {
 					formPassword := c.PostForm("password")
