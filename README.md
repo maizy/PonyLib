@@ -43,7 +43,7 @@ docker-compose exec ponylib ponylib --help
 ### Requirements
 
 * PostgreSQL 12+
-* Go 1.16+
+* Go 1.17+
 
 ### Init DB
 
