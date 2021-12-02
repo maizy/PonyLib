@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/antchfx/xmlquery"
 
@@ -15,6 +16,8 @@ import (
 	"dev.maizy.ru/ponylib/internal/binary"
 	"dev.maizy.ru/ponylib/internal/u"
 )
+
+const annotationMaxChars = 8000
 
 func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 	xmlParser, err := xmlquery.CreateStreamParser(source,
@@ -152,7 +155,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		}
 
 		if annotationNode := xmlquery.FindOne(titleInfoNode, "//annotation"); annotationNode != nil {
-			annotation = u.StrPtr(fb2MarkupToText(annotationNode))
+			annotation = u.StrPtr(fb2MarkupToText(annotationNode, annotationMaxChars))
 		}
 	}
 
@@ -228,8 +231,7 @@ func parseDate(parentNode *xmlquery.Node) (formatted *string, parsed *time.Time)
 	return
 }
 
-func fb2ToTextInner(node *xmlquery.Node, sb *strings.Builder, depth int) []string {
-	var result []string
+func fb2ToTextInner(node *xmlquery.Node, sb *strings.Builder, charsLimit int, depth int) {
 	var iterateChildren = false
 	postfix := ""
 	ifTagMatched := func(regex string) bool {
@@ -301,21 +303,36 @@ func fb2ToTextInner(node *xmlquery.Node, sb *strings.Builder, depth int) []strin
 		}
 	}
 
-	if iterateChildren && depth < 100 {
+	if iterateChildren && depth < 100 && !isCharsLimitReached(sb, charsLimit) {
 		for child := node.FirstChild; child != nil; child = child.NextSibling {
-			fb2ToTextInner(child, sb, depth+1)
+			fb2ToTextInner(child, sb, charsLimit, depth+1)
+			if isCharsLimitReached(sb, charsLimit) {
+				break
+			}
 		}
 	}
 	sb.WriteString(postfix)
-	return result
 }
 
-func fb2MarkupToText(root *xmlquery.Node) string {
+func isCharsLimitReached(sb *strings.Builder, charsLimit int) bool {
+	// assume all runes have size of 1 byte (but it's not)
+	// TODO: how to count size in runes effectively
+	return charsLimit > -1 && sb.Len() >= charsLimit
+}
+
+func fb2MarkupToText(root *xmlquery.Node, charsLimit int) string {
 	var sb strings.Builder
 	for child := root.FirstChild; child != nil; child = child.NextSibling {
-		fb2ToTextInner(child, &sb, 0)
+		fb2ToTextInner(child, &sb, charsLimit, 0)
+		if isCharsLimitReached(&sb, charsLimit) {
+			break
+		}
 	}
-	return strings.TrimSpace(normalizeXmlText(sb.String()))
+	finalTextAsStr := strings.TrimSpace(normalizeXmlText(sb.String()))
+	if utf8.RuneCountInString(finalTextAsStr) > charsLimit {
+		finalTextAsStr = finalTextAsStr[:charsLimit]
+	}
+	return finalTextAsStr
 }
 
 func findText(node *xmlquery.Node, query string) *string {
