@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/antchfx/xmlquery v1.3.3
 	github.com/gabriel-vasile/mimetype v1.1.2
-	github.com/gin-gonic/gin v1.7.1
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.5.0 // indirect
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/golang/protobuf v1.5.2 // indirect
