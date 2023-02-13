@@ -38,6 +38,21 @@ Also see other ponylib commands:
 docker-compose exec ponylib ponylib --help
 ```
 
+### Build
+
+For the current architecture only
+```
+TARGET_ENV=local ./build-docker.sh
+```
+
+For multiple architectures:
+```
+# setup docker buildx env, for ex:
+docker buildx create --use
+
+TARGET_ENV=local ./build-docker-multiarch.sh
+```
+
 ## Setup without docker (advanced)
 
 ### Requirements
