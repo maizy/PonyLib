@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 
 	"dev.maizy.ru/ponylib/fb2_scanner/resource"
 	"dev.maizy.ru/ponylib/internal/u"
