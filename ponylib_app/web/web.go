@@ -25,11 +25,14 @@ var templates embed.FS
 
 func SetupTemplates(engine *gin.Engine, devMode bool) {
 	funcMap := template.FuncMap{
-		"split": func(sep string, string *string) []string {
-			if string == nil {
-				return nil
+		"split": func(sep string, string string) []string {
+			return strings.Split(string, sep)
+		},
+		"StrDeref": func(val *string) string {
+			if val == nil {
+				return ""
 			}
-			return strings.Split(*string, sep)
+			return *val
 		},
 	}
 	if devMode {

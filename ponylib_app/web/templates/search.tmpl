@@ -68,7 +68,9 @@
               {{end}}
 
               {{ with .Metadata.Annotation }}
-                {{ $lines := split "\n" . }}
+                {{/* old versions doesn't have annotation limit */}}
+                {{ $annotation := printf "%.8000s" (StrDeref .) }}
+                {{ $lines := split "\n" $annotation }}
                 <div class="text-break mt-2">
                 {{ range $i, $line := $lines }}
                   {{if ne $i 0}}<br/>{{end}}
