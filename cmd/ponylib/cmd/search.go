@@ -62,7 +62,7 @@ var searchCmd = &cobra.Command{
 
 		if count > 0 {
 			var lastPosition int
-			fmt.Printf("Results %d-%d\n\n", from, u.IntMin(from+limit-1, count))
+			fmt.Printf("Results %d-%d\n\n", from, min(from+limit-1, count))
 			results, err := search.SearchBooks(conn, query, from-1, limit)
 			if err != nil {
 				printErrF("Unable to get search results: %s", err)

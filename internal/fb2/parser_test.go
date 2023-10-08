@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/antchfx/xmlquery"
 	"github.com/stretchr/testify/assert"
 
 	"dev.maizy.ru/ponylib/fb2_parser"
@@ -22,6 +23,20 @@ func openTestBook(name string) io.Reader {
 		panic(err)
 	}
 	return file
+}
+
+func loadTestXmlStream(name string, rootNone string) *xmlquery.Node {
+	xmlParser, err := xmlquery.CreateStreamParser(openTestBook(name),
+		"/"+rootNone)
+	if err != nil {
+		panic(err)
+	}
+
+	node, err := xmlParser.Read()
+	if err != nil {
+		panic(err)
+	}
+	return node
 }
 
 func longText(text string) *string {
@@ -151,4 +166,43 @@ func Test_normalizeText(t *testing.T) {
 func Test_normalizeTextPtr(t *testing.T) {
 	a := assert.New(t)
 	a.Nil(normalizeXmlTextPtr(nil))
+}
+
+func Test_fb2MarkupToText_longTextFirstLevel(t *testing.T) {
+	node := loadTestXmlStream("long-text-first-level.xml", "annotation")
+	got := fb2MarkupToText(node, 8000)
+	a := assert.New(t)
+	a.Len(got, 8000)
+
+	newLineOccurence := strings.Count(got, "\n")
+	a.EqualValues(2, newLineOccurence)
+
+	lines := strings.Split(got, "\n")
+	a.Regexp("^3K text 1", lines[0])
+	a.Len(lines[0], 3000)
+	a.Regexp("^3K text 2", lines[1])
+	a.Len(lines[1], 3000)
+	a.Regexp("^3K text 3", lines[2])
+	a.Len(lines[2], 8000-3000-3000-2)
+}
+
+func Test_fb2MarkupToText_longTextDeepLevel(t *testing.T) {
+	node := loadTestXmlStream("long-text-deep-level.xml", "annotation")
+	got := fb2MarkupToText(node, 8000)
+	println(got)
+
+	a := assert.New(t)
+	a.Len(got, 8000)
+
+	newLineOccurence := strings.Count(got, "\n")
+	a.EqualValues(3, newLineOccurence)
+
+	lines := strings.Split(got, "\n")
+	a.EqualValues("short text", lines[0])
+	a.Regexp(`^\* 3K text 1`, lines[1])
+	a.Len(lines[1], 3002)
+	a.Regexp(`^\* 3K text 2`, lines[2])
+	a.Len(lines[2], 3002)
+	a.Regexp(`^\* 3K text 3`, lines[3])
+	a.Len(lines[3], 8000-3002-3002-3-len("short text"))
 }

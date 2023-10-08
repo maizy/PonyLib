@@ -12,7 +12,6 @@ import (
 	"dev.maizy.ru/ponylib/fb2_scanner"
 	"dev.maizy.ru/ponylib/internal/fb2"
 	"dev.maizy.ru/ponylib/internal/pagination"
-	"dev.maizy.ru/ponylib/internal/u"
 	"dev.maizy.ru/ponylib/ponylib_app/db"
 	"dev.maizy.ru/ponylib/ponylib_app/search"
 )
@@ -32,7 +31,7 @@ func BuildBooksHandler(conn *pgxpool.Pool) func(c *gin.Context) {
 		if query != "" {
 			pageQuery := c.DefaultQuery("page", "1")
 			if pageI, err := strconv.Atoi(pageQuery); err == nil {
-				currentPage = u.IntMax(pageI, 1)
+				currentPage = max(pageI, 1)
 			}
 			limit := 40
 
