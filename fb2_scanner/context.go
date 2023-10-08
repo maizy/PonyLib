@@ -2,8 +2,6 @@ package fb2_scanner
 
 import (
 	"runtime"
-
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type ScannerContext struct {
@@ -19,5 +17,5 @@ func (c *ScannerContext) ReleaseFileSemaphore() {
 }
 
 func NewScannerContext() ScannerContext {
-	return ScannerContext{make(chan struct{}, u.IntMax(runtime.NumCPU(), 4))}
+	return ScannerContext{make(chan struct{}, max(runtime.NumCPU(), 4))}
 }

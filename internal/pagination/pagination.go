@@ -2,8 +2,6 @@ package pagination
 
 import (
 	"math"
-
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type Pagination struct {
@@ -36,8 +34,8 @@ func CountSlidePagination(size int, currentPage int, perPage int, totalFound int
 				leftWing = currentPage - 1
 				rightWing = size - 1 - leftWing
 			}
-			firstNavPage = u.IntMax(currentPage-leftWing, 1)
-			lastNavPage = u.IntMin(currentPage+rightWing, lastNavPage)
+			firstNavPage = max(currentPage-leftWing, 1)
+			lastNavPage = min(currentPage+rightWing, lastNavPage)
 		}
 		for i := firstNavPage; i <= lastNavPage; i++ {
 			navigationPages = append(navigationPages, i)
