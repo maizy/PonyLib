@@ -1,4 +1,4 @@
-FROM golang:1.20.1-bullseye as build
+FROM golang:1.21.1-bullseye as build
 RUN mkdir /app
 COPY . /app
 RUN cd /app; ./build.sh
