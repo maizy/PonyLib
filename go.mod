@@ -1,6 +1,6 @@
 module dev.maizy.ru/ponylib
 
-go 1.21
+go 1.21.12
 
 require (
 	github.com/antchfx/xmlquery v1.4.1
