@@ -99,3 +99,10 @@ ponylib-parser FILE_OR_DIR [FILE_OR_DIR]
 
 _[Obsolete python + django based version](https://github.com/maizy/PonyLib/tree/v1)_
 
+
+## Tests
+
+Run `go test ./...` for unit tests. To also check migrations, JSONB storage and
+full-text search, point `PONYLIB_TEST_DATABASE_URL` at a disposable PostgreSQL 18
+instance and run `go test -race -timeout 2m ./...`. The integration test creates
+and removes its own schema; the database user needs permission to create schemas.
