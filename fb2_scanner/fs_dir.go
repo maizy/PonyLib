@@ -9,7 +9,6 @@ import (
 
 	"dev.maizy.ru/ponylib/fb2_scanner/resource"
 	"dev.maizy.ru/ponylib/internal/sympath"
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type DirectoryTarget struct {
@@ -18,7 +17,7 @@ type DirectoryTarget struct {
 }
 
 func (d *DirectoryTarget) RId() resource.RId {
-	return resource.RId{"dir", d.Path, []resource.Q{{"ext", "fb2"}, {"symlink", "1"}}}
+	return resource.RId{Scheme: "dir", Path: d.Path, Query: []resource.Q{{Key: "ext", Value: "fb2"}, {Key: "symlink", Value: "1"}}}
 }
 
 func (d *DirectoryTarget) Type() TargetType {
@@ -37,7 +36,7 @@ func (d *DirectoryTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
 		if err != nil {
 			resultChan <- ScannerResult{
 				Source:     &FileSource{path},
-				Error:      u.ErrPtr(fmt.Errorf("unable to scan file or symlink %s: %w", path, err)),
+				Error:      new(fmt.Errorf("unable to scan file or symlink %s: %w", path, err)),
 				FromTarget: d,
 			}
 			return filepath.SkipDir
@@ -54,7 +53,7 @@ func (d *DirectoryTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
 		if err != nil {
 			resultChan <- ScannerResult{
 				Source:     &FileSource{d.Path},
-				Error:      u.ErrPtr(fmt.Errorf("unable to scan %s: %w", d.Path, err)),
+				Error:      new(fmt.Errorf("unable to scan %s: %w", d.Path, err)),
 				FromTarget: d,
 			}
 		}

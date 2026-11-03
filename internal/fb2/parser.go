@@ -14,7 +14,6 @@ import (
 
 	"dev.maizy.ru/ponylib/fb2_parser"
 	"dev.maizy.ru/ponylib/internal/binary"
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 const annotationMaxChars = 8000
@@ -64,7 +63,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 			if coverpageImage != nil {
 				id := coverpageImage.SelectAttr("href")
 				if strings.HasPrefix(id, "#") {
-					coverBinaryId = u.StrPtr(id[1:])
+					coverBinaryId = new(id[1:])
 				}
 			}
 		case "publish-info":
@@ -147,7 +146,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		for _, sequenceNode := range sequenceNodes {
 			if name := normalizeXmlTextPtr(findText(sequenceNode, "//@name")); name != nil {
 				number := findInt(sequenceNode, "//@number")
-				foundSequences = append(foundSequences, fb2_parser.Sequence{*name, number})
+				foundSequences = append(foundSequences, fb2_parser.Sequence{Name: *name, Number: number})
 			}
 		}
 		if len(foundSequences) > 0 {
@@ -155,7 +154,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		}
 
 		if annotationNode := xmlquery.FindOne(titleInfoNode, "//annotation"); annotationNode != nil {
-			annotation = u.StrPtr(fb2MarkupToText(annotationNode, annotationMaxChars))
+			annotation = new(fb2MarkupToText(annotationNode, annotationMaxChars))
 		}
 	}
 
@@ -165,7 +164,7 @@ func ScanBookMetadata(source io.Reader) (*fb2_parser.Fb2Metadata, error) {
 		year := findInt(publishInfoNode, "//year")
 		isbn := normalizeXmlTextPtr(findText(publishInfoNode, "//isbn"))
 		if publisher != nil || year != nil || isbn != nil {
-			pubInfo = &fb2_parser.PubInfo{publisher, year, isbn}
+			pubInfo = &fb2_parser.PubInfo{Publisher: publisher, PubYear: year, ISBN: isbn}
 		}
 	}
 
@@ -213,7 +212,7 @@ func parseAuthor(node *xmlquery.Node) *fb2_parser.Author {
 	middleName := normalizeXmlTextPtr(findText(node, "middle-name"))
 	nickname := normalizeXmlTextPtr(findText(node, "nickname"))
 	if lastName != nil || firstName != nil || middleName != nil || nickname != nil {
-		return &fb2_parser.Author{firstName, lastName, middleName, nickname}
+		return &fb2_parser.Author{FirstName: firstName, LastName: lastName, MiddleName: middleName, Nickname: nickname}
 	}
 	return nil
 }
@@ -337,7 +336,7 @@ func fb2MarkupToText(root *xmlquery.Node, charsLimit int) string {
 
 func findText(node *xmlquery.Node, query string) *string {
 	if match := xmlquery.FindOne(node, query); match != nil {
-		return u.StrPtr(match.InnerText())
+		return new(match.InnerText())
 	}
 	return nil
 }
@@ -373,7 +372,7 @@ func normalizeXmlText(text string) string {
 
 func normalizeXmlTextPtr(text *string) *string {
 	if text != nil {
-		return u.StrPtr(normalizeXmlText(*text))
+		return new(normalizeXmlText(*text))
 	}
 	return nil
 }

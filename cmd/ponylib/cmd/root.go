@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/spf13/cobra"
 
 	"dev.maizy.ru/ponylib/ponylib_app"
@@ -21,7 +21,7 @@ func Execute() error {
 	return rootCmd.Execute()
 }
 
-func printErrF(format string, a ...interface{}) {
+func printErrF(format string, a ...any) {
 	_, _ = fmt.Fprintf(os.Stderr, format+"\n", a...)
 }
 

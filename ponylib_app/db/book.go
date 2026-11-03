@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"dev.maizy.ru/ponylib/fb2_parser"
 	"dev.maizy.ru/ponylib/fb2_scanner/resource"

@@ -1,7 +1,6 @@
 # ponylib docker-compose example
 # copy ponylib.env.example to ponylib.env and edit it before first run
 
-version: "3.5"
 services:
   ponylib:
     image: ghcr.io/maizy/ponylib:v2.0.8

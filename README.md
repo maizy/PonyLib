@@ -38,12 +38,16 @@ Also see other ponylib commands:
 docker-compose exec ponylib ponylib --help
 ```
 
+## Local development
+
+See [local/README.md](local/README.md) for local startup with PostgreSQL in Docker.
+
 ## Setup without docker (advanced)
 
 ### Requirements
 
 * PostgreSQL 12+
-* Go 1.17+
+* Go 1.27.3+
 
 ### Init DB
 
@@ -72,6 +76,10 @@ DATABASE_URL="postgres://localhost:5432/ponylib?user=ponylib&password=password" 
 ```
 
 
+## Releases
+
+See [docs/releases.md](docs/releases.md) for the release publishing script.
+
 ## Additional Tools
 
 ### `ponylib-parser`
@@ -89,4 +97,3 @@ ponylib-parser FILE_OR_DIR [FILE_OR_DIR]
 ---
 
 _[Obsolete python + django based version](https://github.com/maizy/PonyLib/tree/v1)_
-

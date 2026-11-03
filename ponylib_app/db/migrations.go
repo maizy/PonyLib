@@ -1,15 +1,16 @@
 package db
 
 import (
+	"cmp"
 	"context"
 	"embed"
 	"fmt"
 	"log"
 	"path"
-	"sort"
+	"slices"
 	"strings"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"dev.maizy.ru/ponylib/ponylib_app"
 )
@@ -45,8 +46,8 @@ func getMigrations() ([]Migration, error) {
 			}
 		}
 	}
-	sort.SliceStable(migrations, func(i, j int) bool {
-		return migrations[i].Id < migrations[j].Id
+	slices.SortStableFunc(migrations, func(a, b Migration) int {
+		return cmp.Compare(a.Id, b.Id)
 	})
 	return migrations, nil
 }
@@ -85,7 +86,7 @@ func Migrate(db *pgxpool.Pool) error {
 	}
 	dbVersion := len(migrations)
 
-	_, err = db.Query(
+	_, err = db.Exec(
 		context.Background(),
 		fmt.Sprintf(
 			`create table if not exists "%s" (

@@ -8,15 +8,11 @@ const (
 	ZipArchive SupportedArchive = "zip"
 )
 
-func archivePtr(archive SupportedArchive) *SupportedArchive {
-	return &archive
-}
-
 func DetectSupportedArchive(path string) *SupportedArchive {
 	if mime, err := mimetype.DetectFile(path); err == nil {
 		switch mime.String() {
 		case "application/zip":
-			return archivePtr(ZipArchive)
+			return new(ZipArchive)
 		default:
 			return nil
 		}

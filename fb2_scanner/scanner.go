@@ -18,13 +18,11 @@ func NewFb2Scanner() Fb2Scanner {
 
 func (s *Fb2Scanner) Scan(target ScanTarget) {
 	targetResultsChannel := target.Scan(s.ctx)
-	s.scanTargetsWG.Add(1)
-	go func() {
+	s.scanTargetsWG.Go(func() {
 		for res := range targetResultsChannel {
 			s.resultChannel <- res
 		}
-		s.scanTargetsWG.Done()
-	}()
+	})
 }
 
 func (s *Fb2Scanner) WaitUntilFinish() {
