@@ -76,6 +76,10 @@ DATABASE_URL="postgres://localhost:5432/ponylib?user=ponylib&password=password" 
 ```
 
 
+## Releases
+
+See [docs/releases.md](docs/releases.md) for the release publishing script.
+
 ## Additional Tools
 
 ### `ponylib-parser`

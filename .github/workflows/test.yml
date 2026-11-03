@@ -21,6 +21,8 @@ jobs:
           ${{ runner.os }}-go-
     - name: Test
       run: ./test.sh
+    - name: Test release script
+      run: python3 -m unittest discover -s tests -p 'test_release.py'
   integrational-test:
     name: integrational test (PostgreSQL ${{ matrix.postgres }})
     runs-on: ubuntu-latest
