@@ -71,6 +71,7 @@ case "$BUMP" in
 esac
 VERSION="v${MAJOR}.${MINOR}.${PATCH}"
 IMAGE="ghcr.io/maizy/ponylib:${VERSION}"
+LATEST_IMAGE="ghcr.io/maizy/ponylib:latest"
 COMPOSE_FILE=docs/docker-compose/docker-compose.yml
 if git show-ref --verify --quiet "refs/tags/$VERSION"; then
     echo "Tag $VERSION already exists." >&2
@@ -109,6 +110,10 @@ STAGE='Docker build'
 TARGET_ENV=github ./build-docker.sh
 STAGE='Docker push'
 docker push "$IMAGE"
+STAGE='Docker latest tag'
+docker tag "$IMAGE" "$LATEST_IMAGE"
+STAGE='Docker latest push'
+docker push "$LATEST_IMAGE"
 STAGE='Compose version commit'
 cat "$TEMP_DIR/compose.yml" > "$COMPOSE_FILE"
 git add -- "$COMPOSE_FILE"
@@ -118,4 +123,4 @@ git push --atomic origin "HEAD:refs/heads/$BRANCH" "refs/tags/$VERSION:refs/tags
 STAGE='GitHub release'
 gh release create "$VERSION" --repo maizy/PonyLib --verify-tag \
     --title "$VERSION" --notes-file "$TEMP_DIR/release-notes.md"
-printf 'Published %s and %s\n' "$VERSION" "$IMAGE"
+printf 'Published %s, %s and %s\n' "$VERSION" "$IMAGE" "$LATEST_IMAGE"

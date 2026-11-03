@@ -16,7 +16,8 @@ The script fetches tags from `origin` and finds the highest version matching
 current commit. At least one existing release tag is required.
 
 It tags the current commit, calls `TARGET_ENV=github ./build-docker.sh`, and pushes
-`ghcr.io/maizy/ponylib:vX.Y.Z`. It then updates the image in
+`ghcr.io/maizy/ponylib:vX.Y.Z`. The same built image is tagged and pushed as
+`ghcr.io/maizy/ponylib:latest`. It then updates the image in
 `docs/docker-compose/docker-compose.yml`, commits that change, and pushes the
 current branch and new tag together with an atomic Git push. Finally, it publishes
 a GitHub release in `maizy/PonyLib` using `gh release create`. Release notes list
