@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"dev.maizy.ru/ponylib/ponylib_app"
 )
@@ -85,7 +85,7 @@ func Migrate(db *pgxpool.Pool) error {
 	}
 	dbVersion := len(migrations)
 
-	_, err = db.Query(
+	_, err = db.Exec(
 		context.Background(),
 		fmt.Sprintf(
 			`create table if not exists "%s" (

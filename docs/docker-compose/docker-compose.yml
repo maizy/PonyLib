@@ -1,7 +1,6 @@
 # ponylib docker-compose example
 # copy ponylib.env.example to ponylib.env and edit it before first run
 
-version: "3.5"
 services:
   ponylib:
     image: ghcr.io/maizy/ponylib:v2.0.8
@@ -23,13 +22,13 @@ services:
     #  - /path/to/your-lib-2:/data/lib2
     #  - /path/to/archive.zip:/data/lib3.zip
   db:
-    image: postgres:12.6
+    image: postgres:18.6
     container_name: ponylib_db
     env_file:
       - ./ponylib.env
     volumes:
       # change ./data/db to any other path if you want to store data in different location
-      - ./data/db:/var/lib/postgresql/data
+      - ./data/db:/var/lib/postgresql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "ponylib"]
       start_period: 30s

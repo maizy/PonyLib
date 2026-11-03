@@ -1,9 +1,9 @@
-FROM golang:1.24.0-bullseye as build
+FROM golang:1.27.3-trixie AS build
 RUN mkdir /app
 COPY . /app
 RUN cd /app; ./build.sh
 
-FROM debian:12.9-slim as ponylib
+FROM debian:trixie-slim AS ponylib
 LABEL org.opencontainers.image.title="Ponylib v2"
 LABEL org.opencontainers.image.description="Fb2 library with CLI & web UI"
 LABEL org.opencontainers.image.authors="Nikita Kovalev <https://github.com/maizy>"

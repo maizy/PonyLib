@@ -42,12 +42,21 @@ docker-compose exec ponylib ponylib --help
 
 ### Requirements
 
-* PostgreSQL 12+
-* Go 1.17+
+* PostgreSQL 18+
+* Go 1.27.3+
+
+### Upgrading an existing database
+
+The Compose example now uses PostgreSQL 18 and mounts `./data/db` at
+`/var/lib/postgresql` (the image stores data in `18/docker`). Existing PostgreSQL 12
+data directories cannot be reused directly. Before changing the image or volume
+mount, back up the old database with `pg_dump`, stop the old server, keep its data
+directory as a backup, and restore the dump into a fresh PostgreSQL 18 database.
+See the [PostgreSQL upgrade documentation](https://www.postgresql.org/docs/18/upgrading.html).
 
 ### Init DB
 
-Setup PostgreSQL 12+, then
+Setup PostgreSQL 18+, then
 
 ```
 su - postgres
