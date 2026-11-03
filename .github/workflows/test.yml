@@ -21,11 +21,16 @@ jobs:
           ${{ runner.os }}-go-
     - name: Test
       run: ./test.sh
-  postgres:
+  integrational-test:
+    name: integrational test (PostgreSQL ${{ matrix.postgres }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres: ["12", "17", "18"]
     services:
       db:
-        image: postgres:12.6
+        image: postgres:${{ matrix.postgres }}
         env:
           POSTGRES_USER: ponylib
           POSTGRES_PASSWORD: ponylib-test

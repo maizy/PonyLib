@@ -54,7 +54,7 @@ PONYLIB_TEST_DATABASE_URL='postgres://ponylib:ponylib-dev@127.0.0.1:55432/ponyli
 
 The integration test creates and removes an isolated schema. Use a development
 or disposable database. CI runs unit tests on Linux and macOS and database tests
-against PostgreSQL 12.6.
+against PostgreSQL 12, 17 and 18.
 
 For local tooling changes, check `bash -n local/run-dev.sh` and
 `docker compose -f local/compose.dev.yml config --quiet`, then exercise the relevant
