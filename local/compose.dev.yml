@@ -2,7 +2,7 @@ name: ponylib-dev
 
 services:
   db:
-    image: postgres:18.6
+    image: postgres:12.6
     environment:
       POSTGRES_DB: ponylib
       POSTGRES_USER: ponylib
@@ -10,7 +10,7 @@ services:
     ports:
       - "127.0.0.1:${DEV_DB_PORT:-55432}:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql
+      - postgres12-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ponylib -d ponylib"]
       interval: 2s
@@ -19,4 +19,4 @@ services:
       start_period: 5s
 
 volumes:
-  postgres-data:
+  postgres12-data:

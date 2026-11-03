@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$LOCAL_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
 for dependency in go docker; do
@@ -18,10 +19,10 @@ if [[ ! "$DEV_DB_PORT" =~ ^[0-9]{1,5}$ ]] || (( 10#$DEV_DB_PORT < 1 || 10#$DEV_D
     exit 1
 fi
 
-docker compose -f "$PROJECT_DIR/compose.dev.yml" up -d --wait --wait-timeout 60 db
+docker compose -f "$LOCAL_DIR/compose.dev.yml" up -d --wait --wait-timeout 60 db
 
 VERSION="$(git describe --tags --always 2>/dev/null || printf 'dev')"
-go build -o "$PROJECT_DIR/bin/ponylib" \
+go build -o "$LOCAL_DIR/bin/ponylib" \
     -ldflags "-X dev.maizy.ru/ponylib/ponylib_app.version=$VERSION" ./cmd/ponylib
 
 export DATABASE_URL="postgres://ponylib:ponylib-dev@127.0.0.1:${DEV_DB_PORT}/ponylib?sslmode=disable"
@@ -32,4 +33,4 @@ if [[ $# -eq 0 ]]; then
 fi
 
 printf 'PostgreSQL is ready on 127.0.0.1:%s. It will keep running after the local process exits.\n' "$DEV_DB_PORT"
-exec "$PROJECT_DIR/bin/ponylib" "$@"
+exec "$LOCAL_DIR/bin/ponylib" "$@"
