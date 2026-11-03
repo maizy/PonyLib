@@ -10,7 +10,6 @@ import (
 
 	"dev.maizy.ru/ponylib/fb2_parser/metadata"
 	"dev.maizy.ru/ponylib/fb2_scanner/resource"
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type ZipArchiveTarget struct {
@@ -19,7 +18,7 @@ type ZipArchiveTarget struct {
 }
 
 func (z *ZipArchiveTarget) RId() resource.RId {
-	return resource.RId{"zip", z.Path, []resource.Q{{"ext", "fb2"}}}
+	return resource.RId{Scheme: "zip", Path: z.Path, Query: []resource.Q{{Key: "ext", Value: "fb2"}}}
 }
 
 func (z *ZipArchiveTarget) Type() TargetType {
@@ -44,7 +43,7 @@ func (z *ZipArchiveTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
 		if err != nil {
 			resultChan <- ScannerResult{
 				Source:     &FileSource{z.Path},
-				Error:      u.ErrPtr(fmt.Errorf("unable to open zip archive %s: %w", z.Path, err)),
+				Error:      new(fmt.Errorf("unable to open zip archive %s: %w", z.Path, err)),
 				FromTarget: z,
 			}
 			return
@@ -66,7 +65,7 @@ func (z *ZipArchiveTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
 					resultChan <- ScannerResult{
 						Source:   &source,
 						Metadata: nil,
-						Error: u.ErrPtr(
+						Error: new(
 							fmt.Errorf("unable to open file %s in zip archive %s: %w", filePath, z.Path, err)),
 						Timers:     timers,
 						FromTarget: z,
@@ -83,7 +82,7 @@ func (z *ZipArchiveTarget) Scan(ctx ScannerContext) <-chan ScannerResult {
 					resultChan <- ScannerResult{
 						Source:   &source,
 						Metadata: nil,
-						Error: u.ErrPtr(
+						Error: new(
 							fmt.Errorf("unable to parse metadata for %s in zip archive %s: %w", filePath, z.Path, err)),
 						Timers:     timers,
 						FromTarget: z,

@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
+	"slices"
 )
 
 // Walk walks the file tree rooted at root, calling walkFn for each file or directory
@@ -44,7 +44,7 @@ func readDirNames(dirname string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	sort.Strings(names)
+	slices.Sort(names)
 	return names, nil
 }
 

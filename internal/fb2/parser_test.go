@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"dev.maizy.ru/ponylib/fb2_parser"
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 func openTestBook(name string) io.Reader {
@@ -58,9 +57,9 @@ func TestScanBookMetadata(t *testing.T) {
 			&fb2_parser.Fb2Metadata{
 				Book: &fb2_parser.Book{
 					Title: "Compulsory",
-					Lang:  u.StrPtr("en"),
+					Lang:  new("en"),
 				},
-				Authors: &[]fb2_parser.Author{{LastName: u.StrPtr("Wells")}},
+				Authors: &[]fb2_parser.Author{{LastName: new("Wells")}},
 				Genres:  &[]fb2_parser.GenreIndexEntity{fb2_parser.GenreIndexByCode["sf"]},
 			},
 			false},
@@ -80,26 +79,26 @@ func TestScanBookMetadata(t *testing.T) {
 			&fb2_parser.Fb2Metadata{
 				Book: &fb2_parser.Book{
 					Title:         "Compulsory",
-					Lang:          u.StrPtr("en"),
-					FormattedDate: u.StrPtr("2018"),
-					Date:          u.TimePtr(time.Date(2018, 12, 16, 0, 0, 0, 0, time.UTC)),
+					Lang:          new("en"),
+					FormattedDate: new("2018"),
+					Date:          new(time.Date(2018, 12, 16, 0, 0, 0, 0, time.UTC)),
 				},
 				PubInfo: &fb2_parser.PubInfo{
-					Publisher: u.StrPtr("Wired Magazine"),
-					PubYear:   u.IntPtr(2018),
-					ISBN:      u.StrPtr("978-1-250-22986-1"),
+					Publisher: new("Wired Magazine"),
+					PubYear:   new(2018),
+					ISBN:      new("978-1-250-22986-1"),
 				},
 				Authors: &[]fb2_parser.Author{
-					{FirstName: u.StrPtr("Martha"), LastName: u.StrPtr("Wells")},
-					{FirstName: u.StrPtr("Some"), MiddleName: u.StrPtr("Co"), LastName: u.StrPtr("Author")},
+					{FirstName: new("Martha"), LastName: new("Wells")},
+					{FirstName: new("Some"), MiddleName: new("Co"), LastName: new("Author")},
 				},
 				Genres: &[]fb2_parser.GenreIndexEntity{
 					fb2_parser.GenreIndexByCode["sf"],
 					fb2_parser.GenreIndexByCode["sf_cyberpunk"],
 				},
 				Sequences: &[]fb2_parser.Sequence{
-					{"The Murderbot Diaries", u.IntPtr(0)},
-					{"Best Of The Best", u.IntPtr(100500)},
+					{Name: "The Murderbot Diaries", Number: new(0)},
+					{Name: "Best Of The Best", Number: new(100500)},
 				},
 				Annotation: longText(`Martha Wells is an American writer of speculative fiction.\n
 					She has published a number of fantasy novels, young adult novels, media tie-ins, short stories,
@@ -115,10 +114,10 @@ func TestScanBookMetadata(t *testing.T) {
 			&fb2_parser.Fb2Metadata{
 				Book: &fb2_parser.Book{
 					Title: "TAB=|    |",
-					Lang:  u.StrPtr("en"),
+					Lang:  new("en"),
 				},
 				Authors: &[]fb2_parser.Author{{
-					FirstName: u.StrPtr("CR=| |"), MiddleName: u.StrPtr("NEL=|\n|"), LastName: u.StrPtr("NBSP=| |")}},
+					FirstName: new("CR=| |"), MiddleName: new("NEL=|\n|"), LastName: new("NBSP=| |")}},
 				Genres: &[]fb2_parser.GenreIndexEntity{fb2_parser.GenreIndexByCode["sf"]},
 			},
 			false},
@@ -156,7 +155,7 @@ func Test_normalizeText(t *testing.T) {
 				t.Errorf("normalizeXmlText() = %v, want %v", got, tt.output)
 			}
 
-			if got := normalizeXmlTextPtr(u.StrPtr(tt.input)); *got != tt.output {
+			if got := normalizeXmlTextPtr(new(tt.input)); *got != tt.output {
 				t.Errorf("normalizeXmlTextPtr() = %v, want %v", *got, tt.output)
 			}
 		})

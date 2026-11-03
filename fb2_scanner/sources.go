@@ -31,7 +31,7 @@ type ZipArchiveFileSource struct {
 }
 
 func (z *ZipArchiveFileSource) RId() resource.RId {
-	return resource.RId{Scheme: ZipSourceType, Path: z.Path, Query: []resource.Q{{resource.SubPathKey, z.FilePath}}}
+	return resource.RId{Scheme: ZipSourceType, Path: z.Path, Query: []resource.Q{{Key: resource.SubPathKey, Value: z.FilePath}}}
 }
 
 func OpenResource(RId resource.RId) (*io.Reader, int64, func(), error) {

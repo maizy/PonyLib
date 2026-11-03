@@ -1,12 +1,13 @@
 package db
 
 import (
+	"cmp"
 	"context"
 	"embed"
 	"fmt"
 	"log"
 	"path"
-	"sort"
+	"slices"
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -45,8 +46,8 @@ func getMigrations() ([]Migration, error) {
 			}
 		}
 	}
-	sort.SliceStable(migrations, func(i, j int) bool {
-		return migrations[i].Id < migrations[j].Id
+	slices.SortStableFunc(migrations, func(a, b Migration) int {
+		return cmp.Compare(a.Id, b.Id)
 	})
 	return migrations, nil
 }

@@ -21,7 +21,7 @@ func Execute() error {
 	return rootCmd.Execute()
 }
 
-func printErrF(format string, a ...interface{}) {
+func printErrF(format string, a ...any) {
 	_, _ = fmt.Fprintf(os.Stderr, format+"\n", a...)
 }
 

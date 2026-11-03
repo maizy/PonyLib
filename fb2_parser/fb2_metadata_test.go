@@ -6,15 +6,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 func TestAuthor_String(t *testing.T) {
-	authorWithNickname := Author{Nickname: u.StrPtr("Ivan"), FirstName: u.StrPtr("John")}
+	authorWithNickname := Author{Nickname: new("Ivan"), FirstName: new("John")}
 	assert.Equal(t, authorWithNickname.String(), "Ivan")
 
-	authorWithoutNickname := Author{FirstName: u.StrPtr("John"), LastName: u.StrPtr("Seed")}
+	authorWithoutNickname := Author{FirstName: new("John"), LastName: new("Seed")}
 	assert.Equal(t, "John Seed", authorWithoutNickname.String())
 }
 
@@ -22,8 +20,8 @@ func TestFb2Metadata_String(t *testing.T) {
 	metadata := Fb2Metadata{
 		Book: &Book{Title: "Best Book"},
 		Authors: &[]Author{
-			{Nickname: u.StrPtr("Ivan")},
-			{Nickname: u.StrPtr("Navi")},
+			{Nickname: new("Ivan")},
+			{Nickname: new("Navi")},
 		},
 	}
 
@@ -40,22 +38,22 @@ func TestFb2Metadata_JsonRoundTrip(t *testing.T) {
 			Fb2Metadata{
 				Book: &Book{
 					Title:         "Compulsory",
-					Lang:          u.StrPtr("en"),
-					FormattedDate: u.StrPtr("2018"),
-					Date:          u.TimePtr(time.Date(2018, 12, 16, 0, 0, 0, 0, time.UTC)),
+					Lang:          new("en"),
+					FormattedDate: new("2018"),
+					Date:          new(time.Date(2018, 12, 16, 0, 0, 0, 0, time.UTC)),
 				},
 				PubInfo: &PubInfo{
-					Publisher: u.StrPtr("Wired Magazine"),
-					PubYear:   u.IntPtr(2018),
-					ISBN:      u.StrPtr("978-1-250-22986-1"),
+					Publisher: new("Wired Magazine"),
+					PubYear:   new(2018),
+					ISBN:      new("978-1-250-22986-1"),
 				},
 				Authors: &[]Author{
-					{FirstName: u.StrPtr("Martha"), LastName: u.StrPtr("Wells")},
+					{FirstName: new("Martha"), LastName: new("Wells")},
 					{
-						FirstName:  u.StrPtr("Some"),
-						MiddleName: u.StrPtr("Co"),
-						LastName:   u.StrPtr("Author"),
-						Nickname:   u.StrPtr("Nagib@T0R"),
+						FirstName:  new("Some"),
+						MiddleName: new("Co"),
+						LastName:   new("Author"),
+						Nickname:   new("Nagib@T0R"),
 					},
 				},
 				Genres: &[]GenreIndexEntity{
@@ -63,10 +61,10 @@ func TestFb2Metadata_JsonRoundTrip(t *testing.T) {
 					GenreIndexByCode["sf_cyberpunk"],
 				},
 				Sequences: &[]Sequence{
-					{"The Murderbot Diaries", u.IntPtr(0)},
+					{"The Murderbot Diaries", new(0)},
 					{"Best Of The Best", nil},
 				},
-				Annotation: u.StrPtr("line\nline2"),
+				Annotation: new("line\nline2"),
 			},
 		},
 		{
@@ -74,9 +72,9 @@ func TestFb2Metadata_JsonRoundTrip(t *testing.T) {
 			Fb2Metadata{
 				Book: &Book{
 					Title: "Compulsory",
-					Lang:  u.StrPtr("en"),
+					Lang:  new("en"),
 				},
-				Authors: &[]Author{{LastName: u.StrPtr("Wells")}},
+				Authors: &[]Author{{LastName: new("Wells")}},
 				Genres:  &[]GenreIndexEntity{GenreIndexByCode["sf"]},
 			},
 		},

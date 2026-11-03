@@ -7,7 +7,6 @@ import (
 	"github.com/gofrs/uuid/v5"
 
 	"dev.maizy.ru/ponylib/fb2_scanner/resource"
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type TargetType string
@@ -34,7 +33,7 @@ func NewTargetFromEntryPath(entry string, withUUID bool) (ScanTarget, error) {
 	var target ScanTarget
 	var targetUUID *string
 	if withUUID {
-		targetUUID = u.StrPtr(uuid.Must(uuid.NewV4()).String())
+		targetUUID = new(uuid.Must(uuid.NewV4()).String())
 	}
 	switch mode := stat.Mode(); {
 	case mode.IsDir():

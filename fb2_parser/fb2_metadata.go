@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-wordwrap"
-
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 type Book struct {
@@ -48,7 +46,7 @@ func (b *Book) AdditionalInfoString() *string {
 			sb.WriteString("Written at: ")
 			sb.WriteString(b.WrittenAt())
 		}
-		return u.StrPtr(sb.String())
+		return new(sb.String())
 	}
 	return nil
 }

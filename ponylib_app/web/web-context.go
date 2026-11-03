@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
+	"maps"
 
 	"dev.maizy.ru/ponylib/ponylib_app"
 	"github.com/gin-gonic/gin"
@@ -24,8 +25,6 @@ func WithCommonVars(c *gin.Context, vars gin.H) gin.H {
 		"staticHash": md5Version,
 	}
 
-	for key, value := range vars {
-		result[key] = value
-	}
+	maps.Copy(result, vars)
 	return result
 }

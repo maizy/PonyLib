@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"dev.maizy.ru/ponylib/fb2_parser/metadata"
-	"dev.maizy.ru/ponylib/internal/u"
 )
 
 func scanRegularFile(
@@ -19,7 +18,7 @@ func scanRegularFile(
 		resultChan <- ScannerResult{
 			Source:     source,
 			Metadata:   nil,
-			Error:      u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
+			Error:      new(fmt.Errorf("unable to open %s: %w", path, err)),
 			FromTarget: target,
 		}
 		done.Done()
@@ -29,7 +28,7 @@ func scanRegularFile(
 		resultChan <- ScannerResult{
 			Source:     source,
 			Metadata:   nil,
-			Error:      u.ErrPtr(fmt.Errorf("%s isn't a regular file", path)),
+			Error:      new(fmt.Errorf("%s isn't a regular file", path)),
 			FromTarget: target,
 		}
 		done.Done()
@@ -48,7 +47,7 @@ func scanRegularFile(
 			resultChan <- ScannerResult{
 				Source:     source,
 				Metadata:   nil,
-				Error:      u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
+				Error:      new(fmt.Errorf("unable to open %s: %w", path, err)),
 				FromTarget: target,
 			}
 			return
@@ -62,7 +61,7 @@ func scanRegularFile(
 			resultChan <- ScannerResult{
 				Source:     source,
 				Metadata:   nil,
-				Error:      u.ErrPtr(fmt.Errorf("unable to open %s: %w", path, err)),
+				Error:      new(fmt.Errorf("unable to open %s: %w", path, err)),
 				Timers:     timers,
 				FromTarget: target,
 			}

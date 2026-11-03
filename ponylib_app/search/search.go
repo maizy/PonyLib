@@ -94,12 +94,12 @@ func SearchBooks(conn *pgxpool.Pool, query *BookSearchQuery, offset int, limit i
 	return &BookSearchResult{Matches: matches, Offset: offset, Limit: limit}, nil
 }
 
-func buildBookSearchFTSQuery(query *BookSearchQuery, substitutionIndex int) (string, []interface{}) {
+func buildBookSearchFTSQuery(query *BookSearchQuery, substitutionIndex int) (string, []any) {
 	return "websearch_to_tsquery(" +
 			"$" + strconv.Itoa(substitutionIndex) + ", " +
 			"$" + strconv.Itoa(substitutionIndex+1) +
 			")",
-		[]interface{}{
+		[]any{
 			ponylib_app.GetFTSLanguage(),
 			query.TextMatch,
 		}
