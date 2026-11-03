@@ -28,9 +28,3 @@ failure, completed steps remain in place. Inspect the reported stage and existin
 artifacts before retrying; do not blindly rerun the script, which computes a new
 version from the tags. For example, if only release creation failed, finish with
 `gh release create vX.Y.Z --repo maizy/PonyLib --verify-tag --title vX.Y.Z --notes-file <notes-file>`.
-
-To test the script without publishing artifacts:
-
-```sh
-python3 -m unittest discover -s tests -p 'test_release.py'
-```
