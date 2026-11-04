@@ -17,25 +17,25 @@ the same directory. Add paths to your libraries in `volumes` section.
 Run
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 It needs some time in the first run to init Database & run DB migrations.
 
-Check status: `docker-compose ps`, `docker-compose logs`.
+Check status: `docker compose ps`, `docker compose logs`.
 
 Scan books from libraries. For example:
 
 ```
-docker-compose exec ponylib ponylib scan /data/lib1
-docker-compose exec ponylib ponylib scan /data/lib3.zip
+docker compose exec ponylib ponylib scan /data/lib1
+docker compose exec ponylib ponylib scan /data/lib3.zip
 # ...
 ```
 
 Also see other ponylib commands:
 
 ```
-docker-compose exec ponylib ponylib --help
+docker compose exec ponylib ponylib --help
 ```
 
 ## Local development
