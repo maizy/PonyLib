@@ -47,13 +47,16 @@ func TestLibrary(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 3*time.Minute)
 	defer cancel()
 	binary := filepath.Join(t.TempDir(), "ponylib")
-	build := exec.CommandContext(ctx, "go", "build", "-race", "-o", binary, "./cmd/ponylib")
-	build.Dir = ".."
-	output, err := build.CombinedOutput()
-	require.NoError(t, err, "%s", output)
+	runStep(t, "build-cli", func(t *testing.T) {
+		build := exec.CommandContext(ctx, "go", "build", "-race", "-o", binary, "./cmd/ponylib")
+		build.Dir = ".."
+		output, err := build.CombinedOutput()
+		require.NoError(t, err, "%s", output)
+	})
 	env := append(os.Environ(), "DATABASE_URL="+databaseURL, "FTS_LANGUAGE=english", "DB_SKIP_MIGRATIONS=1", "PASSWORD=integration-secret")
-	run := func(args ...string) {
+	run := func(t *testing.T, args ...string) {
 		t.Helper()
+		t.Logf("Run CLI: ponylib %s", strings.Join(args, " "))
 		command := exec.CommandContext(ctx, binary, args...)
 		command.Env = env
 		output, err := command.CombinedOutput()
@@ -62,106 +65,125 @@ func TestLibrary(t *testing.T) {
 	pool, err := pgxpool.New(ctx, databaseURL)
 	require.NoError(t, err)
 	t.Cleanup(pool.Close)
-	run("migrate")
-	migrations := func() []string {
+	migrations := func(t *testing.T) []string {
 		rows, err := pool.Query(ctx, "select id || ':' || applied_at::text from app_migrations order by id")
 		require.NoError(t, err)
 		values, err := pgx.CollectRows(rows, pgx.RowTo[string])
 		require.NoError(t, err)
 		return values
 	}
-	before := migrations()
-	require.NotEmpty(t, before)
-	run("migrate")
-	require.Equal(t, before, migrations())
+	var before []string
+	runStep(t, "migrate-database", func(t *testing.T) {
+		run(t, "migrate")
+		before = migrations(t)
+		require.NotEmpty(t, before)
+	})
+	runStep(t, "migrate-database-again", func(t *testing.T) {
+		run(t, "migrate")
+		require.Equal(t, before, migrations(t))
+	})
 	archive, err := filepath.Abs("test-fb2.zip")
 	require.NoError(t, err)
-	zipReader, err := zip.OpenReader(archive)
-	require.NoError(t, err)
-	defer zipReader.Close()
 	originals := map[string][]byte{}
-	for _, entry := range zipReader.File {
-		reader, err := entry.Open()
+	runStep(t, "read-fixture-archive", func(t *testing.T) {
+		zipReader, err := zip.OpenReader(archive)
 		require.NoError(t, err)
-		data, err := io.ReadAll(reader)
-		require.NoError(t, err)
-		require.NoError(t, reader.Close())
-		originals[entry.Name] = data
-	}
-	require.Len(t, originals, len(books))
-	run("scan", archive)
-	var targets, count int
-	require.NoError(t, pool.QueryRow(ctx, "select count(*) from target").Scan(&targets))
-	require.Equal(t, 1, targets)
-	var targetID, targetRID string
-	var scannedAt time.Time
-	require.NoError(t, pool.QueryRow(ctx, "select id, rid, scanned_at from target").Scan(&targetID, &targetRID, &scannedAt))
-	require.False(t, scannedAt.IsZero())
-	expectedRoot := resource.RId{Scheme: "zip", Path: archive, Query: []resource.Q{{Key: "ext", Value: "fb2"}}}
-	require.Equal(t, expectedRoot.String(), targetRID)
-	require.NoError(t, pool.QueryRow(ctx, "select count(*) from book").Scan(&count))
-	require.Equal(t, len(books), count)
+		defer zipReader.Close()
+		for _, entry := range zipReader.File {
+			reader, err := entry.Open()
+			require.NoError(t, err)
+			data, err := io.ReadAll(reader)
+			require.NoError(t, err)
+			require.NoError(t, reader.Close())
+			originals[entry.Name] = data
+		}
+		require.Len(t, originals, len(books))
+	})
+	runStep(t, "scan-books", func(t *testing.T) {
+		run(t, "scan", archive)
+	})
 	ids := map[string]fixture{}
-	for _, book := range books {
-		require.Contains(t, originals, book.name)
-		var id, rid, parent string
-		var metadata fb2_parser.Fb2Metadata
-		require.NoError(t, pool.QueryRow(ctx, "select id, target_id, rid, metadata from book where metadata #>> '{book,title}' = $1", book.title).Scan(&id, &parent, &rid, &metadata))
-		require.Equal(t, targetID, parent)
-		require.Equal(t, book.title, metadata.Book.Title)
-		require.Equal(t, book.author, metadata.AuthorsString())
-		decoded, err := resource.DecodeRId(rid)
-		require.NoError(t, err)
-		require.Equal(t, "zip", decoded.Scheme)
-		require.Equal(t, archive, decoded.Path)
-		require.Equal(t, book.name, decoded.SubPath())
-		ids[id] = book
-	}
-	listener, err := net.Listen("tcp", "127.0.0.1:0")
-	require.NoError(t, err)
-	port := listener.Addr().(*net.TCPAddr).Port
-	require.NoError(t, listener.Close())
-	base := fmt.Sprintf("http://127.0.0.1:%d", port)
-	log, err := os.CreateTemp(t.TempDir(), "web-*.log")
-	require.NoError(t, err)
-	server := exec.CommandContext(ctx, binary, "web-ui", "--port", fmt.Sprint(port))
-	server.Env, server.Stdout, server.Stderr = env, log, log
-	require.NoError(t, server.Start())
-	t.Cleanup(func() {
-		_ = server.Process.Kill()
-		_ = server.Wait()
-		_ = log.Close()
-		if t.Failed() {
-			data, _ := os.ReadFile(log.Name())
-			t.Logf("WebUI output:\n%s", data)
+	runStep(t, "verify-database", func(t *testing.T) {
+		var targets, count int
+		require.NoError(t, pool.QueryRow(ctx, "select count(*) from target").Scan(&targets))
+		require.Equal(t, 1, targets)
+		var targetID, targetRID string
+		var scannedAt time.Time
+		require.NoError(t, pool.QueryRow(ctx, "select id, rid, scanned_at from target").Scan(&targetID, &targetRID, &scannedAt))
+		require.False(t, scannedAt.IsZero())
+		expectedRoot := resource.RId{Scheme: "zip", Path: archive, Query: []resource.Q{{Key: "ext", Value: "fb2"}}}
+		require.Equal(t, expectedRoot.String(), targetRID)
+		require.NoError(t, pool.QueryRow(ctx, "select count(*) from book").Scan(&count))
+		require.Equal(t, len(books), count)
+		for _, book := range books {
+			t.Logf("Verify database book: %s", book.title)
+			require.Contains(t, originals, book.name)
+			var id, rid, parent string
+			var metadata fb2_parser.Fb2Metadata
+			require.NoError(t, pool.QueryRow(ctx, "select id, target_id, rid, metadata from book where metadata #>> '{book,title}' = $1", book.title).Scan(&id, &parent, &rid, &metadata))
+			require.Equal(t, targetID, parent)
+			require.Equal(t, book.title, metadata.Book.Title)
+			require.Equal(t, book.author, metadata.AuthorsString())
+			decoded, err := resource.DecodeRId(rid)
+			require.NoError(t, err)
+			require.Equal(t, "zip", decoded.Scheme)
+			require.Equal(t, archive, decoded.Path)
+			require.Equal(t, book.name, decoded.SubPath())
+			ids[id] = book
 		}
 	})
-	jar, err := cookiejar.New(nil)
-	require.NoError(t, err)
-	browser := &http.Client{Jar: jar, Timeout: 3 * time.Second}
-	require.Eventually(t, func() bool {
+	parent := t
+	var base string
+	var browser *http.Client
+	runStep(t, "start-webui", func(t *testing.T) {
+		listener, err := net.Listen("tcp", "127.0.0.1:0")
+		require.NoError(t, err)
+		port := listener.Addr().(*net.TCPAddr).Port
+		require.NoError(t, listener.Close())
+		base = fmt.Sprintf("http://127.0.0.1:%d", port)
+		log, err := os.CreateTemp(parent.TempDir(), "web-*.log")
+		require.NoError(t, err)
+		server := exec.CommandContext(ctx, binary, "web-ui", "--port", fmt.Sprint(port))
+		server.Env, server.Stdout, server.Stderr = env, log, log
+		require.NoError(t, server.Start())
+		parent.Cleanup(func() {
+			_ = server.Process.Kill()
+			_ = server.Wait()
+			_ = log.Close()
+			if parent.Failed() {
+				data, _ := os.ReadFile(log.Name())
+				parent.Logf("WebUI output:\n%s", data)
+			}
+		})
+		jar, err := cookiejar.New(nil)
+		require.NoError(t, err)
+		browser = &http.Client{Jar: jar, Timeout: 3 * time.Second}
+		require.Eventually(t, func() bool {
+			response, err := browser.Get(base)
+			if err != nil {
+				return false
+			}
+			defer response.Body.Close()
+			return response.StatusCode == http.StatusOK && response.Request.URL.Path == "/auth"
+		}, 15*time.Second, 100*time.Millisecond)
+	})
+	runStep(t, "authenticate-webui", func(t *testing.T) {
 		response, err := browser.Get(base)
-		if err != nil {
-			return false
-		}
-		defer response.Body.Close()
-		return response.StatusCode == http.StatusOK && response.Request.URL.Path == "/auth"
-	}, 15*time.Second, 100*time.Millisecond)
-	response, err := browser.Get(base)
-	require.NoError(t, err)
-	document, err := html.Parse(response.Body)
-	require.NoError(t, response.Body.Close())
-	require.NoError(t, err)
-	authAction := formAction(document, "password")
-	require.Equal(t, "/auth", authAction)
-	response, err = browser.PostForm(base+authAction, url.Values{"password": {"integration-secret"}})
-	require.NoError(t, err)
-	require.NoError(t, response.Body.Close())
-	require.Equal(t, http.StatusOK, response.StatusCode)
-	require.Equal(t, "/", response.Request.URL.Path)
-	address, err := url.Parse(base)
-	require.NoError(t, err)
-	require.NotEmpty(t, jar.Cookies(address))
+		require.NoError(t, err)
+		document, err := html.Parse(response.Body)
+		require.NoError(t, response.Body.Close())
+		require.NoError(t, err)
+		authAction := formAction(document, "password")
+		require.Equal(t, "/auth", authAction)
+		response, err = browser.PostForm(base+authAction, url.Values{"password": {"integration-secret"}})
+		require.NoError(t, err)
+		require.NoError(t, response.Body.Close())
+		require.Equal(t, http.StatusOK, response.StatusCode)
+		require.Equal(t, "/", response.Request.URL.Path)
+		address, err := url.Parse(base)
+		require.NoError(t, err)
+		require.NotEmpty(t, browser.Jar.Cookies(address))
+	})
 	type scenario struct {
 		name, query string
 		expected    []string
@@ -178,6 +200,7 @@ func TestLibrary(t *testing.T) {
 	)
 	for _, test := range scenarios {
 		t.Run(test.name, func(t *testing.T) {
+			t.Logf("Search query: %s", test.query)
 			response, err := browser.Get(base)
 			require.NoError(t, err)
 			document, err := html.Parse(response.Body)
@@ -205,6 +228,7 @@ func TestLibrary(t *testing.T) {
 				require.True(t, ok, "unknown download: %s", href)
 				require.Contains(t, nodeText(node), book.title)
 				found = append(found, book.title)
+				t.Logf("Download and compare: %s", book.name)
 				download, err := browser.Get(base + href)
 				require.NoError(t, err)
 				data, err := io.ReadAll(download.Body)
@@ -216,6 +240,14 @@ func TestLibrary(t *testing.T) {
 			})
 			require.ElementsMatch(t, test.expected, found)
 		})
+	}
+}
+
+// Later steps depend on earlier ones; stop the parent test after a failed step.
+func runStep(t *testing.T, name string, step func(*testing.T)) {
+	t.Helper()
+	if !t.Run(name, step) {
+		t.FailNow()
 	}
 }
 
