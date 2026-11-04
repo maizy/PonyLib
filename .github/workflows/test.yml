@@ -21,8 +21,8 @@ jobs:
           ${{ runner.os }}-go-
     - name: Test
       run: ./test.sh
-  integrational-test:
-    name: integrational test (PostgreSQL ${{ matrix.postgres }})
+  integration-tests:
+    name: integration-tests (PostgreSQL ${{ matrix.postgres }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -49,5 +49,4 @@ jobs:
       - uses: actions/setup-go@v7.0.0
         with:
           go-version-file: go.mod
-      - run: go test -race -timeout 2m ./...
-      - run: go vet ./...
+      - run: ./integration-test.sh
