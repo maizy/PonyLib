@@ -43,18 +43,15 @@ go vet ./...
 go build ./...
 ```
 
-Use `go test -race -timeout 2m ./...` for concurrency changes. Database integration
-tests skip unless `PONYLIB_TEST_DATABASE_URL` is set. To run them against the local
-dev database after starting it:
+Use `go test -race -timeout 2m ./...` for concurrency changes. Integration tests
+live in `integration-tests/` behind the `integration` build tag. Run them with
+`./integration-test.sh`: it starts and removes a disposable PostgreSQL 12.6 Docker
+container, or uses `PONYLIB_TEST_DATABASE_URL` when set. `POSTGRES_VERSION` selects
+another Docker image version. See `local/README.md` for details.
 
-```sh
-PONYLIB_TEST_DATABASE_URL='postgres://ponylib:ponylib-dev@127.0.0.1:55432/ponylib?sslmode=disable' \
-  go test -race -timeout 2m ./ponylib_app/db
-```
-
-The integration test creates and removes an isolated schema. Use a development
-or disposable database. CI runs unit tests on Linux and macOS and database tests
-against PostgreSQL 12, 17 and 18.
+The integration tests create and remove isolated schemas. Use a development or
+disposable database. CI runs unit tests and vet on Linux and macOS and integration
+tests against PostgreSQL 12, 17 and 18. `test.sh` runs unit tests and go vet.
 
 For local tooling changes, check `bash -n local/run-dev.sh` and
 `docker compose -f local/compose.dev.yml config --quiet`, then exercise the relevant

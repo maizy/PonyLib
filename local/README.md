@@ -31,3 +31,38 @@ DEV_DB_PORT=55433 FTS_LANGUAGE=russian ./local/run-dev.sh
 
 Stop PostgreSQL with `docker compose -f local/compose.dev.yml down`. To delete the dev
 database as well, use `docker compose -f local/compose.dev.yml down -v`.
+
+## Integration tests
+
+Run from the repository root:
+
+```sh
+./integration-test.sh
+POSTGRES_VERSION=17 ./integration-test.sh
+POSTGRES_VERSION=18 ./integration-test.sh
+```
+
+The runner starts a disposable PostgreSQL Docker container (12.6 by default),
+waits for readiness, and removes it on exit. It uses a random localhost port and
+keeps the development database separate. Go and Docker are required.
+
+To use an existing development or disposable database, set
+`PONYLIB_TEST_DATABASE_URL`; Docker is then unnecessary. CI uses this mode for
+its PostgreSQL 12, 17 and 18 services:
+
+```sh
+PONYLIB_TEST_DATABASE_URL='postgres://ponylib:ponylib-dev@127.0.0.1:55432/ponylib?sslmode=disable' \
+  ./integration-test.sh
+```
+
+Each test creates and removes its own schema. The database user needs permission
+to create schemas. Tests build and launch the CLI, migrate twice, scan the fixture
+ZIP, verify database records, authenticate to the WebUI, search through HTML forms,
+and compare downloads with the original archive bytes. The HTTP test browser
+supports cookies and redirects; no JavaScript runtime or graphical browser is needed.
+Additional Go test arguments can be passed to the script, for example `-v` or
+`-run TestLibrary`. Integration tests use the `integration` build tag and are
+excluded from the regular `./test.sh` run.
+
+The archive contains 11 books. Expected metadata follows the FB2 contents:
+«Герой нашего времени» and «Дама с собачкой» both identify Pushkin as their author.
