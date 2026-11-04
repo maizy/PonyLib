@@ -4,12 +4,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="/static/css/bootstrap.min.css?{{.staticHash}}" rel="stylesheet">
   <link href="/static/icon/bootstrap-icons.css?{{.staticHash}}" rel="stylesheet">
+  <link href="/static/img/favicon.png?{{.staticHash}}" rel="icon" type="image/png" sizes="32x32">
+  <link href="/static/img/pony.svg?{{.staticHash}}" rel="icon" type="image/svg+xml" sizes="any">
   <title>Ponylib{{if .subtitle}} · {{.subtitle}}{{end}}</title>
 </head>
 {{ end }}
 
 {{ define "app_name" }}
-<span class="fs-2">🎠&nbsp;</span>
+<img src="/static/img/pony.svg?{{.staticHash}}" width="48" height="48" class="me-2" alt="">
 <span class="fs-4 ">Ponylib</span>
 {{ end }}
 
