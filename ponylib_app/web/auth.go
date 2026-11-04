@@ -32,7 +32,7 @@ func BasicUnsafeAuth(authUrl, staticPrefix string) gin.HandlerFunc {
 					}
 				}
 				c.Next()
-			} else if strings.HasPrefix(c.Request.URL.Path, staticPrefix) {
+			} else if strings.HasPrefix(c.Request.URL.Path, staticPrefix) || c.Request.URL.Path == faviconPath {
 				c.Next()
 			} else {
 				passwordCookie, err := c.Cookie(passwordCookieName)

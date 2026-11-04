@@ -9,6 +9,7 @@ import (
 )
 
 const staticPrefix = "/static/"
+const faviconPath = "/favicon.ico"
 const staticCacheMaxAge = 30 * 24 * 60 * 60
 const authUrl = "/auth"
 
@@ -20,6 +21,7 @@ func AppendRouters(engine *gin.Engine, conn *pgxpool.Pool, devMode bool) {
 	engine.Use(BasicUnsafeAuth(authUrl, staticPrefix))
 
 	engine.GET(staticPrefix+"*filepath", StaticsHandler(devMode))
+	engine.GET(faviconPath, StaticsHandler(devMode))
 
 	engine.GET("/", IndexHandler())
 

@@ -47,6 +47,9 @@ func SetupTemplates(engine *gin.Engine, devMode bool) {
 func StaticsHandler(devMode bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
+		if path == faviconPath {
+			path = staticPrefix + "img/favicon.ico"
+		}
 		if !devMode {
 			c.Header("Cache-Control", "public, max-age="+strconv.Itoa(staticCacheMaxAge))
 		}
