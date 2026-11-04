@@ -55,14 +55,7 @@ PONYLIB_TEST_DATABASE_URL='postgres://ponylib:ponylib-dev@127.0.0.1:55432/ponyli
   ./integration-test.sh
 ```
 
-Each test creates and removes its own schema. The database user needs permission
-to create schemas. Tests build and launch the CLI, migrate twice, scan the fixture
-ZIP, verify database records, authenticate to the WebUI, search through HTML forms,
-and compare downloads with the original archive bytes. The HTTP test browser
-supports cookies and redirects; no JavaScript runtime or graphical browser is needed.
-Additional Go test arguments can be passed to the script, for example `-v` or
-`-run TestLibrary`. Integration tests use the `integration` build tag and are
-excluded from the regular `./test.sh` run.
-
-The archive contains 11 books. Expected metadata follows the FB2 contents:
-«Герой нашего времени» and «Дама с собачкой» both identify Pushkin as their author.
+The database user needs permission to create schemas. Additional Go test arguments
+can be passed to the script, for example `-run TestLibrary`. Test names and step
+logs are printed by default. Integration tests use the `integration` build tag
+and are excluded from the regular `./test.sh` run.
